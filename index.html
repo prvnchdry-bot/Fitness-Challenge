@@ -244,9 +244,9 @@
     return `<div class="section-label">FULL RANKINGS</div>
     <div class="list-wrap">${sorted.map((p,i)=>{
       const rank=i+1, st=getStatus(p.days), pct=Math.min(100,Math.round(p.days/CHALLENGE_DAYS*100));
-      const bs=rank<=3?`background:${rank===1?"rgba(255,215,0,.15)":rank===2?"rgba(192,192,192,.12)":"rgba(205,127,50,.12)"};color:${rank===1?"#FFD700":rank===2?"#C0C0C0":"#CD7F32"}`:'';
+      const bs="";
       return `<div class="list-item" style="animation-delay:${i*.04}s">
-        <div class="rank-badge" style="${bs}">${rank<=3?getMedal(rank):rank}</div>
+        <div class="rank-badge" style="${bs}">${rank}</div>
         <div>
           <div class="list-name">${esc(p.name)}</div>
           <div class="list-meta"><span>${p.days}/${CHALLENGE_DAYS} days</span></div>
