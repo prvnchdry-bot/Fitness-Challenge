@@ -250,7 +250,7 @@
         <div>
           <div class="list-name">${esc(p.name)}</div>
           <div class="list-meta"><span>${p.days}/${CHALLENGE_DAYS} days</span></div>
-          <div class="token-row">${Array.from({length:5},(_,i)=>`<div class="token-dot ${i<p.tokens?'used':'left'}"></div>`).join('')}<span class="token-label ${p.tokens>=5?'all-used':''}">${p.tokens>=5?'⚠️ No tokens left':`${p.tokens}/5 tokens used`}</span></div>
+          <div class="token-row">${Array.from({length:6},(_,i)=>`<div class="token-dot ${i<p.tokens?'used':'left'}"></div>`).join('')}<span class="token-label ${p.tokens>=6?'all-used':''}">${p.tokens>=6?'⚠️ No tokens left':`${p.tokens}/6 tokens used`}</span></div>
           <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${pcColor(pct)}"></div></div>
         </div>
         <div class="list-right">

@@ -101,6 +101,7 @@
           <option value="0">0</option><option value="1">1</option>
           <option value="2">2</option><option value="3">3</option>
           <option value="4">4</option><option value="5">5</option>
+          <option value="6">6</option>
         </select>
       </div>
       <div class="fg">
@@ -113,6 +114,16 @@
       </div>
     </div>
     <button class="btn-add" id="btn-add" onclick="addParticipant()">➕ ADD TO CHALLENGE</button>
+  </div>
+
+
+  <!-- One-time bulk load button -->
+  <div id="seed-banner" style="background:rgba(255,107,53,.08);border:1px dashed rgba(255,107,53,.3);border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+    <div>
+      <div style="font-size:13px;font-weight:700;color:#FF6B35;margin-bottom:3px;">📋 Load All 31 Participants</div>
+      <div style="font-size:11px;color:#555;">Press once to add all participants to Firebase. KM & days will be blank.</div>
+    </div>
+    <button onclick="window._seedAll()" style="background:#FF6B35;color:#000;border:none;border-radius:8px;padding:9px 20px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">⚡ Load Participants</button>
   </div>
 
   <!-- Participant Table -->
@@ -216,7 +227,7 @@
           <td><input class="inline-input" id="e-km" type="number" value="${p.km}" style="width:80px"/></td>
           <td><input class="inline-input" id="e-days" type="number" value="${p.days}" min="0" max="100" style="width:70px"/></td>
           <td><select class="inline-select" id="e-tokens">
-            ${[0,1,2,3,4,5].map(v=>`<option value="${v}"${p.tokens===v?' selected':''}>${v}</option>`).join('')}
+            ${[0,1,2,3,4,5,6].map(v=>`<option value="${v}"${p.tokens===v?' selected':''}>${v}</option>`).join('')}
           </select></td>
           <td><span class="status-pill" style="background:${st.bg};color:${st.color};border:1px solid ${st.color}33">${st.icon} ${st.label}</span></td>
           <td>
@@ -311,50 +322,34 @@
   });
 
 
-  // ── Pre-seed participants on first load ───────────────────────────────────
-  async function seedIfEmpty() {
-    const snapshot = await new Promise(res => onValue(participantsRef, res, { onlyOnce: true }));
-    if (snapshot.val()) return; // already has data, skip
-    const { default: pushFn } = { default: push };
-    const entries = [
-    { name: "Amar Shinde", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Shobha", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Aakash Rayate", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Poulomi Mukherjee", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Sipra Tripathy", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Shibani Pattnaik", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Puneet Ahuja", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Shubham Singh", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Praveen Choudhary", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Surabhi Telang", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Aparna Shinde", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Renu Goel", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Saswati Mahapatra", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Sonam Agnihotri", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Jyotika Bhurani", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Yogesh Karira", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Mayuri Hegde", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Asmita Tiwari", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Jaya Bharti", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Mithun Vakharia", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Aman Gupta", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "BIBEK LAL", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Richa Johar", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Dikshant Ohri", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Shyamala", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Shubham Lakhotia", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Kumar Abhishek", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Kali Tripathy", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Thavakumar Swaminathan", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Binay lal", activity: "Walking", km: 0, days: 0, tokens: 0 },
-    { name: "Shilpy pateriya", activity: "Walking", km: 0, days: 0, tokens: 0 }
+
+  // ── One-time bulk seed ────────────────────────────────────────────────────
+  window._seedAll = async function() {
+    if (!confirm('This will add all 31 participants to Firebase. Continue?')) return;
+    const names = [
+      "Amar Shinde","Shobha","Aakash Rayate","Poulomi Mukherjee",
+      "Sipra Tripathy","Shibani Pattnaik","Puneet Ahuja","Shubham Singh",
+      "Praveen Choudhary","Surabhi Telang","Aparna Shinde","Renu Goel",
+      "Saswati Mahapatra","Sonam Agnihotri","Jyotika Bhurani","Yogesh Karira",
+      "Mayuri Hegde","Asmita Tiwari","Jaya Bharti","Mithun Vakharia",
+      "Aman Gupta","BIBEK LAL","Richa Johar","Dikshant Ohri","Shyamala",
+      "Shubham Lakhotia","Kumar Abhishek","Kali Tripathy",
+      "Thavakumar Swaminathan","Binay lal","Shilpy pateriya"
     ];
-    for (const entry of entries) {
-      await push(participantsRef, entry);
+    const btn = document.querySelector('#seed-banner button');
+    btn.textContent = 'Loading…'; btn.disabled = true;
+    try {
+      for (const name of names) {
+        await push(participantsRef, { name, activity: 'Walking', km: 0, days: 0, tokens: 0 });
+      }
+      document.getElementById('seed-banner').style.display = 'none';
+      toast('✅ All 31 participants loaded!');
+    } catch(e) {
+      btn.textContent = '⚡ Load Participants'; btn.disabled = false;
+      toast('Error loading participants. Check Firebase.', 'error');
     }
-    toast('✅ 31 participants loaded!');
-  }
-  seedIfEmpty();
+  };
+
   // ── Real-time listener ────────────────────────────────────────────────────
   onValue(participantsRef, (snapshot) => {
     participants = snapshot.val() || {};
