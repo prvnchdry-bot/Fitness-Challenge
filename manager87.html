@@ -7,78 +7,98 @@
   <style>
     *{box-sizing:border-box;margin:0;padding:0;}
     body{background:#080810;font-family:'DM Sans',sans-serif;color:#eee;min-height:100vh;}
+
     .topbar{background:#0f0f1a;border-bottom:1px solid rgba(255,107,53,.2);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
     .topbar-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#FF6B35;letter-spacing:2px;}
     .topbar-badge{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:rgba(255,107,53,.15);border:1px solid rgba(255,107,53,.3);color:#FF6B35;padding:4px 12px;border-radius:100px;}
     .topbar-link{font-size:11px;color:#555;text-decoration:none;border:1px solid rgba(255,255,255,.1);padding:6px 14px;border-radius:8px;transition:all .2s;}
     .topbar-link:hover{border-color:rgba(255,107,53,.4);color:#FF6B35;}
-    .page{padding:24px 16px 60px;max-width:960px;margin:0 auto;}
 
-    /* Section cards */
-    .section-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:20px;margin-bottom:24px;}
-    .section-card-title{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#FF6B35;margin-bottom:4px;letter-spacing:1px;}
-    .section-card-sub{font-size:11px;color:#555;margin-bottom:16px;}
+    .page{padding:20px 16px 60px;max-width:960px;margin:0 auto;}
 
+    /* Nav tabs */
+    .nav-tabs{display:flex;gap:6px;margin-bottom:24px;border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:0;}
+    .nav-tab{padding:10px 20px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:none;background:transparent;color:#555;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;}
+    .nav-tab.active{color:#FF6B35;border-bottom-color:#FF6B35;}
+    .nav-tab:hover:not(.active){color:#aaa;}
+    .nav-section{display:none;}.nav-section.active{display:block;}
+
+    /* Cards */
+    .card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:20px;margin-bottom:20px;}
+    .card-title{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#FF6B35;margin-bottom:4px;letter-spacing:1px;}
+    .card-sub{font-size:11px;color:#555;margin-bottom:16px;line-height:1.5;}
+
+    /* Forms */
     .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
-    @media(max-width:480px){.form-grid{grid-template-columns:1fr;}}
+    .form-grid.cols3{grid-template-columns:1fr 1fr 1fr;}
+    @media(max-width:520px){.form-grid,.form-grid.cols3{grid-template-columns:1fr;}}
     .fg{display:flex;flex-direction:column;gap:4px;}
     .fg label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#555;}
-    .fg input,.fg select{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;}
-    .fg input:focus,.fg select:focus{border-color:rgba(255,107,53,.5);background:rgba(255,107,53,.05);}
+    .fg input,.fg select,.fg textarea{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;}
+    .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:rgba(255,107,53,.5);background:rgba(255,107,53,.05);}
     .fg select option{background:#1a1a2e;color:#eee;}
-    .btn-primary{background:#FF6B35;color:#000;border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s,transform .1s;}
-    .btn-primary:hover{opacity:.88;transform:translateY(-1px);}
-    .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;}
-    .btn-primary.full{width:100%;}
+    .fg textarea{resize:vertical;min-height:60px;font-size:12px;}
+    .btn{border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s,transform .1s;letter-spacing:.5px;}
+    .btn:hover{opacity:.88;transform:translateY(-1px);}
+    .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+    .btn-orange{background:#FF6B35;color:#000;}
+    .btn-full{width:100%;}
+    .btn-sm{padding:5px 12px;font-size:11px;border-radius:7px;}
+    .btn-red{background:rgba(231,76,60,.15);color:#E74C3C;border:1px solid rgba(231,76,60,.3);}
+    .btn-blue{background:rgba(0,229,255,.1);color:#00E5FF;border:1px solid rgba(0,229,255,.2);}
+
+    /* Daily log table */
+    .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid rgba(255,255,255,.07);}
+    table{width:100%;border-collapse:collapse;min-width:620px;}
+    thead tr{background:#0f0f1a;}
+    thead th{padding:10px 12px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;text-align:left;border-bottom:1px solid rgba(255,255,255,.07);}
+    tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s;}
+    tbody tr:hover{background:rgba(255,255,255,.03);}
+    tbody td{padding:9px 12px;font-size:12px;color:#ccc;vertical-align:middle;}
+    .td-name{font-weight:600;color:#f0f0f0;}
+
+    .act-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;}
+    .act-walk {background:rgba(105,255,71,.1);color:#69FF47;border:1px solid rgba(105,255,71,.2);}
+    .act-run  {background:rgba(0,229,255,.1);color:#00E5FF;border:1px solid rgba(0,229,255,.2);}
+    .act-cycle{background:rgba(255,107,53,.1);color:#FF6B35;border:1px solid rgba(255,107,53,.2);}
+
+    .proof-link{font-size:11px;color:#5bb8e8;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
+    .proof-link:hover{text-decoration:underline;}
+
+    /* Summary cards */
+    .summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:20px;}
+    .summary-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px;}
+    .summary-name{font-size:12px;font-weight:700;color:#f0f0f0;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .summary-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#666;margin-bottom:4px;}
+    .summary-val{font-family:'Bebas Neue',sans-serif;font-size:16px;color:#FF6B35;}
+    .summary-act{font-size:9px;padding:2px 7px;border-radius:100px;margin-right:4px;}
 
     /* Token section */
-    .token-grid{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:end;margin-bottom:8px;}
-    @media(max-width:480px){.token-grid{grid-template-columns:1fr;}}
-    .token-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
-    .token-row{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 14px;gap:10px;}
-    .token-name{font-size:13px;font-weight:600;color:#f0f0f0;flex:1;}
+    .token-list{display:flex;flex-direction:column;gap:8px;}
+    .token-row-item{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 14px;gap:10px;flex-wrap:wrap;}
+    .token-name{font-size:13px;font-weight:600;color:#f0f0f0;flex:1;min-width:120px;}
     .token-dots{display:flex;gap:5px;align-items:center;}
     .token-dot{width:10px;height:10px;border-radius:50%;}
     .token-dot.used{background:#E74C3C;box-shadow:0 0 4px rgba(231,76,60,.5);}
     .token-dot.left{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);}
-    .token-count{font-size:11px;color:#555;min-width:70px;text-align:right;}
+    .token-count{font-size:11px;color:#555;min-width:90px;text-align:right;}
     .token-count.warn{color:#E74C3C;font-weight:700;}
+    .token-edit{display:flex;align-items:center;gap:6px;}
+    .token-select{background:#1a1a2e;border:1px solid rgba(255,107,53,.3);border-radius:6px;padding:4px 8px;font-family:'DM Sans',sans-serif;font-size:12px;color:#eee;outline:none;}
 
-    /* Filter tabs */
-    .filter-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
-    .filter-tab{padding:6px 14px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:transparent;color:#555;transition:all .2s;}
-    .filter-tab.f-all  {border-color:rgba(255,255,255,.25);color:#aaa;}
-    .filter-tab.f-walk {border-color:rgba(105,255,71,.3);color:#69FF47;background:rgba(105,255,71,.08);}
-    .filter-tab.f-run  {border-color:rgba(0,229,255,.3);color:#00E5FF;background:rgba(0,229,255,.08);}
-    .filter-tab.f-cycle{border-color:rgba(255,107,53,.3);color:#FF6B35;background:rgba(255,107,53,.1);}
+    /* Filter bar */
+    .filter-bar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+    .filter-chip{padding:5px 12px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:transparent;color:#555;transition:all .2s;}
+    .filter-chip.active{border-color:rgba(255,107,53,.4);color:#FF6B35;background:rgba(255,107,53,.08);}
+    .search-input{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 12px;font-family:'DM Sans',sans-serif;font-size:12px;color:#eee;outline:none;flex:1;min-width:140px;}
+    .search-input:focus{border-color:rgba(255,107,53,.4);}
 
-    /* Table */
-    .table-wrap{overflow-x:auto;border-radius:14px;border:1px solid rgba(255,255,255,.07);}
-    table{width:100%;border-collapse:collapse;min-width:600px;}
-    thead tr{background:#0f0f1a;}
-    thead th{padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;text-align:left;border-bottom:1px solid rgba(255,255,255,.07);}
-    tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s;}
-    tbody tr:last-child{border-bottom:none;}
-    tbody tr:hover{background:rgba(255,255,255,.03);}
-    tbody td{padding:10px 14px;font-size:13px;color:#ccc;vertical-align:middle;}
-    .td-name{font-weight:600;color:#f0f0f0;}
-    .act-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;}
-    .act-walk {background:rgba(105,255,71,.1);color:#69FF47;border:1px solid rgba(105,255,71,.2);}
-    .act-run  {background:rgba(0,229,255,.1);color:#00E5FF;border:1px solid rgba(0,229,255,.2);}
-    .act-cycle{background:rgba(255,107,53,.1);color:#FF6B35;border:1px solid rgba(255,107,53,.2);}
-    .inline-input{background:transparent;border:1px solid rgba(255,107,53,.4);border-radius:6px;padding:4px 8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;}
-    .inline-select{background:#1a1a2e;border:1px solid rgba(255,107,53,.4);border-radius:6px;padding:4px 8px;font-family:'DM Sans',sans-serif;font-size:12px;color:#eee;outline:none;}
-    .btn-icon{background:none;border:none;cursor:pointer;font-size:15px;padding:4px 6px;border-radius:6px;transition:background .15s;line-height:1;}
-    .btn-icon:hover{background:rgba(255,255,255,.08);}
-    .btn-save{color:#69FF47;}.btn-cancel{color:#888;}.btn-edit{color:#00E5FF;}.btn-del{color:#E74C3C;}
-    .status-pill{display:inline-block;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:100px;}
-    .empty-state{text-align:center;padding:32px;color:#444;font-size:13px;}
-    .loading-spinner{width:24px;height:24px;border:2px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
-
+    .empty{text-align:center;padding:32px;color:#444;font-size:13px;}
     .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e1e2e;border:1px solid rgba(255,107,53,.3);color:#eee;padding:12px 24px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:999;white-space:nowrap;}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
     .toast.success{border-color:rgba(105,255,71,.4);color:#69FF47;}
     .toast.error{border-color:rgba(231,76,60,.4);color:#E74C3C;}
+    .spinner{width:24px;height:24px;border:2px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px;}
     @keyframes spin{to{transform:rotate(360deg);}}
   </style>
 </head>
@@ -88,91 +108,208 @@
   <div><div class="topbar-title">⚙️ Admin Panel</div></div>
   <div style="display:flex;align-items:center;gap:10px;">
     <span class="topbar-badge">🔒 Private</span>
-    <a class="topbar-link" href="index.html" target="_blank">👁 View Leaderboard</a>
+    <a class="topbar-link" href="index.html" target="_blank">👁 Leaderboard</a>
   </div>
 </div>
 
 <div class="page">
 
-  <!-- ── SECTION 1: Add Activity Entry ── -->
-  <div class="section-card">
-    <div class="section-card-title">+ Add Activity Entry</div>
-    <div class="section-card-sub">Add one entry per person per activity. Same person can have separate Walking, Running and Cycling entries.</div>
-    <div class="form-grid">
-      <div class="fg" style="grid-column:1/-1">
-        <label>Full Name</label>
-        <input id="f-name" placeholder="e.g. Rahul Sharma">
+  <!-- Nav -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchNav('log',this)">📋 Log Activity</button>
+    <button class="nav-tab" onclick="switchNav('entries',this)">📊 All Entries</button>
+    <button class="nav-tab" onclick="switchNav('summary',this)">🏆 Summary</button>
+    <button class="nav-tab" onclick="switchNav('tokens',this)">🎟 Tokens</button>
+  </div>
+
+  <!-- ── TAB 1: Log Activity ── -->
+  <div id="nav-log" class="nav-section active">
+    <div class="card">
+      <div class="card-title">📋 Log Daily Activity</div>
+      <div class="card-sub">Enter each participant's daily submission. KMs will be added to their running total automatically.</div>
+      <div class="form-grid">
+        <div class="fg">
+          <label>Participant Name</label>
+          <input id="l-name" placeholder="e.g. Aakash Rayate" list="names-datalist" autocomplete="off">
+          <datalist id="names-datalist">
+            <option value="Amar Shinde">
+            <option value="Shobha">
+            <option value="Aakash Rayate">
+            <option value="Poulomi Mukherjee">
+            <option value="Sipra Tripathy">
+            <option value="Shibani Pattnaik">
+            <option value="Puneet Ahuja">
+            <option value="Shubham Singh">
+            <option value="Praveen Choudhary">
+            <option value="Surabhi Telang">
+            <option value="Aparna Shinde">
+            <option value="Renu Goel">
+            <option value="Saswati Mahapatra">
+            <option value="Sonam Agnihotri">
+            <option value="Jyotika Bhurani">
+            <option value="Yogesh Karira">
+            <option value="Mayuri Hegde">
+            <option value="Asmita Tiwari">
+            <option value="Jaya Bharti">
+            <option value="Mithun Vakharia">
+            <option value="Aman Gupta">
+            <option value="BIBEK LAL">
+            <option value="Richa Johar">
+            <option value="Dikshant Ohri">
+            <option value="Shyamala">
+            <option value="Shubham Lakhotia">
+            <option value="Kumar Abhishek">
+            <option value="Kali Tripathy">
+            <option value="Thavakumar Swaminathan">
+            <option value="Binay lal">
+            <option value="Shilpy pateriya">
+          </datalist>
+        </div>
+        <div class="fg">
+          <label>Activity</label>
+          <select id="l-activity">
+            <option value="Walking">🚶 Walking</option>
+            <option value="Running">🏃 Running</option>
+            <option value="Cycling">🚴 Cycling</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Date</label>
+          <input id="l-date" type="date">
+        </div>
+        <div class="fg">
+          <label>KM Today</label>
+          <input id="l-km" type="number" placeholder="e.g. 5.2" min="0" step="0.1">
+        </div>
+        <div class="fg" style="grid-column:1/-1">
+          <label>Proof Link (optional — Google Drive / WhatsApp screenshot link)</label>
+          <input id="l-proof" placeholder="https://drive.google.com/... or paste any link">
+        </div>
+        <div class="fg" style="grid-column:1/-1">
+          <label>Notes (optional)</label>
+          <textarea id="l-notes" placeholder="Any notes about this entry…"></textarea>
+        </div>
       </div>
-      <div class="fg">
-        <label>Activity Type</label>
-        <select id="f-activity">
-          <option value="Walking">🚶 Walking</option>
-          <option value="Running">🏃 Running</option>
-          <option value="Cycling">🚴 Cycling</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label>Total KM Logged</label>
-        <input id="f-km" type="number" placeholder="e.g. 120" min="0" step="0.1">
-      </div>
-      <div class="fg">
-        <label>Days Active (0–100)</label>
-        <input id="f-days" type="number" placeholder="e.g. 45" min="0" max="100">
+      <button class="btn btn-orange btn-full" id="btn-log" onclick="logActivity()">✅ LOG ACTIVITY</button>
+    </div>
+
+    <!-- Recent logs -->
+    <div class="card-title" style="margin-bottom:12px">Recent Logs</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Name</th><th>Activity</th><th>KM</th><th>Proof</th><th>Notes</th><th></th></tr></thead>
+        <tbody id="recent-tbody"><tr><td colspan="7"><div style="text-align:center;padding:24px"><div class="spinner"></div></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── TAB 2: All Entries ── -->
+  <div id="nav-entries" class="nav-section">
+    <div class="filter-bar">
+      <input class="search-input" id="search-input" placeholder="🔍 Search by name…" oninput="renderEntries()">
+      <button class="filter-chip active" onclick="setActFilter('all',this)">All</button>
+      <button class="filter-chip" onclick="setActFilter('Walking',this)">🚶 Walk</button>
+      <button class="filter-chip" onclick="setActFilter('Running',this)">🏃 Run</button>
+      <button class="filter-chip" onclick="setActFilter('Cycling',this)">🚴 Cycle</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Name</th><th>Activity</th><th>KM</th><th>Proof</th><th>Notes</th><th></th></tr></thead>
+        <tbody id="all-tbody"><tr><td colspan="7"><div style="text-align:center;padding:24px"><div class="spinner"></div></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── TAB 3: Summary ── -->
+  <div id="nav-summary" class="nav-section">
+    <div class="card-title" style="margin-bottom:4px">Cumulative Totals</div>
+    <div style="font-size:11px;color:#555;margin-bottom:16px">Auto-calculated from all daily logs. This is what the leaderboard shows.</div>
+    <div id="summary-grid" class="summary-grid"><div class="empty"><div class="spinner"></div></div></div>
+  </div>
+
+  <!-- ── TAB 4: Tokens ── -->
+  <div id="nav-tokens" class="nav-section">
+    <div class="card">
+      <div class="card-title">🎟 Update Tokens</div>
+      <div class="card-sub">Set how many tokens a participant has used. 6 tokens max per person.</div>
+      <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:end;margin-bottom:8px;">
+        <div class="fg">
+          <label>Person Name</label>
+          <select id="t-name" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;">
+            <option value="">— Select participant —</option>
+            <option value="Amar Shinde">Amar Shinde</option>
+            <option value="Shobha">Shobha</option>
+            <option value="Aakash Rayate">Aakash Rayate</option>
+            <option value="Poulomi Mukherjee">Poulomi Mukherjee</option>
+            <option value="Sipra Tripathy">Sipra Tripathy</option>
+            <option value="Shibani Pattnaik">Shibani Pattnaik</option>
+            <option value="Puneet Ahuja">Puneet Ahuja</option>
+            <option value="Shubham Singh">Shubham Singh</option>
+            <option value="Praveen Choudhary">Praveen Choudhary</option>
+            <option value="Surabhi Telang">Surabhi Telang</option>
+            <option value="Aparna Shinde">Aparna Shinde</option>
+            <option value="Renu Goel">Renu Goel</option>
+            <option value="Saswati Mahapatra">Saswati Mahapatra</option>
+            <option value="Sonam Agnihotri">Sonam Agnihotri</option>
+            <option value="Jyotika Bhurani">Jyotika Bhurani</option>
+            <option value="Yogesh Karira">Yogesh Karira</option>
+            <option value="Mayuri Hegde">Mayuri Hegde</option>
+            <option value="Asmita Tiwari">Asmita Tiwari</option>
+            <option value="Jaya Bharti">Jaya Bharti</option>
+            <option value="Mithun Vakharia">Mithun Vakharia</option>
+            <option value="Aman Gupta">Aman Gupta</option>
+            <option value="BIBEK LAL">BIBEK LAL</option>
+            <option value="Richa Johar">Richa Johar</option>
+            <option value="Dikshant Ohri">Dikshant Ohri</option>
+            <option value="Shyamala">Shyamala</option>
+            <option value="Shubham Lakhotia">Shubham Lakhotia</option>
+            <option value="Kumar Abhishek">Kumar Abhishek</option>
+            <option value="Kali Tripathy">Kali Tripathy</option>
+            <option value="Thavakumar Swaminathan">Thavakumar Swaminathan</option>
+            <option value="Binay lal">Binay lal</option>
+            <option value="Shilpy pateriya">Shilpy pateriya</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Tokens Used</label>
+          <select id="t-tokens">
+            <option value="0">0</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+          </select>
+        </div>
+        <button class="btn btn-orange" onclick="saveToken()">Save</button>
       </div>
     </div>
-    <button class="btn-primary full" id="btn-add" onclick="addEntry()">➕ ADD ENTRY</button>
-  </div>
-
-  <!-- ── SECTION 2: Manage Tokens ── -->
-  <div class="section-card">
-    <div class="section-card-title">🎟 Manage Tokens</div>
-    <div class="section-card-sub">Tokens are shared per person across all activities. Each person gets 6 tokens total.</div>
-    <div class="token-grid">
-      <div class="fg">
-        <label>Person Name</label>
-        <input id="t-name" placeholder="e.g. Rahul Sharma" list="names-list">
-        <datalist id="names-list"></datalist>
-      </div>
-      <div class="fg">
-        <label>Tokens Used</label>
-        <select id="t-tokens">
-          ${[0,1,2,3,4,5,6].map(v=>`<option value="${v}">${v}</option>`).join('')}
-        </select>
-      </div>
-      <button class="btn-primary" onclick="saveToken()">Save</button>
-    </div>
-    <div class="token-list" id="token-list"></div>
-  </div>
-
-  <!-- ── SECTION 3: Activity Entries Table ── -->
-  <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#fff;letter-spacing:1px;margin-bottom:4px;">All Activity Entries</div>
-  <div style="font-size:12px;color:#555;margin-bottom:12px;" id="entry-count">Loading…</div>
-
-  <div class="filter-tabs">
-    <button class="filter-tab f-all"   onclick="setFilter('all',this)">All</button>
-    <button class="filter-tab f-walk"  onclick="setFilter('Walking',this)">🚶 Walking</button>
-    <button class="filter-tab f-run"   onclick="setFilter('Running',this)">🏃 Running</button>
-    <button class="filter-tab f-cycle" onclick="setFilter('Cycling',this)">🚴 Cycling</button>
-  </div>
-
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr><th>#</th><th>Name</th><th>Activity</th><th>Total KM</th><th>Days Active</th><th>Status</th><th>Actions</th></tr>
-      </thead>
-      <tbody id="data-tbody">
-        <tr><td colspan="7"><div style="text-align:center;padding:32px"><div class="loading-spinner"></div></div></td></tr>
-      </tbody>
-    </table>
+    <div class="token-list" id="token-list"><div class="empty"><div class="spinner"></div></div></div>
   </div>
 
 </div>
 
 <div class="toast" id="toast"></div>
 
+<script>
+  function switchNav(key, btn) {
+    document.querySelectorAll('.nav-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('nav-' + key).classList.add('active');
+    btn.classList.add('active');
+    if (key === 'summary') renderSummary();
+    if (key === 'entries') renderEntries();
+  }
+
+  // Set today's date by default
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('l-date').value = today;
+</script>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, push, remove, onValue, update, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, push, remove, onValue, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCrxTZEUB5x8VolI31091hqrZKvtdnbkmM",
@@ -186,15 +323,12 @@
 
   const app = initializeApp(firebaseConfig);
   const db  = getDatabase(app);
-  const entriesRef = ref(db, 'participants');
-  const tokensRef  = ref(db, 'tokens');
+  const logsRef   = ref(db, 'logs');
+  const tokensRef = ref(db, 'tokens');
 
-  const CHALLENGE_DAYS = 100;
   const MAX_TOKENS = 6;
-  let entries = {};
-  let tokens  = {};   // { "Name": count }
-  let editingKey = null;
-  let currentFilter = 'all';
+  let logs   = {};   // all daily logs keyed by Firebase ID
+  let tokens = {};   // { sanitized_name: { name, used } }
 
   // ── Toast ──────────────────────────────────────────────────────────────────
   function toast(msg, type='success') {
@@ -205,170 +339,230 @@
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────
-  function getStatus(days) {
-    if (days >= 90) return { label:"Champion", color:"#FFD700", bg:"#2a2000", icon:"🏆" };
-    if (days >= 70) return { label:"Elite",    color:"#00E5FF", bg:"#001a1f", icon:"🥇" };
-    if (days >= 50) return { label:"Active",   color:"#69FF47", bg:"#001a00", icon:"💪" };
-    if (days >= 1)  return { label:"Started",  color:"#FF9800", bg:"#1a0d00", icon:"🌱" };
-    return               { label:"Pending",  color:"#888",    bg:"#111",    icon:"⏳" };
-  }
+  function sanitizeKey(name) { return name.trim().toLowerCase().replace(/[^a-z0-9]/g,'_'); }
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function actClass(a) { return a==='Walking'?'act-walk':a==='Running'?'act-run':'act-cycle'; }
-  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
-  // ── Unique names for datalist ──────────────────────────────────────────────
-  function updateNamesList() {
-    const names = [...new Set(Object.values(entries).map(p => p.name))].sort();
-    document.getElementById('names-list').innerHTML = names.map(n => `<option value="${esc(n)}">`).join('');
+  function fmtDate(d) {
+    if (!d) return '';
+    const [y,m,day] = d.split('-');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${parseInt(day)} ${months[parseInt(m)-1]}`;
   }
 
-  // ── Token UI ───────────────────────────────────────────────────────────────
+  // ── Unique names datalist ──────────────────────────────────────────────────
+  const PRESET_NAMES = ['Amar Shinde', 'Shobha', 'Aakash Rayate', 'Poulomi Mukherjee', 'Sipra Tripathy', 'Shibani Pattnaik', 'Puneet Ahuja', 'Shubham Singh', 'Praveen Choudhary', 'Surabhi Telang', 'Aparna Shinde', 'Renu Goel', 'Saswati Mahapatra', 'Sonam Agnihotri', 'Jyotika Bhurani', 'Yogesh Karira', 'Mayuri Hegde', 'Asmita Tiwari', 'Jaya Bharti', 'Mithun Vakharia', 'Aman Gupta', 'BIBEK LAL', 'Richa Johar', 'Dikshant Ohri', 'Shyamala', 'Shubham Lakhotia', 'Kumar Abhishek', 'Kali Tripathy', 'Thavakumar Swaminathan', 'Binay lal', 'Shilpy pateriya'];
+
+  function updateNamesList() {
+    // Merge preset names with any logged names
+    const loggedNames = Object.values(logs).map(l => l.name);
+    const names = [...new Set([...PRESET_NAMES, ...loggedNames])].sort();
+    const el = document.getElementById('names-datalist');
+    if (el) el.innerHTML = names.map(n => `<option value="${esc(n)}">`).join('');
+  }
+
+  // ── Compute cumulative totals from logs ────────────────────────────────────
+  function computeTotals() {
+    // totals[name][activity] = { km, days: Set of dates }
+    const totals = {};
+    Object.values(logs).forEach(l => {
+      if (!totals[l.name]) totals[l.name] = {};
+      if (!totals[l.name][l.activity]) totals[l.name][l.activity] = { km: 0, dates: new Set() };
+      totals[l.name][l.activity].km += parseFloat(l.km) || 0;
+      if (l.date) totals[l.name][l.activity].dates.add(l.date);
+    });
+    return totals;
+  }
+
+  // ── Push totals to participants node (for leaderboard) ────────────────────
+  async function syncToParticipants() {
+    const totals = computeTotals();
+    const entries = {};
+    Object.entries(totals).forEach(([name, activities]) => {
+      Object.entries(activities).forEach(([activity, data]) => {
+        const key = sanitizeKey(name) + '_' + sanitizeKey(activity);
+        entries[key] = { name, activity, km: Math.round(data.km * 10) / 10, days: data.dates.size };
+      });
+    });
+    await set(ref(db, 'participants'), entries);
+  }
+
+  // ── Log Activity ───────────────────────────────────────────────────────────
+  window.logActivity = async function() {
+    const name  = document.getElementById('l-name').value.trim();
+    const act   = document.getElementById('l-activity').value;
+    const date  = document.getElementById('l-date').value;
+    const km    = parseFloat(document.getElementById('l-km').value);
+    const proof = document.getElementById('l-proof').value.trim();
+    const notes = document.getElementById('l-notes').value.trim();
+
+    if (!name) { toast('Enter participant name','error'); return; }
+    if (!date) { toast('Select a date','error'); return; }
+    if (!km || km <= 0) { toast('Enter KM > 0','error'); return; }
+
+    // Check duplicate: same name + activity + date
+    const duplicate = Object.values(logs).some(l =>
+      l.name.toLowerCase() === name.toLowerCase() && l.activity === act && l.date === date
+    );
+    if (duplicate) { toast(`${name} already has a ${act} entry for ${fmtDate(date)}!`, 'error'); return; }
+
+    const btn = document.getElementById('btn-log');
+    btn.disabled = true; btn.textContent = 'Saving…';
+    try {
+      await push(logsRef, { name, activity: act, date, km, proof: proof || '', notes: notes || '', logged: Date.now() });
+      await syncToParticipants();
+      // Clear form
+      document.getElementById('l-name').value  = '';
+      document.getElementById('l-km').value    = '';
+      document.getElementById('l-proof').value = '';
+      document.getElementById('l-notes').value = '';
+      document.getElementById('l-date').value  = new Date().toISOString().split('T')[0];
+      toast(`✅ ${name} — ${km}km ${act} on ${fmtDate(date)} logged!`);
+    } catch(e) { toast('Error saving. Check Firebase.','error'); console.error(e); }
+    finally { btn.disabled = false; btn.textContent = '✅ LOG ACTIVITY'; }
+  };
+
+  // ── Delete log entry ───────────────────────────────────────────────────────
+  window._deleteLog = async function(key) {
+    const l = logs[key];
+    if (!confirm(`Delete ${l?.name}'s ${l?.activity} entry for ${fmtDate(l?.date)}?`)) return;
+    try {
+      await remove(ref(db, `logs/${key}`));
+      await syncToParticipants();
+      toast('🗑 Entry deleted.');
+    } catch(e) { toast('Error deleting.','error'); }
+  };
+
+  // ── Render recent logs (last 30) ───────────────────────────────────────────
+  function renderRecent() {
+    const tbody = document.getElementById('recent-tbody');
+    const sorted = Object.entries(logs).sort((a,b) => (b[1].logged||0) - (a[1].logged||0)).slice(0,30);
+    if (!sorted.length) { tbody.innerHTML = `<tr><td colspan="7"><div class="empty">No logs yet. Start logging above!</div></td></tr>`; return; }
+    tbody.innerHTML = sorted.map(([key,l]) => `<tr>
+      <td style="color:#888;white-space:nowrap">${fmtDate(l.date)}</td>
+      <td class="td-name">${esc(l.name)}</td>
+      <td><span class="act-badge ${actClass(l.activity)}">${l.activity}</span></td>
+      <td style="color:#FF6B35;font-weight:700">${l.km} <span style="color:#555;font-size:10px">km</span></td>
+      <td>${l.proof ? `<a class="proof-link" href="${esc(l.proof)}" target="_blank">🔗 View</a>` : '<span style="color:#333;font-size:11px">—</span>'}</td>
+      <td style="color:#666;font-size:11px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(l.notes)||'—'}</td>
+      <td><button class="btn btn-sm btn-red" onclick="window._deleteLog('${key}')">🗑</button></td>
+    </tr>`).join('');
+  }
+
+  // ── Render all entries with filter ────────────────────────────────────────
+  let actFilter = 'all';
+  window.setActFilter = function(val, btn) {
+    actFilter = val;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    renderEntries();
+  };
+
+  window.renderEntries = function() {
+    const tbody  = document.getElementById('all-tbody');
+    const search = (document.getElementById('search-input')?.value || '').toLowerCase();
+    const sorted = Object.entries(logs).sort((a,b) => (b[1].date||'').localeCompare(a[1].date||''));
+    const filtered = sorted.filter(([,l]) => {
+      const matchAct  = actFilter === 'all' || l.activity === actFilter;
+      const matchName = !search || l.name.toLowerCase().includes(search);
+      return matchAct && matchName;
+    });
+    if (!filtered.length) { tbody.innerHTML = `<tr><td colspan="7"><div class="empty">No entries found.</div></td></tr>`; return; }
+    tbody.innerHTML = filtered.map(([key,l]) => `<tr>
+      <td style="color:#888;white-space:nowrap">${fmtDate(l.date)}</td>
+      <td class="td-name">${esc(l.name)}</td>
+      <td><span class="act-badge ${actClass(l.activity)}">${l.activity}</span></td>
+      <td style="color:#FF6B35;font-weight:700">${l.km} <span style="color:#555;font-size:10px">km</span></td>
+      <td>${l.proof ? `<a class="proof-link" href="${esc(l.proof)}" target="_blank">🔗 View</a>` : '<span style="color:#333;font-size:11px">—</span>'}</td>
+      <td style="color:#666;font-size:11px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(l.notes)||'—'}</td>
+      <td><button class="btn btn-sm btn-red" onclick="window._deleteLog('${key}')">🗑</button></td>
+    </tr>`).join('');
+  };
+
+  // ── Render summary ─────────────────────────────────────────────────────────
+  window.renderSummary = function() {
+    const grid = document.getElementById('summary-grid');
+    const totals = computeTotals();
+    const names = Object.keys(totals).sort();
+    if (!names.length) { grid.innerHTML = `<div class="empty">No data yet.</div>`; return; }
+    grid.innerHTML = names.map(name => {
+      const activities = totals[name];
+      const rows = Object.entries(activities).map(([act, data]) =>
+        `<div class="summary-row">
+          <span class="act-badge summary-act ${actClass(act)}">${act[0]}</span>
+          <span style="color:#888">${data.dates.size}d</span>
+          <span class="summary-val">${Math.round(data.km*10)/10}km</span>
+        </div>`
+      ).join('');
+      const used = tokens[sanitizeKey(name)]?.used || 0;
+      return `<div class="summary-card">
+        <div class="summary-name">${esc(name)}</div>
+        ${rows}
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);font-size:10px;color:${used>=MAX_TOKENS?'#E74C3C':'#555'}">🎟 ${used}/${MAX_TOKENS} tokens</div>
+      </div>`;
+    }).join('');
+  };
+
+  // ── Tokens ─────────────────────────────────────────────────────────────────
   function renderTokens() {
-    const names = [...new Set(Object.values(entries).map(p => p.name))].sort();
     const list  = document.getElementById('token-list');
-    if (!names.length) { list.innerHTML = '<div style="color:#444;font-size:12px;text-align:center;padding:12px">No participants yet</div>'; return; }
+    const names = [...new Set(Object.values(logs).map(l => l.name))].sort();
+    if (!names.length) { list.innerHTML = `<div class="empty">No participants logged yet.</div>`; return; }
     list.innerHTML = names.map(name => {
-      const used = tokens[sanitizeKey(name)] || 0;
-      const dots = Array.from({length: MAX_TOKENS}, (_,i) =>
-        `<div class="token-dot ${i < used ? 'used' : 'left'}"></div>`).join('');
+      const used = tokens[sanitizeKey(name)]?.used || 0;
       const warn = used >= MAX_TOKENS;
-      return `<div class="token-row">
+      const dots = Array.from({length:MAX_TOKENS},(_,i) =>
+        `<div class="token-dot ${i<used?'used':'left'}"></div>`).join('');
+      return `<div class="token-row-item">
         <span class="token-name">${esc(name)}</span>
         <div class="token-dots">${dots}</div>
-        <span class="token-count ${warn ? 'warn' : ''}">${warn ? '⚠️ No tokens left' : `${used}/${MAX_TOKENS} used`}</span>
+        <span class="token-count ${warn?'warn':''}">${warn?'⚠️ No tokens left':`${used}/${MAX_TOKENS}`}</span>
+        <div class="token-edit">
+          <select class="token-select" id="ts-${sanitizeKey(name)}">
+            ${[0,1,2,3,4,5,6].map(v=>`<option value="${v}"${v===used?' selected':''}>${v}</option>`).join('')}
+          </select>
+          <button class="btn btn-sm btn-blue" onclick="window._saveTokenFor('${esc(name)}')">Save</button>
+        </div>
       </div>`;
     }).join('');
   }
 
-  function sanitizeKey(name) {
-    return name.trim().toLowerCase().replace(/[^a-z0-9]/g,'_');
-  }
+  window._saveTokenFor = async function(name) {
+    const key  = sanitizeKey(name);
+    const used = parseInt(document.getElementById(`ts-${key}`)?.value) || 0;
+    try {
+      await set(ref(db, `tokens/${key}`), { name, used });
+      toast(`✅ Tokens updated for ${name}`);
+    } catch(e) { toast('Error saving tokens','error'); }
+  };
 
   window.saveToken = async function() {
     const name = document.getElementById('t-name').value.trim();
     const used = parseInt(document.getElementById('t-tokens').value);
     if (!name) { toast('Enter a name first','error'); return; }
-    const key = sanitizeKey(name);
     try {
-      await set(ref(db, `tokens/${key}`), { name, used });
+      await set(ref(db, `tokens/${sanitizeKey(name)}`), { name, used });
       toast(`✅ Tokens updated for ${name}`);
       document.getElementById('t-name').value = '';
       document.getElementById('t-tokens').value = '0';
     } catch(e) { toast('Error saving tokens','error'); }
   };
 
-  // ── Filter ─────────────────────────────────────────────────────────────────
-  window.setFilter = function(val) { currentFilter = val; renderTable(); };
-
-  // ── Render table ───────────────────────────────────────────────────────────
-  function renderTable() {
-    const tbody  = document.getElementById('data-tbody');
-    const all    = Object.entries(entries);
-    const filtered = currentFilter === 'all' ? all : all.filter(([,p]) => p.activity === currentFilter);
-    document.getElementById('entry-count').textContent =
-      all.length === 0 ? 'No entries yet.' : `${all.length} total entr${all.length!==1?'ies':'y'} across all activities`;
-
-    if (!filtered.length) {
-      tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">No entries for this activity yet.</div></td></tr>`;
-      return;
-    }
-    tbody.innerHTML = filtered.map(([key, p], i) => {
-      const st = getStatus(p.days);
-      if (editingKey === key) {
-        return `<tr>
-          <td style="color:#555">${i+1}</td>
-          <td><input class="inline-input" id="e-name" value="${esc(p.name)}" style="min-width:120px"/></td>
-          <td><select class="inline-select" id="e-activity">
-            ${['Walking','Running','Cycling'].map(o=>`<option${p.activity===o?' selected':''}>${o}</option>`).join('')}
-          </select></td>
-          <td><input class="inline-input" id="e-km" type="number" value="${p.km}" style="width:75px"/></td>
-          <td><input class="inline-input" id="e-days" type="number" value="${p.days}" min="0" max="100" style="width:65px"/></td>
-          <td><span class="status-pill" style="background:${st.bg};color:${st.color};border:1px solid ${st.color}33">${st.icon} ${st.label}</span></td>
-          <td>
-            <button class="btn-icon btn-save"   onclick="window._saveEdit('${key}')">✅</button>
-            <button class="btn-icon btn-cancel" onclick="window._cancelEdit()">✖</button>
-          </td>
-        </tr>`;
-      }
-      return `<tr>
-        <td style="color:#555">${i+1}</td>
-        <td class="td-name">${esc(p.name)}</td>
-        <td><span class="act-badge ${actClass(p.activity)}">${p.activity}</span></td>
-        <td><span style="color:#FF6B35;font-weight:700">${p.km}</span> <span style="color:#555;font-size:11px">km</span></td>
-        <td>${p.days}<span style="color:#555;font-size:11px"> / 100</span></td>
-        <td><span class="status-pill" style="background:${st.bg};color:${st.color};border:1px solid ${st.color}33">${st.icon} ${st.label}</span></td>
-        <td>
-          <button class="btn-icon btn-edit" onclick="window._startEdit('${key}')">✏️</button>
-          <button class="btn-icon btn-del"  onclick="window._deleteP('${key}')">🗑</button>
-        </td>
-      </tr>`;
-    }).join('');
-  }
-
-  // ── Add entry ──────────────────────────────────────────────────────────────
-  window.addEntry = async function() {
-    const name     = document.getElementById('f-name').value.trim();
-    const km       = parseFloat(document.getElementById('f-km').value)  || 0;
-    const days     = parseInt(document.getElementById('f-days').value)  || 0;
-    const activity = document.getElementById('f-activity').value;
-    if (!name) { toast('Please enter a name.','error'); return; }
-    const exists = Object.values(entries).some(p => p.name.toLowerCase()===name.toLowerCase() && p.activity===activity);
-    if (exists) { toast(`${name} already has a ${activity} entry!`,'error'); return; }
-    const btn = document.getElementById('btn-add');
-    btn.disabled = true; btn.textContent = 'Saving…';
-    try {
-      await push(entriesRef, { name, activity, km, days });
-      document.getElementById('f-name').value = '';
-      document.getElementById('f-km').value   = '';
-      document.getElementById('f-days').value = '';
-      toast(`✅ ${name} (${activity}) added!`);
-    } catch(e) { toast('Error saving. Check Firebase config.','error'); }
-    finally { btn.disabled = false; btn.textContent = '➕ ADD ENTRY'; }
-  };
-
-  // ── Edit ───────────────────────────────────────────────────────────────────
-  window._startEdit  = function(key) { editingKey = key; renderTable(); setTimeout(()=>document.getElementById('e-name')?.focus(),50); };
-  window._cancelEdit = function()    { editingKey = null; renderTable(); };
-  window._saveEdit   = async function(key) {
-    const p = entries[key]; if (!p) return;
-    try {
-      await update(ref(db, `participants/${key}`), {
-        name:     document.getElementById('e-name').value.trim() || p.name,
-        activity: document.getElementById('e-activity').value,
-        km:       parseFloat(document.getElementById('e-km').value)  || 0,
-        days:     parseInt(document.getElementById('e-days').value)  || 0,
-      });
-      editingKey = null; toast('✅ Changes saved!');
-    } catch(e) { toast('Error saving changes.','error'); }
-  };
-
-  // ── Delete ─────────────────────────────────────────────────────────────────
-  window._deleteP = async function(key) {
-    const p = entries[key];
-    if (!confirm(`Remove ${p?.name} (${p?.activity})?`)) return;
-    try {
-      await remove(ref(db, `participants/${key}`));
-      toast(`🗑 ${p?.name} (${p?.activity}) removed.`);
-    } catch(e) { toast('Error deleting.','error'); }
-  };
-
-  // ── Enter key ──────────────────────────────────────────────────────────────
-  ['f-name','f-km','f-days'].forEach(id => {
-    document.getElementById(id)?.addEventListener('keydown', e => { if(e.key==='Enter') window.addEntry(); });
-  });
-
   // ── Listeners ──────────────────────────────────────────────────────────────
-  onValue(entriesRef, snap => {
-    entries = snap.val() || {};
-    renderTable();
+  onValue(logsRef, snap => {
+    logs = snap.val() || {};
     updateNamesList();
+    renderRecent();
+    renderEntries();
+    renderSummary();
     renderTokens();
   });
 
   onValue(tokensRef, snap => {
     const raw = snap.val() || {};
     tokens = {};
-    Object.values(raw).forEach(t => { if(t.name) tokens[sanitizeKey(t.name)] = t.used || 0; });
+    Object.values(raw).forEach(t => { if(t.name) tokens[sanitizeKey(t.name)] = t; });
     renderTokens();
+    renderSummary();
   });
 </script>
 
