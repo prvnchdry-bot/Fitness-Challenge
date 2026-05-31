@@ -7,17 +7,18 @@
   <style>
     *{box-sizing:border-box;margin:0;padding:0;}
     body{background:#080810;font-family:'DM Sans',sans-serif;color:#eee;min-height:100vh;}
-
     .topbar{background:#0f0f1a;border-bottom:1px solid rgba(255,107,53,.2);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
     .topbar-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#FF6B35;letter-spacing:2px;}
     .topbar-badge{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:rgba(255,107,53,.15);border:1px solid rgba(255,107,53,.3);color:#FF6B35;padding:4px 12px;border-radius:100px;}
     .topbar-link{font-size:11px;color:#555;text-decoration:none;border:1px solid rgba(255,255,255,.1);padding:6px 14px;border-radius:8px;transition:all .2s;}
     .topbar-link:hover{border-color:rgba(255,107,53,.4);color:#FF6B35;}
-
     .page{padding:24px 16px 60px;max-width:960px;margin:0 auto;}
 
-    .add-card{background:rgba(255,255,255,.03);border:1px dashed rgba(255,107,53,.3);border-radius:16px;padding:20px;margin-bottom:24px;}
-    .add-card-title{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#FF6B35;margin-bottom:14px;letter-spacing:1px;}
+    /* Section cards */
+    .section-card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:20px;margin-bottom:24px;}
+    .section-card-title{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#FF6B35;margin-bottom:4px;letter-spacing:1px;}
+    .section-card-sub{font-size:11px;color:#555;margin-bottom:16px;}
+
     .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
     @media(max-width:480px){.form-grid{grid-template-columns:1fr;}}
     .fg{display:flex;flex-direction:column;gap:4px;}
@@ -25,52 +26,66 @@
     .fg input,.fg select{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;}
     .fg input:focus,.fg select:focus{border-color:rgba(255,107,53,.5);background:rgba(255,107,53,.05);}
     .fg select option{background:#1a1a2e;color:#eee;}
-    .btn-add{width:100%;background:#FF6B35;color:#000;border:none;border-radius:10px;padding:11px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;letter-spacing:.5px;transition:opacity .15s,transform .1s;}
-    .btn-add:hover{opacity:.88;transform:translateY(-1px);}
-    .btn-add:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+    .btn-primary{background:#FF6B35;color:#000;border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s,transform .1s;}
+    .btn-primary:hover{opacity:.88;transform:translateY(-1px);}
+    .btn-primary:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+    .btn-primary.full{width:100%;}
 
-    .section-title{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#fff;letter-spacing:1px;margin-bottom:14px;}
-    .section-sub{font-size:12px;color:#555;margin-top:2px;margin-bottom:16px;}
+    /* Token section */
+    .token-grid{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:end;margin-bottom:8px;}
+    @media(max-width:480px){.token-grid{grid-template-columns:1fr;}}
+    .token-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+    .token-row{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 14px;gap:10px;}
+    .token-name{font-size:13px;font-weight:600;color:#f0f0f0;flex:1;}
+    .token-dots{display:flex;gap:5px;align-items:center;}
+    .token-dot{width:10px;height:10px;border-radius:50%;}
+    .token-dot.used{background:#E74C3C;box-shadow:0 0 4px rgba(231,76,60,.5);}
+    .token-dot.left{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);}
+    .token-count{font-size:11px;color:#555;min-width:70px;text-align:right;}
+    .token-count.warn{color:#E74C3C;font-weight:700;}
 
+    /* Filter tabs */
+    .filter-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+    .filter-tab{padding:6px 14px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:transparent;color:#555;transition:all .2s;}
+    .filter-tab.f-all  {border-color:rgba(255,255,255,.25);color:#aaa;}
+    .filter-tab.f-walk {border-color:rgba(105,255,71,.3);color:#69FF47;background:rgba(105,255,71,.08);}
+    .filter-tab.f-run  {border-color:rgba(0,229,255,.3);color:#00E5FF;background:rgba(0,229,255,.08);}
+    .filter-tab.f-cycle{border-color:rgba(255,107,53,.3);color:#FF6B35;background:rgba(255,107,53,.1);}
+
+    /* Table */
     .table-wrap{overflow-x:auto;border-radius:14px;border:1px solid rgba(255,255,255,.07);}
-    table{width:100%;border-collapse:collapse;min-width:700px;}
+    table{width:100%;border-collapse:collapse;min-width:600px;}
     thead tr{background:#0f0f1a;}
-    thead th{padding:11px 14px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;text-align:left;border-bottom:1px solid rgba(255,255,255,.07);}
+    thead th{padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;text-align:left;border-bottom:1px solid rgba(255,255,255,.07);}
     tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s;}
     tbody tr:last-child{border-bottom:none;}
     tbody tr:hover{background:rgba(255,255,255,.03);}
-    tbody td{padding:11px 14px;font-size:13px;color:#ccc;vertical-align:middle;}
+    tbody td{padding:10px 14px;font-size:13px;color:#ccc;vertical-align:middle;}
     .td-name{font-weight:600;color:#f0f0f0;}
-
+    .act-badge{font-size:10px;font-weight:700;padding:3px 9px;border-radius:100px;}
+    .act-walk {background:rgba(105,255,71,.1);color:#69FF47;border:1px solid rgba(105,255,71,.2);}
+    .act-run  {background:rgba(0,229,255,.1);color:#00E5FF;border:1px solid rgba(0,229,255,.2);}
+    .act-cycle{background:rgba(255,107,53,.1);color:#FF6B35;border:1px solid rgba(255,107,53,.2);}
     .inline-input{background:transparent;border:1px solid rgba(255,107,53,.4);border-radius:6px;padding:4px 8px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;}
-    .inline-input:focus{background:rgba(255,107,53,.06);}
     .inline-select{background:#1a1a2e;border:1px solid rgba(255,107,53,.4);border-radius:6px;padding:4px 8px;font-family:'DM Sans',sans-serif;font-size:12px;color:#eee;outline:none;}
-
     .btn-icon{background:none;border:none;cursor:pointer;font-size:15px;padding:4px 6px;border-radius:6px;transition:background .15s;line-height:1;}
     .btn-icon:hover{background:rgba(255,255,255,.08);}
     .btn-save{color:#69FF47;}.btn-cancel{color:#888;}.btn-edit{color:#00E5FF;}.btn-del{color:#E74C3C;}
-
-    .status-pill{display:inline-block;font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;padding:3px 8px;border-radius:100px;}
+    .status-pill{display:inline-block;font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:3px 8px;border-radius:100px;}
+    .empty-state{text-align:center;padding:32px;color:#444;font-size:13px;}
+    .loading-spinner{width:24px;height:24px;border:2px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
 
     .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e1e2e;border:1px solid rgba(255,107,53,.3);color:#eee;padding:12px 24px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:999;white-space:nowrap;}
     .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
     .toast.success{border-color:rgba(105,255,71,.4);color:#69FF47;}
     .toast.error{border-color:rgba(231,76,60,.4);color:#E74C3C;}
-
-    .empty-state{text-align:center;padding:48px 24px;color:#444;font-size:13px;}
-    .empty-icon{font-size:36px;margin-bottom:10px;}
-
-    .loading{text-align:center;padding:48px 24px;color:#555;font-size:13px;}
-    .loading-spinner{width:24px;height:24px;border:2px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
     @keyframes spin{to{transform:rotate(360deg);}}
   </style>
 </head>
 <body>
 
 <div class="topbar">
-  <div>
-    <div class="topbar-title">⚙️ Admin Panel</div>
-  </div>
+  <div><div class="topbar-title">⚙️ Admin Panel</div></div>
   <div style="display:flex;align-items:center;gap:10px;">
     <span class="topbar-badge">🔒 Private</span>
     <a class="topbar-link" href="index.html" target="_blank">👁 View Leaderboard</a>
@@ -79,9 +94,10 @@
 
 <div class="page">
 
-  <!-- Add Participant -->
-  <div class="add-card">
-    <div class="add-card-title">+ New Participant</div>
+  <!-- ── SECTION 1: Add Activity Entry ── -->
+  <div class="section-card">
+    <div class="section-card-title">+ Add Activity Entry</div>
+    <div class="section-card-sub">Add one entry per person per activity. Same person can have separate Walking, Running and Cycling entries.</div>
     <div class="form-grid">
       <div class="fg" style="grid-column:1/-1">
         <label>Full Name</label>
@@ -90,18 +106,9 @@
       <div class="fg">
         <label>Activity Type</label>
         <select id="f-activity">
-          <option>Walking</option>
-          <option>Running</option>
-          <option>Cycling</option>
-        </select>
-      </div>
-      <div class="fg">
-        <label>Tokens Used</label>
-        <select id="f-tokens">
-          <option value="0">0</option><option value="1">1</option>
-          <option value="2">2</option><option value="3">3</option>
-          <option value="4">4</option><option value="5">5</option>
-          <option value="6">6</option>
+          <option value="Walking">🚶 Walking</option>
+          <option value="Running">🏃 Running</option>
+          <option value="Cycling">🚴 Cycling</option>
         </select>
       </div>
       <div class="fg">
@@ -113,39 +120,48 @@
         <input id="f-days" type="number" placeholder="e.g. 45" min="0" max="100">
       </div>
     </div>
-    <button class="btn-add" id="btn-add" onclick="addParticipant()">➕ ADD TO CHALLENGE</button>
+    <button class="btn-primary full" id="btn-add" onclick="addEntry()">➕ ADD ENTRY</button>
   </div>
 
-
-  <!-- One-time bulk load button -->
-  <div id="seed-banner" style="background:rgba(255,107,53,.08);border:1px dashed rgba(255,107,53,.3);border-radius:12px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
-    <div>
-      <div style="font-size:13px;font-weight:700;color:#FF6B35;margin-bottom:3px;">📋 Load All 31 Participants</div>
-      <div style="font-size:11px;color:#555;">Press once to add all participants to Firebase. KM & days will be blank.</div>
+  <!-- ── SECTION 2: Manage Tokens ── -->
+  <div class="section-card">
+    <div class="section-card-title">🎟 Manage Tokens</div>
+    <div class="section-card-sub">Tokens are shared per person across all activities. Each person gets 6 tokens total.</div>
+    <div class="token-grid">
+      <div class="fg">
+        <label>Person Name</label>
+        <input id="t-name" placeholder="e.g. Rahul Sharma" list="names-list">
+        <datalist id="names-list"></datalist>
+      </div>
+      <div class="fg">
+        <label>Tokens Used</label>
+        <select id="t-tokens">
+          ${[0,1,2,3,4,5,6].map(v=>`<option value="${v}">${v}</option>`).join('')}
+        </select>
+      </div>
+      <button class="btn-primary" onclick="saveToken()">Save</button>
     </div>
-    <button onclick="window._seedAll()" style="background:#FF6B35;color:#000;border:none;border-radius:8px;padding:9px 20px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap;">⚡ Load Participants</button>
+    <div class="token-list" id="token-list"></div>
   </div>
 
-  <!-- Participant Table -->
-  <div class="section-title">All Participants</div>
-  <div class="section-sub" id="participant-count">Loading…</div>
+  <!-- ── SECTION 3: Activity Entries Table ── -->
+  <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#fff;letter-spacing:1px;margin-bottom:4px;">All Activity Entries</div>
+  <div style="font-size:12px;color:#555;margin-bottom:12px;" id="entry-count">Loading…</div>
+
+  <div class="filter-tabs">
+    <button class="filter-tab f-all"   onclick="setFilter('all',this)">All</button>
+    <button class="filter-tab f-walk"  onclick="setFilter('Walking',this)">🚶 Walking</button>
+    <button class="filter-tab f-run"   onclick="setFilter('Running',this)">🏃 Running</button>
+    <button class="filter-tab f-cycle" onclick="setFilter('Cycling',this)">🚴 Cycling</button>
+  </div>
 
   <div class="table-wrap">
     <table>
       <thead>
-        <tr>
-          <th>#</th>
-          <th>Name</th>
-          <th>Activity</th>
-          <th>Total KM</th>
-          <th>Days Active</th>
-          <th>Tokens Used</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
+        <tr><th>#</th><th>Name</th><th>Activity</th><th>Total KM</th><th>Days Active</th><th>Status</th><th>Actions</th></tr>
       </thead>
       <tbody id="data-tbody">
-        <tr><td colspan="8"><div class="loading"><div class="loading-spinner"></div>Connecting to database…</div></td></tr>
+        <tr><td colspan="7"><div style="text-align:center;padding:32px"><div class="loading-spinner"></div></div></td></tr>
       </tbody>
     </table>
   </div>
@@ -154,12 +170,10 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- Firebase -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getDatabase, ref, set, push, remove, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  import { getDatabase, ref, push, remove, onValue, update, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  // ── PASTE YOUR FIREBASE CONFIG HERE ──────────────────────────────────────
   const firebaseConfig = {
     apiKey: "AIzaSyCrxTZEUB5x8VolI31091hqrZKvtdnbkmM",
     authDomain: "fitness-leaderboard-ed631.firebaseapp.com",
@@ -169,17 +183,20 @@
     messagingSenderId: "861678454829",
     appId: "1:861678454829:web:f375e12cf6970d7d6cd0a4"
   };
-  // ─────────────────────────────────────────────────────────────────────────
 
   const app = initializeApp(firebaseConfig);
   const db  = getDatabase(app);
-  const participantsRef = ref(db, 'participants');
+  const entriesRef = ref(db, 'participants');
+  const tokensRef  = ref(db, 'tokens');
 
   const CHALLENGE_DAYS = 100;
-  let participants = {};   // keyed by Firebase push ID
+  const MAX_TOKENS = 6;
+  let entries = {};
+  let tokens  = {};   // { "Name": count }
   let editingKey = null;
+  let currentFilter = 'all';
 
-  // ── Toast ─────────────────────────────────────────────────────────────────
+  // ── Toast ──────────────────────────────────────────────────────────────────
   function toast(msg, type='success') {
     const el = document.getElementById('toast');
     el.textContent = msg;
@@ -187,7 +204,7 @@
     setTimeout(() => { el.className = 'toast'; }, 2800);
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
+  // ── Helpers ────────────────────────────────────────────────────────────────
   function getStatus(days) {
     if (days >= 90) return { label:"Champion", color:"#FFD700", bg:"#2a2000", icon:"🏆" };
     if (days >= 70) return { label:"Elite",    color:"#00E5FF", bg:"#001a1f", icon:"🥇" };
@@ -195,165 +212,163 @@
     if (days >= 1)  return { label:"Started",  color:"#FF9800", bg:"#1a0d00", icon:"🌱" };
     return               { label:"Pending",  color:"#888",    bg:"#111",    icon:"⏳" };
   }
-  function esc(str) {
-    return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-  function sortedEntries() {
-    return Object.entries(participants).sort((a,b) => b[1].km-a[1].km || b[1].days-a[1].days);
+  function actClass(a) { return a==='Walking'?'act-walk':a==='Running'?'act-run':'act-cycle'; }
+  function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+  // ── Unique names for datalist ──────────────────────────────────────────────
+  function updateNamesList() {
+    const names = [...new Set(Object.values(entries).map(p => p.name))].sort();
+    document.getElementById('names-list').innerHTML = names.map(n => `<option value="${esc(n)}">`).join('');
   }
 
-  // ── Render table ──────────────────────────────────────────────────────────
+  // ── Token UI ───────────────────────────────────────────────────────────────
+  function renderTokens() {
+    const names = [...new Set(Object.values(entries).map(p => p.name))].sort();
+    const list  = document.getElementById('token-list');
+    if (!names.length) { list.innerHTML = '<div style="color:#444;font-size:12px;text-align:center;padding:12px">No participants yet</div>'; return; }
+    list.innerHTML = names.map(name => {
+      const used = tokens[sanitizeKey(name)] || 0;
+      const dots = Array.from({length: MAX_TOKENS}, (_,i) =>
+        `<div class="token-dot ${i < used ? 'used' : 'left'}"></div>`).join('');
+      const warn = used >= MAX_TOKENS;
+      return `<div class="token-row">
+        <span class="token-name">${esc(name)}</span>
+        <div class="token-dots">${dots}</div>
+        <span class="token-count ${warn ? 'warn' : ''}">${warn ? '⚠️ No tokens left' : `${used}/${MAX_TOKENS} used`}</span>
+      </div>`;
+    }).join('');
+  }
+
+  function sanitizeKey(name) {
+    return name.trim().toLowerCase().replace(/[^a-z0-9]/g,'_');
+  }
+
+  window.saveToken = async function() {
+    const name = document.getElementById('t-name').value.trim();
+    const used = parseInt(document.getElementById('t-tokens').value);
+    if (!name) { toast('Enter a name first','error'); return; }
+    const key = sanitizeKey(name);
+    try {
+      await set(ref(db, `tokens/${key}`), { name, used });
+      toast(`✅ Tokens updated for ${name}`);
+      document.getElementById('t-name').value = '';
+      document.getElementById('t-tokens').value = '0';
+    } catch(e) { toast('Error saving tokens','error'); }
+  };
+
+  // ── Filter ─────────────────────────────────────────────────────────────────
+  window.setFilter = function(val) { currentFilter = val; renderTable(); };
+
+  // ── Render table ───────────────────────────────────────────────────────────
   function renderTable() {
-    const tbody = document.getElementById('data-tbody');
-    const entries = sortedEntries();
-    const count = entries.length;
-    document.getElementById('participant-count').textContent =
-      count === 0 ? 'No participants yet — add one above.' : `${count} participant${count!==1?'s':''} in the challenge`;
+    const tbody  = document.getElementById('data-tbody');
+    const all    = Object.entries(entries);
+    const filtered = currentFilter === 'all' ? all : all.filter(([,p]) => p.activity === currentFilter);
+    document.getElementById('entry-count').textContent =
+      all.length === 0 ? 'No entries yet.' : `${all.length} total entr${all.length!==1?'ies':'y'} across all activities`;
 
-    if (count === 0) {
-      tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><div class="empty-icon">📋</div>No participants yet. Add one above!</div></td></tr>`;
+    if (!filtered.length) {
+      tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">No entries for this activity yet.</div></td></tr>`;
       return;
     }
-
-    tbody.innerHTML = entries.map(([key, p], i) => {
+    tbody.innerHTML = filtered.map(([key, p], i) => {
       const st = getStatus(p.days);
       if (editingKey === key) {
-        return `<tr id="row-${key}">
+        return `<tr>
           <td style="color:#555">${i+1}</td>
-          <td><input class="inline-input" id="e-name" value="${esc(p.name)}" style="min-width:130px"/></td>
+          <td><input class="inline-input" id="e-name" value="${esc(p.name)}" style="min-width:120px"/></td>
           <td><select class="inline-select" id="e-activity">
             ${['Walking','Running','Cycling'].map(o=>`<option${p.activity===o?' selected':''}>${o}</option>`).join('')}
           </select></td>
-          <td><input class="inline-input" id="e-km" type="number" value="${p.km}" style="width:80px"/></td>
-          <td><input class="inline-input" id="e-days" type="number" value="${p.days}" min="0" max="100" style="width:70px"/></td>
-          <td><select class="inline-select" id="e-tokens">
-            ${[0,1,2,3,4,5,6].map(v=>`<option value="${v}"${p.tokens===v?' selected':''}>${v}</option>`).join('')}
-          </select></td>
+          <td><input class="inline-input" id="e-km" type="number" value="${p.km}" style="width:75px"/></td>
+          <td><input class="inline-input" id="e-days" type="number" value="${p.days}" min="0" max="100" style="width:65px"/></td>
           <td><span class="status-pill" style="background:${st.bg};color:${st.color};border:1px solid ${st.color}33">${st.icon} ${st.label}</span></td>
           <td>
-            <button class="btn-icon btn-save" onclick="window._saveEdit('${key}')" title="Save">✅</button>
-            <button class="btn-icon btn-cancel" onclick="window._cancelEdit()" title="Cancel">✖</button>
+            <button class="btn-icon btn-save"   onclick="window._saveEdit('${key}')">✅</button>
+            <button class="btn-icon btn-cancel" onclick="window._cancelEdit()">✖</button>
           </td>
         </tr>`;
       }
       return `<tr>
         <td style="color:#555">${i+1}</td>
         <td class="td-name">${esc(p.name)}</td>
-        <td><span style="color:#888;font-size:12px">${p.activity}</span></td>
+        <td><span class="act-badge ${actClass(p.activity)}">${p.activity}</span></td>
         <td><span style="color:#FF6B35;font-weight:700">${p.km}</span> <span style="color:#555;font-size:11px">km</span></td>
-        <td>${p.days} <span style="color:#555;font-size:11px">/ 100</span></td>
-        <td><span style="color:#aaa">${p.tokens}</span></td>
+        <td>${p.days}<span style="color:#555;font-size:11px"> / 100</span></td>
         <td><span class="status-pill" style="background:${st.bg};color:${st.color};border:1px solid ${st.color}33">${st.icon} ${st.label}</span></td>
         <td>
-          <button class="btn-icon btn-edit" onclick="window._startEdit('${key}')" title="Edit">✏️</button>
-          <button class="btn-icon btn-del"  onclick="window._deleteP('${key}')"   title="Delete">🗑</button>
+          <button class="btn-icon btn-edit" onclick="window._startEdit('${key}')">✏️</button>
+          <button class="btn-icon btn-del"  onclick="window._deleteP('${key}')">🗑</button>
         </td>
       </tr>`;
     }).join('');
   }
 
-  // ── Add participant ───────────────────────────────────────────────────────
-  window.addParticipant = async function() {
-    const name = document.getElementById('f-name').value.trim();
-    const km   = parseFloat(document.getElementById('f-km').value)  || 0;
-    const days = parseInt(document.getElementById('f-days').value)  || 0;
+  // ── Add entry ──────────────────────────────────────────────────────────────
+  window.addEntry = async function() {
+    const name     = document.getElementById('f-name').value.trim();
+    const km       = parseFloat(document.getElementById('f-km').value)  || 0;
+    const days     = parseInt(document.getElementById('f-days').value)  || 0;
+    const activity = document.getElementById('f-activity').value;
     if (!name) { toast('Please enter a name.','error'); return; }
-
+    const exists = Object.values(entries).some(p => p.name.toLowerCase()===name.toLowerCase() && p.activity===activity);
+    if (exists) { toast(`${name} already has a ${activity} entry!`,'error'); return; }
     const btn = document.getElementById('btn-add');
     btn.disabled = true; btn.textContent = 'Saving…';
-
     try {
-      await push(participantsRef, {
-        name,
-        activity: document.getElementById('f-activity').value,
-        km, days,
-        tokens: parseInt(document.getElementById('f-tokens').value)
+      await push(entriesRef, { name, activity, km, days });
+      document.getElementById('f-name').value = '';
+      document.getElementById('f-km').value   = '';
+      document.getElementById('f-days').value = '';
+      toast(`✅ ${name} (${activity}) added!`);
+    } catch(e) { toast('Error saving. Check Firebase config.','error'); }
+    finally { btn.disabled = false; btn.textContent = '➕ ADD ENTRY'; }
+  };
+
+  // ── Edit ───────────────────────────────────────────────────────────────────
+  window._startEdit  = function(key) { editingKey = key; renderTable(); setTimeout(()=>document.getElementById('e-name')?.focus(),50); };
+  window._cancelEdit = function()    { editingKey = null; renderTable(); };
+  window._saveEdit   = async function(key) {
+    const p = entries[key]; if (!p) return;
+    try {
+      await update(ref(db, `participants/${key}`), {
+        name:     document.getElementById('e-name').value.trim() || p.name,
+        activity: document.getElementById('e-activity').value,
+        km:       parseFloat(document.getElementById('e-km').value)  || 0,
+        days:     parseInt(document.getElementById('e-days').value)  || 0,
       });
-      document.getElementById('f-name').value  = '';
-      document.getElementById('f-km').value    = '';
-      document.getElementById('f-days').value  = '';
-      document.getElementById('f-tokens').value = '0';
-      toast(`✅ ${name} added to the challenge!`);
-    } catch(e) {
-      toast('Error saving. Check Firebase config.','error');
-    } finally {
-      btn.disabled = false; btn.textContent = '➕ ADD TO CHALLENGE';
-    }
+      editingKey = null; toast('✅ Changes saved!');
+    } catch(e) { toast('Error saving changes.','error'); }
   };
 
-  // ── Edit ──────────────────────────────────────────────────────────────────
-  window._startEdit = function(key) { editingKey = key; renderTable(); setTimeout(()=>document.getElementById('e-name')?.focus(),50); };
-  window._cancelEdit = function()   { editingKey = null; renderTable(); };
-
-  window._saveEdit = async function(key) {
-    const p = participants[key];
-    if (!p) return;
-    const updated = {
-      name:     document.getElementById('e-name').value.trim() || p.name,
-      activity: document.getElementById('e-activity').value,
-      km:       parseFloat(document.getElementById('e-km').value)   || 0,
-      days:     parseInt(document.getElementById('e-days').value)   || 0,
-      tokens:   parseInt(document.getElementById('e-tokens').value) || 0,
-    };
-    try {
-      await update(ref(db, `participants/${key}`), updated);
-      editingKey = null;
-      toast('✅ Changes saved!');
-    } catch(e) {
-      toast('Error saving changes.','error');
-    }
-  };
-
-  // ── Delete ────────────────────────────────────────────────────────────────
+  // ── Delete ─────────────────────────────────────────────────────────────────
   window._deleteP = async function(key) {
-    const name = participants[key]?.name || 'this participant';
-    if (!confirm(`Remove ${name} from the challenge?`)) return;
+    const p = entries[key];
+    if (!confirm(`Remove ${p?.name} (${p?.activity})?`)) return;
     try {
       await remove(ref(db, `participants/${key}`));
-      toast(`🗑 ${name} removed.`);
-    } catch(e) {
-      toast('Error deleting participant.','error');
-    }
+      toast(`🗑 ${p?.name} (${p?.activity}) removed.`);
+    } catch(e) { toast('Error deleting.','error'); }
   };
 
-  // ── Enter key on add form ─────────────────────────────────────────────────
+  // ── Enter key ──────────────────────────────────────────────────────────────
   ['f-name','f-km','f-days'].forEach(id => {
-    document.getElementById(id)?.addEventListener('keydown', e => { if(e.key==='Enter') window.addParticipant(); });
+    document.getElementById(id)?.addEventListener('keydown', e => { if(e.key==='Enter') window.addEntry(); });
   });
 
-
-
-  // ── One-time bulk seed ────────────────────────────────────────────────────
-  window._seedAll = async function() {
-    if (!confirm('This will add all 31 participants to Firebase. Continue?')) return;
-    const names = [
-      "Amar Shinde","Shobha","Aakash Rayate","Poulomi Mukherjee",
-      "Sipra Tripathy","Shibani Pattnaik","Puneet Ahuja","Shubham Singh",
-      "Praveen Choudhary","Surabhi Telang","Aparna Shinde","Renu Goel",
-      "Saswati Mahapatra","Sonam Agnihotri","Jyotika Bhurani","Yogesh Karira",
-      "Mayuri Hegde","Asmita Tiwari","Jaya Bharti","Mithun Vakharia",
-      "Aman Gupta","BIBEK LAL","Richa Johar","Dikshant Ohri","Shyamala",
-      "Shubham Lakhotia","Kumar Abhishek","Kali Tripathy",
-      "Thavakumar Swaminathan","Binay lal","Shilpy pateriya"
-    ];
-    const btn = document.querySelector('#seed-banner button');
-    btn.textContent = 'Loading…'; btn.disabled = true;
-    try {
-      for (const name of names) {
-        await push(participantsRef, { name, activity: 'Walking', km: 0, days: 0, tokens: 0 });
-      }
-      document.getElementById('seed-banner').style.display = 'none';
-      toast('✅ All 31 participants loaded!');
-    } catch(e) {
-      btn.textContent = '⚡ Load Participants'; btn.disabled = false;
-      toast('Error loading participants. Check Firebase.', 'error');
-    }
-  };
-
-  // ── Real-time listener ────────────────────────────────────────────────────
-  onValue(participantsRef, (snapshot) => {
-    participants = snapshot.val() || {};
+  // ── Listeners ──────────────────────────────────────────────────────────────
+  onValue(entriesRef, snap => {
+    entries = snap.val() || {};
     renderTable();
+    updateNamesList();
+    renderTokens();
+  });
+
+  onValue(tokensRef, snap => {
+    const raw = snap.val() || {};
+    tokens = {};
+    Object.values(raw).forEach(t => { if(t.name) tokens[sanitizeKey(t.name)] = t.used || 0; });
+    renderTokens();
   });
 </script>
 

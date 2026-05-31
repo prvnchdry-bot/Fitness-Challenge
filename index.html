@@ -17,7 +17,7 @@
       padding:0 0 32px;
     }
 
-    /* ── Hero (poster style) ── */
+    /* ── Hero ── */
     .hero{text-align:center;padding:28px 24px 20px;}
     .hero-starting{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#CC5522;background:rgba(180,80,30,.18);border:1px solid rgba(200,90,40,.35);padding:6px 18px;border-radius:100px;margin-bottom:18px;}
     .hero-starting-dot{width:7px;height:7px;border-radius:50%;background:#FF6B35;animation:pulse 1.6s ease-in-out infinite;}
@@ -33,19 +33,21 @@
     .hero-pills{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
     .hero-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:8px 18px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#ccc;}
 
-    /* ── Category tabs (horizontal scroll) ── */
+    /* ── Leaderboard label ── */
+    .lb-label{text-align:center;padding:20px 0 4px;}
+
+    /* ── Category tabs ── */
     .cat-tabs{display:flex;gap:6px;padding:12px 14px 0;overflow-x:auto;scrollbar-width:none;}
     .cat-tabs::-webkit-scrollbar{display:none;}
     .cat-tab{flex-shrink:0;padding:7px 16px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:transparent;color:#555;transition:all .2s;}
-    .cat-tab.active-walk{background:rgba(105,255,71,.12);border-color:rgba(105,255,71,.4);color:#69FF47;}
-    .cat-tab.active-run {background:rgba(0,229,255,.12);border-color:rgba(0,229,255,.4);color:#00E5FF;}
+    .cat-tab.active-walk {background:rgba(105,255,71,.12);border-color:rgba(105,255,71,.4);color:#69FF47;}
+    .cat-tab.active-run  {background:rgba(0,229,255,.12);border-color:rgba(0,229,255,.4);color:#00E5FF;}
     .cat-tab.active-cycle{background:rgba(255,107,53,.15);border-color:rgba(255,107,53,.4);color:#FF6B35;}
     .cat-tab:hover:not([class*="active"]){border-color:rgba(255,255,255,.2);color:#aaa;}
 
     /* ── Category panel ── */
     .cat-panel{display:none;padding:14px 0 0;}
     .cat-panel.active{display:block;}
-
     .cat-header{display:flex;align-items:center;gap:10px;padding:0 16px 12px;}
     .cat-icon{font-size:22px;}
     .cat-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;}
@@ -55,7 +57,7 @@
     .cat-divider{flex:1;height:1px;background:rgba(255,255,255,.06);}
     .cat-count{font-size:10px;color:#444;letter-spacing:1px;text-transform:uppercase;}
 
-    /* ── Podium (compact 3-col) ── */
+    /* ── Podium ── */
     .podium{display:flex;align-items:flex-end;justify-content:center;gap:6px;padding:0 12px 20px;}
     .podium-slot{flex:1;max-width:160px;display:flex;flex-direction:column;align-items:center;}
     .podium-card{width:100%;border-radius:14px 14px 0 0;padding:12px 10px 10px;text-align:center;transition:transform .2s;}
@@ -72,9 +74,9 @@
     .podium-base.first {background:#FFD700;color:#000;height:44px;}
     .podium-base.second{background:#909090;color:#000;height:32px;}
     .podium-base.third {background:#7B4F2B;color:#fff;height:22px;}
-    .podium-empty{text-align:center;padding:20px;color:#333;font-size:11px;letter-spacing:1px;text-transform:uppercase;}
+    .podium-empty{text-align:center;padding:20px;color:#444;font-size:11px;letter-spacing:1px;}
 
-    /* ── Rankings list (compact) ── */
+    /* ── List ── */
     .section-label{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#444;padding:0 16px;margin-bottom:10px;}
     .list-wrap{padding:0 10px;margin-bottom:8px;}
     .list-item{display:grid;grid-template-columns:36px 1fr auto;align-items:center;gap:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:10px 12px;margin-bottom:6px;transition:background .15s,border-color .15s;animation:fadeUp .3s ease both;}
@@ -92,22 +94,21 @@
     .token-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
     .token-dot.used{background:#E74C3C;box-shadow:0 0 4px rgba(231,76,60,.5);}
     .token-dot.left{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);}
-    .token-label{font-size:9px;color:#555;letter-spacing:.5px;}
+    .token-label{font-size:9px;color:#555;}
     .token-label.all-used{color:#E74C3C;font-weight:700;}
 
-    /* ── Legend (compact) ── */
+    /* ── Legend ── */
     .legend{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:16px 16px 0;}
     .legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:#555;}
     .legend-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
 
-    .loading{text-align:center;padding:60px 24px;color:#555;font-size:13px;}
+    .loading{text-align:center;padding:60px 24px;color:#555;}
     .loading-spinner{width:28px;height:28px;border:2px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
     @keyframes spin{to{transform:rotate(360deg);}}
     @keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
   </style>
 </head>
 <body>
-
 <div class="lb-root">
 
   <!-- Hero -->
@@ -120,14 +121,10 @@
     </div>
     <div class="hero-quote">"Lets move together, stronger everyday!"</div>
     <div class="hero-community">
-      <span class="hero-community-line"></span>
-      Keya Apartments Community
-      <span class="hero-community-line"></span>
+      <span class="hero-community-line"></span>Keya Apartments Community<span class="hero-community-line"></span>
     </div>
     <div class="hero-dates">
-      <span>1 June 2026</span>
-      <span class="hero-dates-sep"></span>
-      <span>9 September 2026</span>
+      <span>1 June 2026</span><span class="hero-dates-sep"></span><span>9 September 2026</span>
     </div>
     <div class="hero-pills">
       <span class="hero-pill">🚶 Walk 2 KM+</span>
@@ -136,30 +133,22 @@
     </div>
   </div>
 
-  <!-- Leaderboard divider -->
-  <div style="text-align:center;padding:20px 0 4px;">
+  <!-- Leaderboard label -->
+  <div class="lb-label">
     <span style="display:inline-block;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#FF6B35;border:1px solid rgba(255,107,53,.3);padding:5px 18px;border-radius:100px;">🏆 Live Leaderboard</span>
   </div>
 
-  <!-- Activity tabs -->
+  <!-- Tabs -->
   <div class="cat-tabs">
     <button class="cat-tab active-walk" onclick="switchCat('walk',this)">🚶 Walking</button>
     <button class="cat-tab" onclick="switchCat('run',this)">🏃 Running</button>
     <button class="cat-tab" onclick="switchCat('cycle',this)">🚴 Cycling</button>
   </div>
 
-  <!-- Panels (one per activity) -->
-  <div id="panel-walk" class="cat-panel active">
-    <div class="loading"><div class="loading-spinner"></div></div>
-  </div>
-  <div id="panel-run" class="cat-panel">
-    <div class="loading"><div class="loading-spinner"></div></div>
-  </div>
-  <div id="panel-cycle" class="cat-panel">
-    <div class="loading"><div class="loading-spinner"></div></div>
-  </div>
+  <div id="panel-walk"  class="cat-panel active"><div class="loading"><div class="loading-spinner"></div></div></div>
+  <div id="panel-run"   class="cat-panel"><div class="loading"><div class="loading-spinner"></div></div></div>
+  <div id="panel-cycle" class="cat-panel"><div class="loading"><div class="loading-spinner"></div></div></div>
 
-  <!-- Legend -->
   <div class="legend">
     <div class="legend-item"><div class="legend-dot" style="background:#FFD700"></div>Champion ≥90d</div>
     <div class="legend-item"><div class="legend-dot" style="background:#00E5FF"></div>Elite ≥70d</div>
@@ -167,11 +156,9 @@
     <div class="legend-item"><div class="legend-dot" style="background:#FF9800"></div>Started ≥1d</div>
     <div class="legend-item"><div class="legend-dot" style="background:#555"></div>Pending</div>
   </div>
-
 </div>
 
 <script>
-  // Tab switching
   function switchCat(key, btn) {
     document.querySelectorAll('.cat-panel').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.cat-tab').forEach(t => { t.className = 'cat-tab'; });
@@ -184,7 +171,6 @@
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  // ── PASTE YOUR FIREBASE CONFIG HERE ──────────────────────────────────────
   const firebaseConfig = {
     apiKey: "AIzaSyCrxTZEUB5x8VolI31091hqrZKvtdnbkmM",
     authDomain: "fitness-leaderboard-ed631.firebaseapp.com",
@@ -194,17 +180,24 @@
     messagingSenderId: "861678454829",
     appId: "1:861678454829:web:f375e12cf6970d7d6cd0a4"
   };
-  // ─────────────────────────────────────────────────────────────────────────
 
   const app = initializeApp(firebaseConfig);
   const db  = getDatabase(app);
   const CHALLENGE_DAYS = 100;
+  const MAX_TOKENS = 6;
+
+  let allEntries = [];
+  let tokensMap  = {}; // { "sanitized_name": count }
 
   const CATEGORIES = [
-    { key:'walk',  dbKey:'Walk/Run', icon:'🚶', label:'Walking', cls:'walk' },
-    { key:'run',   dbKey:'Running',  icon:'🏃', label:'Running', cls:'run'  },
-    { key:'cycle', dbKey:'Cycling',  icon:'🚴', label:'Cycling', cls:'cycle'},
+    { key:'walk',  activity:'Walking', icon:'🚶', label:'Walking', cls:'walk'  },
+    { key:'run',   activity:'Running', icon:'🏃', label:'Running', cls:'run'   },
+    { key:'cycle', activity:'Cycling', icon:'🚴', label:'Cycling', cls:'cycle' },
   ];
+
+  function sanitizeKey(name) {
+    return name.trim().toLowerCase().replace(/[^a-z0-9]/g,'_');
+  }
 
   function getStatus(days) {
     if (days >= 90) return { label:"Champion", color:"#FFD700", bg:"#2a2000", icon:"🏆" };
@@ -218,8 +211,10 @@
   function esc(s)      { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function sortBy(arr) { return [...arr].sort((a,b)=>b.km-a.km||b.days-a.days); }
 
+  function getTokens(name) { return tokensMap[sanitizeKey(name)] || 0; }
+
   function renderPodium(top3) {
-    if (!top3.length) return `<div class="podium-empty" style="color:#444;font-size:11px;letter-spacing:1px;padding:18px 0">⏳ Podium unlocks once KM &amp; days are logged</div>`;
+    if (!top3.length) return `<div class="podium-empty">⏳ Podium unlocks once KM & days are logged</div>`;
     const slots = top3.length >= 3
       ? [[top3[1],2,"second","2ND"],[top3[0],1,"first","1ST"],[top3[2],3,"third","3RD"]]
       : top3.map((p,i)=>[[p,i+1,["first","second","third"][i],["1ST","2ND","3RD"][i]]]).flat();
@@ -244,13 +239,17 @@
     return `<div class="section-label">FULL RANKINGS</div>
     <div class="list-wrap">${sorted.map((p,i)=>{
       const rank=i+1, st=getStatus(p.days), pct=Math.min(100,Math.round(p.days/CHALLENGE_DAYS*100));
-      const bs="";
+      const used = getTokens(p.name);
+      const allUsed = used >= MAX_TOKENS;
       return `<div class="list-item" style="animation-delay:${i*.04}s">
-        <div class="rank-badge" style="${bs}">${rank}</div>
+        <div class="rank-badge">${rank}</div>
         <div>
           <div class="list-name">${esc(p.name)}</div>
           <div class="list-meta"><span>${p.days}/${CHALLENGE_DAYS} days</span></div>
-          <div class="token-row">${Array.from({length:6},(_,i)=>`<div class="token-dot ${i<p.tokens?'used':'left'}"></div>`).join('')}<span class="token-label ${p.tokens>=6?'all-used':''}">${p.tokens>=6?'⚠️ No tokens left':`${p.tokens}/6 tokens used`}</span></div>
+          <div class="token-row">
+            ${Array.from({length:MAX_TOKENS},(_,i)=>`<div class="token-dot ${i<used?'used':'left'}"></div>`).join('')}
+            <span class="token-label ${allUsed?'all-used':''}">${allUsed?'⚠️ No tokens left':`${used}/${MAX_TOKENS} tokens used`}</span>
+          </div>
           <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${pcColor(pct)}"></div></div>
         </div>
         <div class="list-right">
@@ -262,11 +261,11 @@
     }).join('')}</div>`;
   }
 
-  function renderPanel(cat, group) {
-    // Only include participants with km > 0 or days > 0 in podium
+  function renderPanel(cat) {
+    const group = sortBy(allEntries.filter(p => p.activity === cat.activity));
     const podiumGroup = group.filter(p => p.km > 0 || p.days > 0);
     const top3 = podiumGroup.slice(0,3);
-    return `
+    document.getElementById('panel-' + cat.key).innerHTML = `
       <div class="cat-header">
         <span class="cat-icon">${cat.icon}</span>
         <span class="cat-title ${cat.cls}">${cat.label}</span>
@@ -279,22 +278,19 @@
     `;
   }
 
-  onValue(ref(db, 'participants'), (snapshot) => {
-    const raw = snapshot.val();
-    const all = raw ? Object.values(raw) : [];
+  function renderAll() { CATEGORIES.forEach(renderPanel); }
 
-    CATEGORIES.forEach(cat => {
-      // Walk/Run maps to walking tab; Running maps to running tab
-      let group;
-      if (cat.key === 'walk') {
-        group = sortBy(all.filter(p => p.activity === 'Walking' || p.activity === 'Walk/Run'));
-      } else if (cat.key === 'run') {
-        group = sortBy(all.filter(p => p.activity === 'Running'));
-      } else {
-        group = sortBy(all.filter(p => p.activity === 'Cycling'));
-      }
-      document.getElementById('panel-' + cat.key).innerHTML = renderPanel(cat, group);
-    });
+  // Listen to both nodes
+  onValue(ref(db, 'participants'), snap => {
+    allEntries = snap.val() ? Object.values(snap.val()) : [];
+    renderAll();
+  });
+
+  onValue(ref(db, 'tokens'), snap => {
+    const raw = snap.val() || {};
+    tokensMap = {};
+    Object.values(raw).forEach(t => { if(t.name) tokensMap[sanitizeKey(t.name)] = t.used || 0; });
+    renderAll();
   });
 </script>
 
