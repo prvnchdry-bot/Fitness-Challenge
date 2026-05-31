@@ -310,6 +310,51 @@
     document.getElementById(id)?.addEventListener('keydown', e => { if(e.key==='Enter') window.addParticipant(); });
   });
 
+
+  // ── Pre-seed participants on first load ───────────────────────────────────
+  async function seedIfEmpty() {
+    const snapshot = await new Promise(res => onValue(participantsRef, res, { onlyOnce: true }));
+    if (snapshot.val()) return; // already has data, skip
+    const { default: pushFn } = { default: push };
+    const entries = [
+    { name: "Amar Shinde", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Shobha", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Aakash Rayate", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Poulomi Mukherjee", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Sipra Tripathy", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Shibani Pattnaik", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Puneet Ahuja", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Shubham Singh", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Praveen Choudhary", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Surabhi Telang", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Aparna Shinde", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Renu Goel", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Saswati Mahapatra", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Sonam Agnihotri", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Jyotika Bhurani", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Yogesh Karira", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Mayuri Hegde", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Asmita Tiwari", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Jaya Bharti", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Mithun Vakharia", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Aman Gupta", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "BIBEK LAL", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Richa Johar", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Dikshant Ohri", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Shyamala", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Shubham Lakhotia", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Kumar Abhishek", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Kali Tripathy", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Thavakumar Swaminathan", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Binay lal", activity: "Walking", km: 0, days: 0, tokens: 0 },
+    { name: "Shilpy pateriya", activity: "Walking", km: 0, days: 0, tokens: 0 }
+    ];
+    for (const entry of entries) {
+      await push(participantsRef, entry);
+    }
+    toast('✅ 31 participants loaded!');
+  }
+  seedIfEmpty();
   // ── Real-time listener ────────────────────────────────────────────────────
   onValue(participantsRef, (snapshot) => {
     participants = snapshot.val() || {};
