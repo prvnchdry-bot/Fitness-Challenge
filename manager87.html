@@ -107,6 +107,7 @@
     .spinner{width:24px;height:24px;border:2px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px;}
     @keyframes spin{to{transform:rotate(360deg);}}
   </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -218,6 +219,7 @@
       <button class="filter-chip" onclick="setActFilter('Walking',this)">🚶 Walk</button>
       <button class="filter-chip" onclick="setActFilter('Running',this)">🏃 Run</button>
       <button class="filter-chip" onclick="setActFilter('Cycling',this)">🚴 Cycle</button>
+      <button class="btn btn-sm" onclick="exportToExcel()" style="margin-left:auto;background:rgba(105,255,71,.1);color:#69FF47;border:1px solid rgba(105,255,71,.25);padding:6px 14px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;">⬇️ Export Excel</button>
     </div>
     <div class="table-wrap">
       <table>
@@ -622,6 +624,69 @@
   };
 
   // ── Listeners ──────────────────────────────────────────────────────────────
+  // ── Export to Excel ──────────────────────────────────────────────────────
+  window.exportToExcel = function() {
+    const search   = (document.getElementById('search-input')?.value || '').toLowerCase();
+    const allEntries = Object.entries(logs).sort((a,b) => (b[1].date||'').localeCompare(a[1].date||''));
+    const filtered = allEntries.filter(([,l]) => {
+      const matchAct  = actFilter === 'all' || l.activity === actFilter;
+      const matchName = !search || l.name.toLowerCase().includes(search);
+      return matchAct && matchName;
+    });
+
+    if (!filtered.length) { toast('No entries to export','error'); return; }
+
+    // Build rows
+    const rows = [['Date','Name','Activity','KM','Days Active (cumulative)','Proof Link','Notes']];
+    filtered.forEach(([,l]) => {
+      rows.push([
+        l.date || '',
+        l.name || '',
+        l.activity || '',
+        l.km || 0,
+        '',   // days active is cumulative, left blank per entry
+        l.proof || '',
+        l.notes || ''
+      ]);
+    });
+
+    // Create workbook
+    const wb  = XLSX.utils.book_new();
+    const ws  = XLSX.utils.aoa_to_sheet(rows);
+
+    // Column widths
+    ws['!cols'] = [
+      {wch:12},{wch:22},{wch:12},{wch:8},{wch:20},{wch:36},{wch:28}
+    ];
+
+    // Style header row bold (basic)
+    const headerRange = XLSX.utils.decode_range(ws['!ref']);
+    for (let C = headerRange.s.c; C <= headerRange.e.c; C++) {
+      const cell = ws[XLSX.utils.encode_cell({r:0, c:C})];
+      if (cell) cell.s = { font: { bold: true } };
+    }
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Activity Log');
+
+    // Also add a summary sheet
+    const totals = computeTotals();
+    const summaryRows = [['Name','Activity','Total KM','Days Active']];
+    Object.entries(totals).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([name, acts]) => {
+      Object.entries(acts).forEach(([act, data]) => {
+        summaryRows.push([name, act, Math.round(data.km*10)/10, data.dates.size]);
+      });
+    });
+    const ws2 = XLSX.utils.aoa_to_sheet(summaryRows);
+    ws2['!cols'] = [{wch:22},{wch:12},{wch:12},{wch:14}];
+    XLSX.utils.book_append_sheet(wb, ws2, 'Summary');
+
+    // File name with date
+    const today = new Date().toISOString().split('T')[0];
+    const filter = actFilter === 'all' ? 'All' : actFilter;
+    XLSX.writeFile(wb, `FitnessChallenge_${filter}_${today}.xlsx`);
+    toast(`✅ Exported ${filtered.length} entries to Excel!`);
+  };
+
   onValue(logsRef, snap => {
     logs = snap.val() || {};
     updateNamesList();
