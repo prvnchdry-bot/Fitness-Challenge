@@ -96,11 +96,13 @@
     .token-dot.left{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);}
     .token-label{font-size:9px;color:#555;}
     .token-label.all-used{color:#E74C3C;font-weight:700;}
-
-    /* ── Legend ── */
-    .legend{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:16px 16px 0;}
-    .legend-item{display:flex;align-items:center;gap:5px;font-size:10px;color:#555;}
-    .legend-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+    .week-row{display:flex;align-items:center;gap:4px;margin-top:5px;flex-wrap:wrap;}
+    .week-label{font-size:9px;color:#444;letter-spacing:.5px;margin-right:2px;min-width:28px;}
+    .day-dot{width:18px;height:18px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0;}
+    .day-dot.active{background:rgba(105,255,71,.2);color:#69FF47;border:1px solid rgba(105,255,71,.4);}
+    .day-dot.today{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.06);color:#888;}
+    .day-dot.future{background:rgba(255,255,255,.03);color:#333;border:1px solid rgba(255,255,255,.05);}
+    .day-dot.token{background:rgba(255,152,0,.15);color:#FF9800;border:1px solid rgba(255,152,0,.3);}
 
     .loading{text-align:center;padding:60px 24px;color:#555;}
     .loading-spinner{width:28px;height:28px;border:2px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
@@ -149,13 +151,15 @@
   <div id="panel-run"   class="cat-panel"><div class="loading"><div class="loading-spinner"></div></div></div>
   <div id="panel-cycle" class="cat-panel"><div class="loading"><div class="loading-spinner"></div></div></div>
 
-  <div class="legend">
-    <div class="legend-item"><div class="legend-dot" style="background:#FFD700"></div>Champion ≥90d</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#00E5FF"></div>Elite ≥70d</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#69FF47"></div>Active ≥50d</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#FF9800"></div>Started ≥1d</div>
-    <div class="legend-item"><div class="legend-dot" style="background:#555"></div>Pending</div>
+  <!-- Status legend -->
+  <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:20px 16px 0;">
+    <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#FFD700;flex-shrink:0;"></div>Champion ≥90d</div>
+    <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#00E5FF;flex-shrink:0;"></div>Elite ≥70d</div>
+    <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#69FF47;flex-shrink:0;"></div>Active ≥50d</div>
+    <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#FF9800;flex-shrink:0;"></div>Started ≥1d</div>
+    <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;"></div>Pending</div>
   </div>
+
 </div>
 
 <script>
@@ -188,6 +192,8 @@
 
   let allEntries = [];
   let tokensMap  = {}; // { "sanitized_name": count }
+  let logsMap    = {}; // { "sanitized_name_activity": Set of date strings }
+  let tokenDates = {}; // { "sanitized_name": Set of date strings when token used } — derived from token count
 
   const CATEGORIES = [
     { key:'walk',  activity:'Walking', icon:'🚶', label:'Walking', cls:'walk'  },
@@ -212,6 +218,70 @@
   function sortBy(arr) { return [...arr].sort((a,b)=>b.km-a.km||b.days-a.days); }
 
   function getTokens(name) { return tokensMap[sanitizeKey(name)] || 0; }
+
+  // ── Week tracker helpers ────────────────────────────────────────────────
+  const CHALLENGE_START = new Date('2026-06-01');
+
+  function getWeekDates() {
+    // Returns Mon-Sun of current week, clamped to challenge range
+    const now = new Date();
+    const day = now.getDay(); // 0=Sun
+    const diffToMon = (day === 0 ? -6 : 1 - day);
+    const mon = new Date(now);
+    mon.setDate(now.getDate() + diffToMon);
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(mon);
+      d.setDate(mon.getDate() + i);
+      days.push(d);
+    }
+    return days;
+  }
+
+  function dateStr(d) {
+    return d.toISOString().split('T')[0];
+  }
+
+  function dayInitial(d) {
+    return ['S','M','T','W','T','F','S'][d.getDay()];
+  }
+
+  function renderWeekTracker(name, activity) {
+    const key    = sanitizeKey(name) + '_' + sanitizeKey(activity);
+    const logged = logsMap[key] || new Set();
+    const used   = getTokens(name);
+    const days   = getWeekDates();
+    const todayStr = dateStr(new Date());
+
+    // Build token date set — last N days before today that aren't logged
+    // We don't track exact token dates, so we just show token count as dots after week
+    const dayDots = days.map(d => {
+      const ds  = dateStr(d);
+      const now = new Date(); now.setHours(0,0,0,0);
+      const dt  = new Date(d); dt.setHours(0,0,0,0);
+      const isActive = logged.has(ds);
+      const isToday  = ds === todayStr;
+      const isFuture = dt > now;
+      const cls = isActive ? 'active' : isFuture ? 'future' : isToday ? 'today' : 'today';
+      return `<div class="day-dot ${cls}" title="${ds}">${dayInitial(d)}</div>`;
+    }).join('');
+
+    // Token dots
+    const tokenDots = Array.from({length: MAX_TOKENS}, (_,i) =>
+      `<div class="token-dot ${i < used ? 'used' : 'left'}"></div>`
+    ).join('');
+    const allUsed = used >= MAX_TOKENS;
+
+    return `
+      <div class="week-row">
+        <span class="week-label">Week</span>
+        ${dayDots}
+      </div>
+      <div class="token-row">
+        ${tokenDots}
+        <span class="token-label ${allUsed ? 'all-used' : ''}">${allUsed ? '⚠️ No tokens left' : `${used}/${MAX_TOKENS} tokens`}</span>
+      </div>`;
+  }
 
   function renderPodium(top3) {
     if (!top3.length) return `<div class="podium-empty">⏳ Podium unlocks once KM & days are logged</div>`;
@@ -239,17 +309,12 @@
     return `<div class="section-label">FULL RANKINGS</div>
     <div class="list-wrap">${sorted.map((p,i)=>{
       const rank=i+1, st=getStatus(p.days), pct=Math.min(100,Math.round(p.days/CHALLENGE_DAYS*100));
-      const used = getTokens(p.name);
-      const allUsed = used >= MAX_TOKENS;
       return `<div class="list-item" style="animation-delay:${i*.04}s">
         <div class="rank-badge">${rank}</div>
         <div>
           <div class="list-name">${esc(p.name)}</div>
           <div class="list-meta"><span>${p.days}/${CHALLENGE_DAYS} days</span></div>
-          <div class="token-row">
-            ${Array.from({length:MAX_TOKENS},(_,i)=>`<div class="token-dot ${i<used?'used':'left'}"></div>`).join('')}
-            <span class="token-label ${allUsed?'all-used':''}">${allUsed?'⚠️ No tokens left':`${used}/${MAX_TOKENS} tokens used`}</span>
-          </div>
+          ${renderWeekTracker(p.name, p.activity)}
           <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${pcColor(pct)}"></div></div>
         </div>
         <div class="list-right">
@@ -280,7 +345,7 @@
 
   function renderAll() { CATEGORIES.forEach(renderPanel); }
 
-  // Listen to both nodes
+  // Listen to all 3 nodes
   onValue(ref(db, 'participants'), snap => {
     allEntries = snap.val() ? Object.values(snap.val()) : [];
     renderAll();
@@ -290,6 +355,18 @@
     const raw = snap.val() || {};
     tokensMap = {};
     Object.values(raw).forEach(t => { if(t.name) tokensMap[sanitizeKey(t.name)] = t.used || 0; });
+    renderAll();
+  });
+
+  onValue(ref(db, 'logs'), snap => {
+    const raw = snap.val() || {};
+    logsMap = {};
+    Object.values(raw).forEach(l => {
+      if (!l.name || !l.activity || !l.date) return;
+      const key = sanitizeKey(l.name) + '_' + sanitizeKey(l.activity);
+      if (!logsMap[key]) logsMap[key] = new Set();
+      logsMap[key].add(l.date);
+    });
     renderAll();
   });
 </script>
