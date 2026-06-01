@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Weekly Champions — 100 Days Fitness</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold:   #F5C842;
+      --silver: #C0C8D8;
+      --bronze: #D4845A;
+      --bg:     #0A0A0E;
+      --surface:#13131A;
+      --border: rgba(255,255,255,.07);
+      --text:   #F0EDE8;
+      --muted:  #5A5870;
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+    /* ── Background ── */
+    .bg-glow{position:fixed;inset:0;pointer-events:none;z-index:0;
+      background:
+        radial-gradient(ellipse 60% 40% at 20% 20%, rgba(245,200,66,.04) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 80% 80%, rgba(192,200,216,.03) 0%, transparent 60%);
+    }
+    .bg-lines{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.4;
+      background-image:repeating-linear-gradient(90deg,transparent,transparent 80px,rgba(255,255,255,.012) 80px,rgba(255,255,255,.012) 81px);
+    }
+
+    .wrap{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:40px 20px 60px;}
+
+    /* ── Header ── */
+    .header{text-align:center;margin-bottom:40px;}
+    .header-eyebrow{font-size:10px;font-weight:600;letter-spacing:5px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;}
+    .trophy-icon{font-size:52px;display:block;margin-bottom:8px;filter:drop-shadow(0 0 20px rgba(245,200,66,.4));animation:float 3s ease-in-out infinite;}
+    @keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+    .header-title{font-family:'Playfair Display',serif;font-size:clamp(32px,8vw,48px);font-weight:900;line-height:1;letter-spacing:-1px;color:var(--text);margin-bottom:6px;}
+    .header-title em{font-style:italic;color:var(--gold);}
+    .header-week{font-size:12px;color:var(--muted);letter-spacing:1px;margin-top:10px;}
+    .header-divider{width:40px;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:16px auto 0;}
+
+    /* ── Category tabs ── */
+    .tabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:4px;margin-bottom:28px;}
+    .tab{flex:1;padding:8px 6px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border-radius:10px;transition:all .2s;}
+    .tab.active{background:rgba(245,200,66,.12);color:var(--gold);border:1px solid rgba(245,200,66,.2);}
+    .tab:hover:not(.active){color:var(--text);}
+
+    /* ── Week summary pill ── */
+    .week-pill{display:flex;align-items:center;justify-content:center;gap:16px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:12px 20px;margin-bottom:28px;}
+    .week-pill-item{text-align:center;}
+    .week-pill-val{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--gold);line-height:1;}
+    .week-pill-label{font-size:9px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+    .week-pill-sep{width:1px;height:28px;background:var(--border);}
+
+    /* ── Rank cards ── */
+    .rank-list{display:flex;flex-direction:column;gap:10px;}
+
+    .rank-card{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:14px;
+      background:var(--surface);border:1px solid var(--border);border-radius:16px;
+      padding:16px;position:relative;overflow:hidden;
+      animation:slideIn .4s ease both;}
+    @keyframes slideIn{from{opacity:0;transform:translateX(-12px);}to{opacity:1;transform:translateX(0);}}
+
+    .rank-card.rank-1{border-color:rgba(245,200,66,.25);background:linear-gradient(135deg,rgba(245,200,66,.06),var(--surface));}
+    .rank-card.rank-2{border-color:rgba(192,200,216,.15);background:linear-gradient(135deg,rgba(192,200,216,.04),var(--surface));}
+    .rank-card.rank-3{border-color:rgba(212,132,90,.15);background:linear-gradient(135deg,rgba(212,132,90,.04),var(--surface));}
+
+    /* Glow line top */
+    .rank-card.rank-1::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+    .rank-card.rank-2::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--silver),transparent);}
+    .rank-card.rank-3::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--bronze),transparent);}
+
+    .rank-num{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+    .rank-num.n1{background:rgba(245,200,66,.12);font-size:24px;}
+    .rank-num.n2{background:rgba(192,200,216,.08);font-size:24px;}
+    .rank-num.n3{background:rgba(212,132,90,.08);font-size:24px;}
+    .rank-num.nX{background:rgba(255,255,255,.04);font-family:'Playfair Display',serif;font-size:18px;color:var(--muted);}
+
+    .rank-info{}
+    .rank-name{font-size:15px;font-weight:600;color:var(--text);margin-bottom:3px;line-height:1.2;}
+    .rank-meta{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;}
+    .rank-streak{display:inline-flex;align-items:center;gap:3px;font-size:10px;color:#69FF47;font-weight:600;}
+    .rank-streak-dot{width:5px;height:5px;border-radius:50%;background:#69FF47;}
+
+    .rank-km{text-align:right;}
+    .rank-km-val{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;line-height:1;}
+    .rank-km-val.c1{color:var(--gold);}
+    .rank-km-val.c2{color:var(--silver);}
+    .rank-km-val.c3{color:var(--bronze);}
+    .rank-km-val.cX{color:#888;}
+    .rank-km-unit{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase;}
+
+    /* week dots */
+    .week-dots{display:flex;gap:3px;margin-top:4px;}
+    .wd{width:8px;height:8px;border-radius:2px;}
+    .wd.on {background:#69FF47;box-shadow:0 0 4px rgba(105,255,71,.4);}
+    .wd.off{background:rgba(255,255,255,.08);}
+
+    /* empty state */
+    .empty{text-align:center;padding:48px 20px;color:var(--muted);font-size:13px;}
+    .empty-icon{font-size:36px;margin-bottom:12px;display:block;opacity:.4;}
+
+    /* loading */
+    .spinner{width:24px;height:24px;border:2px solid rgba(245,200,66,.15);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:40px auto;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+
+    /* footer */
+    .footer{text-align:center;margin-top:36px;font-size:11px;color:var(--muted);}
+    .footer a{color:rgba(245,200,66,.5);text-decoration:none;}
+    .footer a:hover{color:var(--gold);}
+  </style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+<div class="bg-lines"></div>
+
+<div class="wrap">
+
+  <div class="header">
+    <div class="header-eyebrow">Keya Apartments Community</div>
+    <span class="trophy-icon">🏆</span>
+    <div class="header-title">Weekly<br><em>Champions</em></div>
+    <div class="header-week" id="week-label">Loading…</div>
+    <div class="header-divider"></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('Walking',this)">🚶 Walking</button>
+    <button class="tab" onclick="switchTab('Running',this)">🏃 Running</button>
+    <button class="tab" onclick="switchTab('Cycling',this)">🚴 Cycling</button>
+  </div>
+
+  <div class="week-pill" id="week-summary">
+    <div class="week-pill-item"><div class="week-pill-val" id="s-athletes">—</div><div class="week-pill-label">Athletes</div></div>
+    <div class="week-pill-sep"></div>
+    <div class="week-pill-item"><div class="week-pill-val" id="s-km">—</div><div class="week-pill-label">Total KM</div></div>
+    <div class="week-pill-sep"></div>
+    <div class="week-pill-item"><div class="week-pill-val" id="s-days">—</div><div class="week-pill-label">Active Days</div></div>
+  </div>
+
+  <div class="rank-list" id="rank-list">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="footer">
+    <a href="index.html">← Full Leaderboard</a>
+    &nbsp;•&nbsp; 100 Days Fitness Challenge
+  </div>
+
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCrxTZEUB5x8VolI31091hqrZKvtdnbkmM",
+    authDomain: "fitness-leaderboard-ed631.firebaseapp.com",
+    databaseURL: "https://fitness-leaderboard-ed631-default-rtdb.firebaseio.com",
+    projectId: "fitness-leaderboard-ed631",
+    storageBucket: "fitness-leaderboard-ed631.firebasestorage.app",
+    messagingSenderId: "861678454829",
+    appId: "1:861678454829:web:f375e12cf6970d7d6cd0a4"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+
+  let allLogs    = [];
+  let currentTab = 'Walking';
+
+  // ── Week range ─────────────────────────────────────────────────────────────
+  function getWeekRange() {
+    const now  = new Date();
+    const day  = now.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    const mon  = new Date(now); mon.setDate(now.getDate() + diff); mon.setHours(0,0,0,0);
+    const sun  = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
+    return { mon, sun };
+  }
+
+  function dateStr(d) { return d.toISOString().split('T')[0]; }
+
+  function getWeekDates() {
+    const { mon } = getWeekRange();
+    return Array.from({length:7}, (_,i) => {
+      const d = new Date(mon); d.setDate(mon.getDate() + i);
+      return dateStr(d);
+    });
+  }
+
+  function fmtDate(d) {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${d.getDate()} ${months[d.getMonth()]}`;
+  }
+
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // ── Tab switch ─────────────────────────────────────────────────────────────
+  window.switchTab = function(activity, btn) {
+    currentTab = activity;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    render();
+  };
+
+  // ── Render ─────────────────────────────────────────────────────────────────
+  function render() {
+    const weekDates = getWeekDates();
+    const { mon, sun } = getWeekRange();
+
+    // Update week label
+    document.getElementById('week-label').textContent =
+      `Week of ${fmtDate(mon)} — ${fmtDate(sun)}`;
+
+    // Filter logs to this week + current activity
+    const weekLogs = allLogs.filter(l => l.activity === currentTab && weekDates.includes(l.date));
+
+    // Group by name
+    const byName = {};
+    weekLogs.forEach(l => {
+      if (!byName[l.name]) byName[l.name] = { name: l.name, km: 0, dates: new Set() };
+      byName[l.name].km += parseFloat(l.km) || 0;
+      byName[l.name].dates.add(l.date);
+    });
+
+    // Sort by km desc, then days desc
+    const sorted = Object.values(byName)
+      .sort((a,b) => b.km - a.km || b.dates.size - a.dates.size)
+      .slice(0, 5);
+
+    // Summary stats
+    const totalKm   = sorted.reduce((s,p) => s + p.km, 0);
+    const totalDays = sorted.reduce((s,p) => s + p.dates.size, 0);
+    document.getElementById('s-athletes').textContent = sorted.length || '—';
+    document.getElementById('s-km').textContent       = sorted.length ? Math.round(totalKm*10)/10 : '—';
+    document.getElementById('s-days').textContent     = sorted.length ? totalDays : '—';
+
+    // Rank list
+    const list = document.getElementById('rank-list');
+    if (!sorted.length) {
+      list.innerHTML = `<div class="empty"><span class="empty-icon">🏁</span>No activity logged this week yet.<br>Check back soon!</div>`;
+      return;
+    }
+
+    const medals  = ['🥇','🥈','🥉','4','5'];
+    const kmCls   = ['c1','c2','c3','cX','cX'];
+    const numCls  = ['n1','n2','n3','nX','nX'];
+    const cardCls = ['rank-1','rank-2','rank-3','',''];
+
+    list.innerHTML = sorted.map((p, i) => {
+      const km      = Math.round(p.km * 10) / 10;
+      const days    = p.dates.size;
+      const isConsistent = days >= 5;
+
+      // Week dot pattern
+      const dots = weekDates.map(d =>
+        `<div class="wd ${p.dates.has(d) ? 'on' : 'off'}" title="${d}"></div>`
+      ).join('');
+
+      return `<div class="rank-card ${cardCls[i]}" style="animation-delay:${i * .08}s">
+        <div class="rank-num ${numCls[i]}">${medals[i]}</div>
+        <div class="rank-info">
+          <div class="rank-name">${esc(p.name)}</div>
+          <div class="rank-meta">
+            <span>${days} day${days!==1?'s':''} this week</span>
+            ${isConsistent ? `<span class="rank-streak"><span class="rank-streak-dot"></span>Consistent</span>` : ''}
+          </div>
+          <div class="week-dots">${dots}</div>
+        </div>
+        <div class="rank-km">
+          <div class="rank-km-val ${kmCls[i]}">${km}</div>
+          <div class="rank-km-unit">km</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // ── Firebase listener ──────────────────────────────────────────────────────
+  onValue(ref(db, 'logs'), snap => {
+    allLogs = snap.val() ? Object.values(snap.val()) : [];
+    render();
+  });
+</script>
+
+</body></html>
