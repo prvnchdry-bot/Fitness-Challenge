@@ -191,9 +191,8 @@
   const MAX_TOKENS = 6;
 
   let allEntries = [];
-  let tokensMap  = {}; // { "sanitized_name": count }
+  let tokensMap  = {}; // { "sanitized_name": { dates: Set of date strings } }
   let logsMap    = {}; // { "sanitized_name_activity": Set of date strings }
-  let tokenDates = {}; // { "sanitized_name": Set of date strings when token used } — derived from token count
 
   const CATEGORIES = [
     { key:'walk',  activity:'Walking', icon:'🚶', label:'Walking', cls:'walk'  },
@@ -217,7 +216,14 @@
   function esc(s)      { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function sortBy(arr) { return [...arr].sort((a,b)=>b.km-a.km||b.days-a.days); }
 
-  function getTokens(name) { return tokensMap[sanitizeKey(name)] || 0; }
+  function getTokens(name)      { return tokensMap[sanitizeKey(name)]?.count || 0; }
+  function getTokenDates(name)  { return tokensMap[sanitizeKey(name)]?.dates || new Set(); }
+  function fmtTokenDate(d) {
+    if (!d) return '';
+    const [y,m,day] = d.split('-');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${parseInt(day)} ${months[parseInt(m)-1]}`;
+  }
 
   // ── Week tracker helpers ────────────────────────────────────────────────
   const CHALLENGE_START = new Date('2026-06-01');
@@ -247,30 +253,35 @@
   }
 
   function renderWeekTracker(name, activity) {
-    const key    = sanitizeKey(name) + '_' + sanitizeKey(activity);
-    const logged = logsMap[key] || new Set();
-    const used   = getTokens(name);
-    const days   = getWeekDates();
-    const todayStr = dateStr(new Date());
+    const key        = sanitizeKey(name) + '_' + sanitizeKey(activity);
+    const logged     = logsMap[key] || new Set();
+    const used       = getTokens(name);
+    const tokenDates = getTokenDates(name);
+    const days       = getWeekDates();
+    const todayStr   = dateStr(new Date());
 
-    // Build token date set — last N days before today that aren't logged
-    // We don't track exact token dates, so we just show token count as dots after week
     const dayDots = days.map(d => {
-      const ds  = dateStr(d);
-      const now = new Date(); now.setHours(0,0,0,0);
-      const dt  = new Date(d); dt.setHours(0,0,0,0);
-      const isActive = logged.has(ds);
-      const isToday  = ds === todayStr;
-      const isFuture = dt > now;
-      const cls = isActive ? 'active' : isFuture ? 'future' : isToday ? 'today' : 'today';
-      return `<div class="day-dot ${cls}" title="${ds}">${dayInitial(d)}</div>`;
+      const ds      = dateStr(d);
+      const now     = new Date(); now.setHours(0,0,0,0);
+      const dt      = new Date(d); dt.setHours(0,0,0,0);
+      const isActive  = logged.has(ds);
+      const isToken   = tokenDates.has(ds);
+      const isFuture  = dt > now;
+      let cls, title;
+      if (isActive)       { cls = 'active'; title = 'Activity logged'; }
+      else if (isToken)   { cls = 'token';  title = 'Token used (rest day)'; }
+      else if (isFuture)  { cls = 'future'; title = 'Upcoming'; }
+      else                { cls = 'today';  title = 'No activity'; }
+      return `<div class="day-dot ${cls}" title="${title}">${dayInitial(d)}</div>`;
     }).join('');
 
-    // Token dots
+    // Token dots + dates list
     const tokenDots = Array.from({length: MAX_TOKENS}, (_,i) =>
       `<div class="token-dot ${i < used ? 'used' : 'left'}"></div>`
     ).join('');
-    const allUsed = used >= MAX_TOKENS;
+    const allUsed   = used >= MAX_TOKENS;
+    const datesList = [...tokenDates].sort().map(d => fmtTokenDate(d)).join(', ');
+    const datesText = datesList ? ` • ${datesList}` : '';
 
     return `
       <div class="week-row">
@@ -279,7 +290,7 @@
       </div>
       <div class="token-row">
         ${tokenDots}
-        <span class="token-label ${allUsed ? 'all-used' : ''}">${allUsed ? '⚠️ No tokens left' : `${used}/${MAX_TOKENS} tokens`}</span>
+        <span class="token-label ${allUsed ? 'all-used' : ''}">${allUsed ? '⚠️ No tokens left' : `${used}/${MAX_TOKENS} tokens`}${datesText}</span>
       </div>`;
   }
 
@@ -354,7 +365,11 @@
   onValue(ref(db, 'tokens'), snap => {
     const raw = snap.val() || {};
     tokensMap = {};
-    Object.values(raw).forEach(t => { if(t.name) tokensMap[sanitizeKey(t.name)] = t.used || 0; });
+    Object.entries(raw).forEach(([key, t]) => {
+      if (!t.name) return;
+      const dates = Array.isArray(t.dates) ? t.dates : [];
+      tokensMap[sanitizeKey(t.name)] = { count: dates.length, dates: new Set(dates) };
+    });
     renderAll();
   });
 

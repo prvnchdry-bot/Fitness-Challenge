@@ -239,8 +239,8 @@
   <!-- ── TAB 4: Tokens ── -->
   <div id="nav-tokens" class="nav-section">
     <div class="card">
-      <div class="card-title">🎟 Update Tokens</div>
-      <div class="card-sub">Set how many tokens a participant has used. 6 tokens max per person.</div>
+      <div class="card-title">🎟 Log Token Usage</div>
+      <div class="card-sub">When a participant uses a rest day token, log their name and the date. Tokens protect their streak. Max 6 per person.</div>
       <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:end;margin-bottom:8px;">
         <div class="fg">
           <label>Person Name</label>
@@ -302,6 +302,12 @@
 <div class="toast" id="toast"></div>
 
 <script>
+  // Set today's date on token date input
+  document.addEventListener('DOMContentLoaded', () => {
+    const td = document.getElementById('t-date');
+    if (td) td.value = new Date().toISOString().split('T')[0];
+  });
+
   function switchNav(key, btn) {
     document.querySelectorAll('.nav-section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
@@ -569,7 +575,7 @@
           <span class="summary-val">${Math.round(data.km*10)/10}km</span>
         </div>`
       ).join('');
-      const used = tokens[sanitizeKey(name)]?.used || 0;
+      const used = (tokens[sanitizeKey(name)]?.dates || []).length;
       return `<div class="summary-card">
         <div class="summary-name">${esc(name)}</div>
         ${rows}
@@ -581,46 +587,74 @@
   // ── Tokens ─────────────────────────────────────────────────────────────────
   function renderTokens() {
     const list  = document.getElementById('token-list');
-    const names = [...new Set(Object.values(logs).map(l => l.name))].sort();
-    if (!names.length) { list.innerHTML = `<div class="empty">No participants logged yet.</div>`; return; }
+    const PRESET_NAMES = [
+      "Amar Shinde","Shobha","Aakash Rayate","Poulomi Mukherjee","Sipra Tripathy",
+      "Shibani Pattnaik","Puneet Ahuja","Shubham Singh","Praveen Choudhary","Surabhi Telang",
+      "Aparna Shinde","Renu Goel","Saswati Mahapatra","Sonam Agnihotri","Jyotika Bhurani",
+      "Yogesh Karira","Mayuri Hegde","Asmita Tiwari","Jaya Bharti","Mithun Vakharia",
+      "Aman Gupta","BIBEK LAL","Richa Johar","Dikshant Ohri","Shyamala",
+      "Shubham Lakhotia","Kumar Abhishek","Kali Tripathy","Thavakumar Swaminathan",
+      "Binay lal","Shilpy pateriya"
+    ];
+    const loggedNames = Object.values(logs).map(l => l.name);
+    const names = [...new Set([...PRESET_NAMES, ...loggedNames])].sort();
+    if (!names.length) { list.innerHTML = `<div class="empty">No participants yet.</div>`; return; }
     list.innerHTML = names.map(name => {
-      const used = tokens[sanitizeKey(name)]?.used || 0;
-      const warn = used >= MAX_TOKENS;
-      const dots = Array.from({length:MAX_TOKENS},(_,i) =>
+      const key      = sanitizeKey(name);
+      const dates    = tokens[key]?.dates || [];
+      const used     = dates.length;
+      const warn     = used >= MAX_TOKENS;
+      const dots     = Array.from({length:MAX_TOKENS},(_,i) =>
         `<div class="token-dot ${i<used?'used':'left'}"></div>`).join('');
+      const dateList = dates.length
+        ? dates.sort().map(d => {
+            const [y,m,day] = d.split('-');
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(255,152,0,.1);border:1px solid rgba(255,152,0,.2);border-radius:6px;padding:2px 8px;font-size:9px;color:#FF9800;margin:2px;">
+              🟠 ${parseInt(day)} ${months[parseInt(m)-1]}
+              <button onclick="window._removeTokenDate('${esc(name)}','${d}')" style="background:none;border:none;color:#E74C3C;cursor:pointer;font-size:10px;padding:0;margin-left:2px;">✕</button>
+            </span>`;
+          }).join('')
+        : '<span style="font-size:10px;color:#444;">No tokens used yet</span>';
       return `<div class="token-row-item">
-        <span class="token-name">${esc(name)}</span>
-        <div class="token-dots">${dots}</div>
-        <span class="token-count ${warn?'warn':''}">${warn?'⚠️ No tokens left':`${used}/${MAX_TOKENS}`}</span>
-        <div class="token-edit">
-          <select class="token-select" id="ts-${sanitizeKey(name)}">
-            ${[0,1,2,3,4,5,6].map(v=>`<option value="${v}"${v===used?' selected':''}>${v}</option>`).join('')}
-          </select>
-          <button class="btn btn-sm btn-blue" onclick="window._saveTokenFor('${esc(name)}')">Save</button>
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+            <span class="token-name">${esc(name)}</span>
+            <div class="token-dots">${dots}</div>
+            <span class="token-count ${warn?'warn':''}">${warn?'⚠️ No tokens left':`${used}/${MAX_TOKENS}`}</span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:2px;">${dateList}</div>
         </div>
       </div>`;
     }).join('');
   }
 
-  window._saveTokenFor = async function(name) {
-    const key  = sanitizeKey(name);
-    const used = parseInt(document.getElementById(`ts-${key}`)?.value) || 0;
+  window._removeTokenDate = async function(name, date) {
+    const key   = sanitizeKey(name);
+    const entry = tokens[key] || { name, dates: [] };
+    const newDates = (entry.dates || []).filter(d => d !== date);
     try {
-      await set(ref(db, `tokens/${key}`), { name, used });
-      toast(`✅ Tokens updated for ${name}`);
-    } catch(e) { toast('Error saving tokens','error'); }
+      await set(ref(db, `tokens/${key}`), { name, dates: newDates });
+      toast(`🗑 Token removed for ${name} on ${date}`);
+    } catch(e) { toast('Error removing token','error'); }
   };
 
   window.saveToken = async function() {
     const name = document.getElementById('t-name').value.trim();
-    const used = parseInt(document.getElementById('t-tokens').value);
-    if (!name) { toast('Enter a name first','error'); return; }
+    const date = document.getElementById('t-date').value;
+    if (!name) { toast('Select a participant first','error'); return; }
+    if (!date) { toast('Select a date','error'); return; }
+    const key   = sanitizeKey(name);
+    const entry = tokens[key] || { name, dates: [] };
+    const dates = entry.dates || [];
+    if (dates.includes(date)) { toast(`${name} already has a token for this date!`,'error'); return; }
+    if (dates.length >= MAX_TOKENS) { toast(`${name} has used all ${MAX_TOKENS} tokens!`,'error'); return; }
     try {
-      await set(ref(db, `tokens/${sanitizeKey(name)}`), { name, used });
-      toast(`✅ Tokens updated for ${name}`);
+      await set(ref(db, `tokens/${key}`), { name, dates: [...dates, date] });
+      toast(`✅ Token logged for ${name} on ${date}`);
       document.getElementById('t-name').value = '';
-      document.getElementById('t-tokens').value = '0';
-    } catch(e) { toast('Error saving tokens','error'); }
+      document.getElementById('t-date').value = '';
+    } catch(e) { toast('Error saving token','error'); }
   };
 
   // ── Listeners ──────────────────────────────────────────────────────────────
@@ -699,7 +733,16 @@
   onValue(tokensRef, snap => {
     const raw = snap.val() || {};
     tokens = {};
-    Object.values(raw).forEach(t => { if(t.name) tokens[sanitizeKey(t.name)] = t; });
+    Object.entries(raw).forEach(([key, t]) => {
+      if (t.name) {
+        // Support both old format {name, used} and new format {name, dates:[]}
+        if (Array.isArray(t.dates)) {
+          tokens[key] = { name: t.name, dates: t.dates };
+        } else {
+          tokens[key] = { name: t.name, dates: [] };
+        }
+      }
+    });
     renderTokens();
     renderSummary();
   });
