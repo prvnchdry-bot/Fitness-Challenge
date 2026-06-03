@@ -241,58 +241,31 @@
     <div class="card">
       <div class="card-title">🎟 Log Token Usage</div>
       <div class="card-sub">When a participant uses a rest day token, log their name and the date. Tokens protect their streak. Max 6 per person.</div>
-      <div style="display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:end;margin-bottom:8px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-bottom:8px;">
         <div class="fg">
-          <label>Person Name</label>
+          <label>Participant Name</label>
           <select id="t-name" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;">
             <option value="">— Select participant —</option>
-            <option value="Amar Shinde">Amar Shinde</option>
-            <option value="Shobha">Shobha</option>
-            <option value="Aakash Rayate">Aakash Rayate</option>
-            <option value="Poulomi Mukherjee">Poulomi Mukherjee</option>
-            <option value="Sipra Tripathy">Sipra Tripathy</option>
-            <option value="Shibani Pattnaik">Shibani Pattnaik</option>
-            <option value="Puneet Ahuja">Puneet Ahuja</option>
-            <option value="Shubham Singh">Shubham Singh</option>
-            <option value="Praveen Choudhary">Praveen Choudhary</option>
-            <option value="Surabhi Telang">Surabhi Telang</option>
-            <option value="Aparna Shinde">Aparna Shinde</option>
-            <option value="Renu Goel">Renu Goel</option>
-            <option value="Saswati Mahapatra">Saswati Mahapatra</option>
-            <option value="Sonam Agnihotri">Sonam Agnihotri</option>
-            <option value="Jyotika Bhurani">Jyotika Bhurani</option>
-            <option value="Yogesh Karira">Yogesh Karira</option>
-            <option value="Mayuri Hegde">Mayuri Hegde</option>
-            <option value="Asmita Tiwari">Asmita Tiwari</option>
-            <option value="Jaya Bharti">Jaya Bharti</option>
-            <option value="Mithun Vakharia">Mithun Vakharia</option>
-            <option value="Aman Gupta">Aman Gupta</option>
-            <option value="BIBEK LAL">BIBEK LAL</option>
-            <option value="Richa Johar">Richa Johar</option>
-            <option value="Dikshant Ohri">Dikshant Ohri</option>
-            <option value="Shyamala">Shyamala</option>
-            <option value="Shubham Lakhotia">Shubham Lakhotia</option>
-            <option value="Kumar Abhishek">Kumar Abhishek</option>
-            <option value="Kali Tripathy">Kali Tripathy</option>
-            <option value="Thavakumar Swaminathan">Thavakumar Swaminathan</option>
-            <option value="Binay lal">Binay lal</option>
-            <option value="Shilpy pateriya">Shilpy pateriya</option>
+            <option>Amar Shinde</option><option>Shobha</option><option>Aakash Rayate</option>
+            <option>Poulomi Mukherjee</option><option>Sipra Tripathy</option><option>Shibani Pattnaik</option>
+            <option>Puneet Ahuja</option><option>Shubham Singh</option><option>Praveen Choudhary</option>
+            <option>Surabhi Telang</option><option>Aparna Shinde</option><option>Renu Goel</option>
+            <option>Saswati Mahapatra</option><option>Sonam Agnihotri</option><option>Jyotika Bhurani</option>
+            <option>Yogesh Karira</option><option>Mayuri Hegde</option><option>Asmita Tiwari</option>
+            <option>Jaya Bharti</option><option>Mithun Vakharia</option><option>Aman Gupta</option>
+            <option>BIBEK LAL</option><option>Richa Johar</option><option>Dikshant Ohri</option>
+            <option>Shyamala</option><option>Shubham Lakhotia</option><option>Kumar Abhishek</option>
+            <option>Kali Tripathy</option><option>Thavakumar Swaminathan</option><option>Binay lal</option>
+            <option>Shilpy pateriya</option>
           </select>
         </div>
         <div class="fg">
-          <label>Tokens Used</label>
-          <select id="t-tokens">
-            <option value="0">0</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-          </select>
+          <label>Token Date (rest day)</label>
+          <input id="t-date" type="date" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;">
         </div>
-        <button class="btn btn-orange" onclick="saveToken()">Save</button>
+        <button class="btn btn-orange" onclick="saveToken()">Log Token</button>
       </div>
+      <div style="font-size:11px;color:#555;margin-top:4px;">💡 Each token date saved separately. Click ✕ next to a date below to remove it.</div>
     </div>
     <div class="token-list" id="token-list"><div class="empty"><div class="spinner"></div></div></div>
   </div>
