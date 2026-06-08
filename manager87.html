@@ -437,6 +437,8 @@
       await update(ref(db, `logs/${key}`), { name, activity, date, km, proof, notes });
       await syncToParticipants();
       editingLogKey = null;
+      renderRecent();
+      renderEntries();
       toast('✅ Entry updated!');
     } catch(e) { toast('Error saving edits.','error'); console.error(e); }
   };
