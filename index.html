@@ -260,7 +260,7 @@
         <div class="wk-pill-sep"></div>
         <div class="wk-pill-item"><div class="wk-pill-val" id="wk-s-km">—</div><div class="wk-pill-lbl">Total KM</div></div>
         <div class="wk-pill-sep"></div>
-        <div class="wk-pill-item"><div class="wk-pill-val" id="wk-s-days">—</div><div class="wk-pill-lbl">Active Days</div></div>
+        <div class="wk-pill-item"><div class="wk-pill-val" id="wk-s-days">—</div><div class="wk-pill-lbl">Days Active</div></div>
       </div>
 
       <div class="wk-list" id="wk-list"><div class="wk-spinner"></div></div>
@@ -303,9 +303,10 @@
   const CHALLENGE_DAYS = 100;
   const MAX_TOKENS = 6;
 
-  let allEntries = [];
-  let tokensMap  = {}; // { "sanitized_name": { dates: Set of date strings } }
-  let logsMap    = {}; // { "sanitized_name_activity": Set of date strings }
+  let allParticipants = []; // roster from participants node: [{name, activity}]
+  let allLogs        = []; // raw log entries from logs node
+  let tokensMap      = {};
+  let logsMap        = {}; // { "name_activity": Set<date> } for week-dot tracker
 
   const CATEGORIES = [
     { key:'walk',  activity:'Walking', icon:'🚶', label:'Walking', cls:'walk'  },
@@ -315,6 +316,53 @@
 
   function sanitizeKey(name) {
     return name.trim().toLowerCase().replace(/[^a-z0-9]/g,'_');
+  }
+
+  // ── Derive aggregated entries from logs ────────────────────────────────────
+  // Returns [{name, activity, km, days}] for all registered participants,
+  // with km and days computed purely from the logs node.
+  function buildEntries() {
+    // Aggregate logs by name+activity
+    const agg = {}; // key → { name, activity, km, dateSet }
+    allLogs.forEach(l => {
+      if (!l.name || !l.activity || !l.date) return;
+      const k = sanitizeKey(l.name) + '_' + sanitizeKey(l.activity);
+      if (!agg[k]) agg[k] = { name: l.name, activity: l.activity, km: 0, dateSet: new Set() };
+      // Deduplicate by date — take the max km for a given date if logged twice
+      // We store per-date km separately to handle duplicates
+      if (!agg[k]._byDate) agg[k]._byDate = {};
+      const prev = agg[k]._byDate[l.date] || 0;
+      const cur  = parseFloat(l.km) || 0;
+      if (cur > prev) {
+        agg[k].km += cur - prev;
+        agg[k]._byDate[l.date] = cur;
+      }
+      agg[k].dateSet.add(l.date);
+    });
+
+    // Merge with participant roster so zero-log athletes still appear
+    const result = {};
+    allParticipants.forEach(p => {
+      if (!p.name || !p.activity) return;
+      const k = sanitizeKey(p.name) + '_' + sanitizeKey(p.activity);
+      result[k] = {
+        name: p.name,
+        activity: p.activity,
+        km:   agg[k] ? Math.round(agg[k].km * 10) / 10 : 0,
+        days: agg[k] ? agg[k].dateSet.size : 0,
+      };
+    });
+
+    // Also include anyone in logs not in participants roster
+    Object.values(agg).forEach(a => {
+      const k = sanitizeKey(a.name) + '_' + sanitizeKey(a.activity);
+      if (!result[k]) result[k] = {
+        name: a.name, activity: a.activity,
+        km: Math.round(a.km * 10) / 10, days: a.dateSet.size,
+      };
+    });
+
+    return Object.values(result);
   }
 
   function getStatus(days) {
@@ -338,13 +386,10 @@
     return `${parseInt(day)} ${months[parseInt(m)-1]}`;
   }
 
-  // ── Week tracker helpers ────────────────────────────────────────────────
-  const CHALLENGE_START = new Date('2026-06-01');
-
+  // ── Week tracker helpers ───────────────────────────────────────────────────
   function getWeekDates() {
-    // Returns Mon-Sun of current week, clamped to challenge range
     const now = new Date();
-    const day = now.getDay(); // 0=Sun
+    const day = now.getDay();
     const diffToMon = (day === 0 ? -6 : 1 - day);
     const mon = new Date(now);
     mon.setDate(now.getDate() + diffToMon);
@@ -374,24 +419,22 @@
     const used       = getTokens(name);
     const tokenDates = getTokenDates(name);
     const days       = getWeekDates();
-    const todayStr   = dateStr(new Date());
 
     const dayDots = days.map(d => {
-      const ds      = dateStr(d);
-      const now     = new Date(); now.setHours(0,0,0,0);
-      const dt      = new Date(d); dt.setHours(0,0,0,0);
-      const isActive  = logged.has(ds);
-      const isToken   = tokenDates.has(ds);
-      const isFuture  = dt > now;
+      const ds     = dateStr(d);
+      const now    = new Date(); now.setHours(0,0,0,0);
+      const dt     = new Date(d); dt.setHours(0,0,0,0);
+      const isActive = logged.has(ds);
+      const isToken  = tokenDates.has(ds);
+      const isFuture = dt > now;
       let cls, title;
-      if (isActive)       { cls = 'active'; title = 'Activity logged'; }
-      else if (isToken)   { cls = 'token';  title = 'Token used (rest day)'; }
-      else if (isFuture)  { cls = 'future'; title = 'Upcoming'; }
-      else                { cls = 'today';  title = 'No activity'; }
+      if (isActive)      { cls = 'active'; title = 'Activity logged'; }
+      else if (isToken)  { cls = 'token';  title = 'Token used (rest day)'; }
+      else if (isFuture) { cls = 'future'; title = 'Upcoming'; }
+      else               { cls = 'today';  title = 'No activity'; }
       return `<div class="day-dot ${cls}" title="${title}">${dayInitial(d)}</div>`;
     }).join('');
 
-    // Token dots + dates list
     const tokenDots = Array.from({length: MAX_TOKENS}, (_,i) =>
       `<div class="token-dot ${i < used ? 'used' : 'left'}"></div>`
     ).join('');
@@ -454,6 +497,7 @@
   }
 
   function renderPanel(cat) {
+    const allEntries = buildEntries();
     const group = sortBy(allEntries.filter(p => p.activity === cat.activity));
     const podiumGroup = group.filter(p => p.km > 0 || p.days > 0);
     const top3 = podiumGroup.slice(0,3);
@@ -472,9 +516,9 @@
 
   function renderAll() { CATEGORIES.forEach(renderPanel); }
 
-  // Listen to all 3 nodes
+  // ── Firebase listeners ─────────────────────────────────────────────────────
   onValue(ref(db, 'participants'), snap => {
-    allEntries = snap.val() ? Object.values(snap.val()) : [];
+    allParticipants = snap.val() ? Object.values(snap.val()) : [];
     renderAll();
   });
 
@@ -489,27 +533,42 @@
     renderAll();
   });
 
-  // ══════════════════════════════════════════════════════
-  //  WEEKLY CHAMPIONS — embedded logic
-  // ══════════════════════════════════════════════════════
-  let wkAllLogs  = [];
-  let wkTab      = 'Walking';
-  let wkOffset   = 0;
+  // Single logs listener — feeds leaderboard (logsMap + buildEntries) and weekly
+  onValue(ref(db, 'logs'), snap => {
+    const raw = snap.val() || {};
+    allLogs = Object.values(raw);
 
-  function wkGetRange(offset) {
-    offset = offset ?? wkOffset;
-    const now = new Date();
-    const day = now.getDay();
+    // Rebuild logsMap for week-dot tracker (Set of dates per name+activity)
+    logsMap = {};
+    allLogs.forEach(l => {
+      if (!l.name || !l.activity || !l.date) return;
+      const key = sanitizeKey(l.name) + '_' + sanitizeKey(l.activity);
+      if (!logsMap[key]) logsMap[key] = new Set();
+      logsMap[key].add(l.date);
+    });
+
+    renderAll();
+    wkRender();
+  });
+
+  // ══════════════════════════════════════════════════════
+  //  WEEKLY CHAMPIONS
+  // ══════════════════════════════════════════════════════
+  let wkTab    = 'Walking';
+  let wkOffset = 0;
+
+  function wkGetRange() {
+    const now  = new Date();
+    const day  = now.getDay();
     const diff = day === 0 ? -6 : 1 - day;
-    const mon = new Date(now);
-    mon.setDate(now.getDate() + diff + offset * 7);
+    const mon  = new Date(now);
+    mon.setDate(now.getDate() + diff + wkOffset * 7);
     mon.setHours(0,0,0,0);
     const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
     return { mon, sun };
   }
 
   function wkDateStr(d) {
-    // Use local time, not UTC, to avoid IST→UTC shift corrupting the date
     const y = d.getFullYear();
     const m = String(d.getMonth() + 1).padStart(2, '0');
     const day = String(d.getDate()).padStart(2, '0');
@@ -561,23 +620,34 @@
 
   function wkRender() {
     wkNavUI();
-    const dates = wkDates();
-    const filtered = wkAllLogs.filter(l => l.activity === wkTab && dates.includes(l.date));
-    const byName = {};
-    filtered.forEach(l => {
-      if (!byName[l.name]) byName[l.name] = { name: l.name, km: 0, dates: new Set() };
-      byName[l.name].km += parseFloat(l.km) || 0;
-      byName[l.name].dates.add(l.date);
-    });
-    const sorted = Object.values(byName)
-      .sort((a,b) => b.km - a.km || b.dates.size - a.dates.size)
-      .slice(0, 5);
+    const dates   = wkDates();
 
-    const totalKm   = sorted.reduce((s,p) => s + p.km, 0);
-    const totalDays = sorted.reduce((s,p) => s + p.dates.size, 0);
-    document.getElementById('wk-s-athletes').textContent = sorted.length || '—';
-    document.getElementById('wk-s-km').textContent       = sorted.length ? Math.round(totalKm*10)/10 : '—';
-    document.getElementById('wk-s-days').textContent     = sorted.length ? totalDays : '—';
+    // Use same buildEntries dedup logic but scoped to this week's dates
+    const weekLogs = allLogs.filter(l => l.activity === wkTab && dates.includes(l.date));
+
+    // Aggregate with duplicate-date dedup (same as buildEntries)
+    const agg = {};
+    weekLogs.forEach(l => {
+      const k = sanitizeKey(l.name) + '_' + l.date;
+      const cur = parseFloat(l.km) || 0;
+      if (!agg[l.name]) agg[l.name] = { name: l.name, km: 0, dates: new Set(), _byDate: {} };
+      const prev = agg[l.name]._byDate[l.date] || 0;
+      if (cur > prev) {
+        agg[l.name].km += cur - prev;
+        agg[l.name]._byDate[l.date] = cur;
+      }
+      agg[l.name].dates.add(l.date);
+    });
+
+    const all    = Object.values(agg).sort((a,b) => b.km - a.km || b.dates.size - a.dates.size);
+    const sorted = all.slice(0, 5);
+
+    const totalKm    = all.reduce((s,p) => s + p.km, 0);
+    const activeDays = new Set(weekLogs.map(l => l.date)).size;
+
+    document.getElementById('wk-s-athletes').textContent = all.length || '—';
+    document.getElementById('wk-s-km').textContent       = all.length ? Math.round(totalKm*10)/10 : '—';
+    document.getElementById('wk-s-days').textContent     = all.length ? activeDays : '—';
 
     const list = document.getElementById('wk-list');
     if (!sorted.length) {
@@ -585,10 +655,10 @@
       return;
     }
 
-    const medals   = ['🥇','🥈','🥉','4','5'];
-    const kmCls    = ['k1','k2','k3','kx','kx'];
-    const mCls     = ['m1','m2','m3','mx','mx'];
-    const cardCls  = ['r1','r2','r3','',''];
+    const medals  = ['🥇','🥈','🥉','4','5'];
+    const kmCls   = ['k1','k2','k3','kx','kx'];
+    const mCls    = ['m1','m2','m3','mx','mx'];
+    const cardCls = ['r1','r2','r3','',''];
 
     list.innerHTML = sorted.map((p, i) => {
       const km   = Math.round(p.km * 10) / 10;
@@ -596,7 +666,7 @@
       const dots = dates.map(d =>
         `<div class="wk-dot ${p.dates.has(d)?'on':'off'}" title="${d}"></div>`
       ).join('');
-      const nameEsc = String(p.name||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      const nameEsc = esc(p.name);
       return `<div class="wk-card ${cardCls[i]}" style="animation-delay:${i*.07}s">
         <div class="wk-medal ${mCls[i]}">${medals[i]}</div>
         <div>
@@ -614,23 +684,6 @@
       </div>`;
     }).join('');
   }
-
-  // Listen to logs node — feeds both leaderboard and weekly section
-  onValue(ref(db, 'logs'), snap => {
-    const raw = snap.val() || {};
-    // existing leaderboard logsMap
-    logsMap = {};
-    Object.values(raw).forEach(l => {
-      if (!l.name || !l.activity || !l.date) return;
-      const key = sanitizeKey(l.name) + '_' + sanitizeKey(l.activity);
-      if (!logsMap[key]) logsMap[key] = new Set();
-      logsMap[key].add(l.date);
-    });
-    renderAll();
-    // weekly section
-    wkAllLogs = snap.val() ? Object.values(snap.val()) : [];
-    wkRender();
-  });
 </script>
 
 </body></html>
