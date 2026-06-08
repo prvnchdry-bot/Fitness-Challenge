@@ -358,7 +358,10 @@
   }
 
   function dateStr(d) {
-    return d.toISOString().split('T')[0];
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
   }
 
   function dayInitial(d) {
@@ -505,11 +508,19 @@
     return { mon, sun };
   }
 
+  function wkDateStr(d) {
+    // Use local time, not UTC, to avoid IST→UTC shift corrupting the date
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
   function wkDates() {
     const { mon } = wkGetRange();
     return Array.from({length:7}, (_,i) => {
       const d = new Date(mon); d.setDate(mon.getDate() + i);
-      return d.toISOString().split('T')[0];
+      return wkDateStr(d);
     });
   }
 
@@ -522,7 +533,7 @@
     const { mon, sun } = wkGetRange();
     const label = `${wkFmt(mon)} – ${wkFmt(sun)}`;
     document.getElementById('wk-nav-text').textContent = label;
-    document.getElementById('wk-picker').value = mon.toISOString().split('T')[0];
+    document.getElementById('wk-picker').value = wkDateStr(mon);
     document.getElementById('wk-btn-now').classList.toggle('hidden', wkOffset === 0);
     document.getElementById('wk-btn-next').disabled = wkOffset >= 0;
   }
