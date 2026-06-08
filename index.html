@@ -33,8 +33,12 @@
     .hero-pills{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
     .hero-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:8px 18px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#ccc;}
 
-    /* ── Leaderboard label ── */
+    /* ── View toggle ── */
     .lb-label{text-align:center;padding:20px 0 4px;}
+    .view-toggle{display:inline-flex;gap:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:100px;padding:4px;}
+    .view-btn{padding:7px 20px;border-radius:100px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#555;cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .view-btn.active{background:#FF6B35;color:#fff;box-shadow:0 2px 12px rgba(255,107,53,.35);}
+    .view-btn:hover:not(.active){color:#aaa;}
 
     /* ── Category tabs ── */
     .cat-tabs{display:flex;gap:6px;padding:12px 14px 0;overflow-x:auto;scrollbar-width:none;}
@@ -202,69 +206,68 @@
     </div>
   </div>
 
-  <!-- ══════════════════════════════════════
-       WEEKLY CHAMPIONS
-  ═══════════════════════════════════════ -->
-  <div class="wk-section">
-    <div class="wk-section-header">
-      <div class="wk-section-line"></div>
-      <span class="wk-section-label">🏆 Weekly Champions</span>
-      <div class="wk-section-line"></div>
-    </div>
-
-    <div class="wk-nav">
-      <button class="wk-nav-btn" id="wk-btn-prev" onclick="wkShift(-1)">‹</button>
-      <div class="wk-nav-label">
-        <span class="wk-nav-text" id="wk-nav-text">Loading…</span>
-        <input type="date" id="wk-picker" oninput="wkJump(this.value)">
-      </div>
-      <button class="wk-nav-btn wk-nav-now hidden" id="wk-btn-now" onclick="wkNow()">Now</button>
-      <button class="wk-nav-btn" id="wk-btn-next" onclick="wkShift(1)">›</button>
-    </div>
-
-    <div class="wk-tabs">
-      <button class="wk-tab active" onclick="wkSwitchTab('Walking',this)">🚶 Walking</button>
-      <button class="wk-tab"       onclick="wkSwitchTab('Running',this)">🏃 Running</button>
-      <button class="wk-tab"       onclick="wkSwitchTab('Cycling',this)">🚴 Cycling</button>
-    </div>
-
-    <div class="wk-pill">
-      <div class="wk-pill-item"><div class="wk-pill-val" id="wk-s-athletes">—</div><div class="wk-pill-lbl">Athletes</div></div>
-      <div class="wk-pill-sep"></div>
-      <div class="wk-pill-item"><div class="wk-pill-val" id="wk-s-km">—</div><div class="wk-pill-lbl">Total KM</div></div>
-      <div class="wk-pill-sep"></div>
-      <div class="wk-pill-item"><div class="wk-pill-val" id="wk-s-days">—</div><div class="wk-pill-lbl">Active Days</div></div>
-    </div>
-
-    <div class="wk-list" id="wk-list"><div class="wk-spinner"></div></div>
-  </div>
-
-  <!-- Leaderboard label -->
+  <!-- ── View Toggle ── -->
   <div class="lb-label">
-    <span style="display:inline-block;font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#FF6B35;border:1px solid rgba(255,107,53,.3);padding:5px 18px;border-radius:100px;">🏆 Live Leaderboard</span>
+    <div class="view-toggle">
+      <button class="view-btn active" id="vbtn-lb" onclick="switchView('lb')">🏆 Live Leaderboard</button>
+      <button class="view-btn"        id="vbtn-wk" onclick="switchView('wk')">📅 Weekly</button>
+    </div>
   </div>
 
-  <!-- Tabs -->
-  <div class="cat-tabs">
-    <button class="cat-tab active-walk" onclick="switchCat('walk',this)">🚶 Walking</button>
-    <button class="cat-tab" onclick="switchCat('run',this)">🏃 Running</button>
-    <button class="cat-tab" onclick="switchCat('cycle',this)">🚴 Cycling</button>
-  </div>
+  <!-- ── LEADERBOARD VIEW (default) ── -->
+  <div id="view-lb">
+    <div class="cat-tabs">
+      <button class="cat-tab active-walk" onclick="switchCat('walk',this)">🚶 Walking</button>
+      <button class="cat-tab" onclick="switchCat('run',this)">🏃 Running</button>
+      <button class="cat-tab" onclick="switchCat('cycle',this)">🚴 Cycling</button>
+    </div>
 
-  <div id="panel-walk"  class="cat-panel active"><div class="loading"><div class="loading-spinner"></div></div></div>
-  <div id="panel-run"   class="cat-panel"><div class="loading"><div class="loading-spinner"></div></div></div>
-  <div id="panel-cycle" class="cat-panel"><div class="loading"><div class="loading-spinner"></div></div></div>
+    <div id="panel-walk"  class="cat-panel active"><div class="loading"><div class="loading-spinner"></div></div></div>
+    <div id="panel-run"   class="cat-panel"><div class="loading"><div class="loading-spinner"></div></div></div>
+    <div id="panel-cycle" class="cat-panel"><div class="loading"><div class="loading-spinner"></div></div></div>
 
-  <!-- Status legend -->
-  <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:20px 16px 0;">
-    <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#FFD700;flex-shrink:0;"></div>Champion ≥90d</div>
-    <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#00E5FF;flex-shrink:0;"></div>Elite ≥70d</div>
-    <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#69FF47;flex-shrink:0;"></div>Active ≥50d</div>
-    <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#FF9800;flex-shrink:0;"></div>Started ≥1d</div>
-    <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;"></div>Pending</div>
-  </div>
+    <!-- Status legend -->
+    <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:20px 16px 0;">
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#FFD700;flex-shrink:0;"></div>Champion ≥90d</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#00E5FF;flex-shrink:0;"></div>Elite ≥70d</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#69FF47;flex-shrink:0;"></div>Active ≥50d</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#FF9800;flex-shrink:0;"></div>Started ≥1d</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;"></div>Pending</div>
+    </div>
+  </div><!-- /view-lb -->
 
-</div>
+  <!-- ── WEEKLY VIEW (hidden by default) ── -->
+  <div id="view-wk" style="display:none">
+    <div class="wk-section">
+      <div class="wk-nav">
+        <button class="wk-nav-btn" id="wk-btn-prev" onclick="wkShift(-1)">‹</button>
+        <div class="wk-nav-label">
+          <span class="wk-nav-text" id="wk-nav-text">Loading…</span>
+          <input type="date" id="wk-picker" oninput="wkJump(this.value)">
+        </div>
+        <button class="wk-nav-btn wk-nav-now hidden" id="wk-btn-now" onclick="wkNow()">Now</button>
+        <button class="wk-nav-btn" id="wk-btn-next" onclick="wkShift(1)">›</button>
+      </div>
+
+      <div class="wk-tabs">
+        <button class="wk-tab active" onclick="wkSwitchTab('Walking',this)">🚶 Walking</button>
+        <button class="wk-tab"       onclick="wkSwitchTab('Running',this)">🏃 Running</button>
+        <button class="wk-tab"       onclick="wkSwitchTab('Cycling',this)">🚴 Cycling</button>
+      </div>
+
+      <div class="wk-pill">
+        <div class="wk-pill-item"><div class="wk-pill-val" id="wk-s-athletes">—</div><div class="wk-pill-lbl">Athletes</div></div>
+        <div class="wk-pill-sep"></div>
+        <div class="wk-pill-item"><div class="wk-pill-val" id="wk-s-km">—</div><div class="wk-pill-lbl">Total KM</div></div>
+        <div class="wk-pill-sep"></div>
+        <div class="wk-pill-item"><div class="wk-pill-val" id="wk-s-days">—</div><div class="wk-pill-lbl">Active Days</div></div>
+      </div>
+
+      <div class="wk-list" id="wk-list"><div class="wk-spinner"></div></div>
+    </div>
+  </div><!-- /view-wk -->
+
+</div><!-- /lb-root -->
 
 <script>
   function switchCat(key, btn) {
@@ -272,6 +275,12 @@
     document.querySelectorAll('.cat-tab').forEach(t => { t.className = 'cat-tab'; });
     document.getElementById('panel-' + key).classList.add('active');
     btn.classList.add('active-' + key);
+  }
+  function switchView(v) {
+    document.getElementById('view-lb').style.display = v === 'lb' ? '' : 'none';
+    document.getElementById('view-wk').style.display = v === 'wk' ? '' : 'none';
+    document.getElementById('vbtn-lb').classList.toggle('active', v === 'lb');
+    document.getElementById('vbtn-wk').classList.toggle('active', v === 'wk');
   }
 </script>
 
