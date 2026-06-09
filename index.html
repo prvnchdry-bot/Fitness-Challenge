@@ -19,12 +19,12 @@
 
     /* ── Hero ── */
     .hero{text-align:center;padding:28px 24px 20px;}
-    .hero-starting{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#CC5522;background:rgba(180,80,30,.18);border:1px solid rgba(200,90,40,.35);padding:6px 18px;border-radius:100px;margin-bottom:18px;}
-    .hero-starting-dot{width:7px;height:7px;border-radius:50%;background:#FF6B35;animation:pulse 1.6s ease-in-out infinite;}
+    .hero-starting{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#39FF14;background:rgba(57,255,20,.08);border:1px solid rgba(57,255,20,.35);padding:6px 18px;border-radius:100px;margin-bottom:18px;}
+    .hero-starting-dot{width:7px;height:7px;border-radius:50%;background:#39FF14;animation:pulse 1.6s ease-in-out infinite;}
     @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.8);}}
     .hero-100{font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,22vw,160px);line-height:.85;color:#fff;letter-spacing:2px;display:block;}
     .hero-days{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,15vw,110px);line-height:.85;color:#FF6B35;letter-spacing:4px;display:block;}
-    .hero-fitness{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,10vw,72px);line-height:1;color:#fff;letter-spacing:8px;display:block;margin-bottom:16px;}
+    .hero-fitness{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,10vw,72px);line-height:1;color:#fff;letter-spacing:8px;display:block;margin-bottom:2px;}
     .hero-quote{font-family:'Georgia',serif;font-style:italic;font-size:clamp(13px,3.5vw,17px);color:#5bb8e8;margin-bottom:10px;line-height:1.4;}
     .hero-community{font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#555;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;}
     .hero-community-line{width:28px;height:1px;background:#333;}
@@ -34,7 +34,7 @@
     .hero-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:100px;padding:8px 18px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#ccc;}
 
     /* ── View toggle ── */
-    .lb-label{text-align:center;padding:20px 0 4px;}
+    .lb-label{text-align:center;padding:2px 0 4px;}
     .view-toggle{display:inline-flex;gap:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:100px;padding:4px;}
     .view-btn{padding:7px 20px;border-radius:100px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#555;cursor:pointer;transition:all .2s;white-space:nowrap;}
     .view-btn.active{background:#FF6B35;color:#fff;box-shadow:0 2px 12px rgba(255,107,53,.35);}
@@ -261,15 +261,15 @@
     .grp-status.none{color:#555;}
 
     /* Members row */
-    .grp-members{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
-    .grp-member{display:flex;flex-direction:column;align-items:center;gap:4px;width:72px;}
+    .grp-members{display:flex;gap:4px;flex-wrap:nowrap;justify-content:center;margin-bottom:6px;overflow-x:auto;scrollbar-width:none;}
+    .grp-member{display:flex;flex-direction:column;align-items:center;gap:3px;width:56px;flex-shrink:0;}
     .grp-avatar-wrap{position:relative;}
-    .grp-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;border:2px solid transparent;transition:border-color .2s;}
+    .grp-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;border:2px solid transparent;transition:border-color .2s;}
     .grp-avatar.av-active{border-color:#69FF47;box-shadow:0 0 10px rgba(105,255,71,.25);}
     .grp-avatar.av-run{border-color:#00E5FF;box-shadow:0 0 10px rgba(0,229,255,.25);}
     .grp-avatar.av-cycle{border-color:#FF6B35;box-shadow:0 0 10px rgba(255,107,53,.25);}
     .grp-fire{position:absolute;top:-4px;right:-2px;font-size:12px;}
-    .grp-member-name{font-size:10px;font-weight:600;color:#ccc;text-align:center;line-height:1.2;max-width:72px;word-break:break-word;}
+    .grp-member-name{font-size:9px;font-weight:600;color:#ccc;text-align:center;line-height:1.2;max-width:56px;word-break:break-word;}
     .grp-member-km{font-family:'Bebas Neue',sans-serif;font-size:13px;color:#FF6B35;line-height:1;}
     .grp-member-act{font-size:8px;letter-spacing:.5px;text-transform:uppercase;color:#555;margin-top:1px;}
     .grp-member.gm-active .grp-member-km{color:#69FF47;}
@@ -335,7 +335,7 @@
 
   <!-- Hero -->
   <div class="hero">
-    <div class="hero-starting"><span class="hero-starting-dot"></span>Starting 1 June 2026</div>
+    <div class="hero-starting" id="hero-day-badge"><span class="hero-starting-dot"></span><span id="hero-day-text">Day — of 100</span></div>
     <div>
       <span class="hero-100">100</span>
       <span class="hero-days">DAYS</span>
@@ -348,11 +348,7 @@
     <div class="hero-dates">
       <span>1 June 2026</span><span class="hero-dates-sep"></span><span>9 September 2026</span>
     </div>
-    <div class="hero-pills">
-      <span class="hero-pill">🚶 Walk 2 KM+</span>
-      <span class="hero-pill">🏃 Run 2 KM+</span>
-      <span class="hero-pill">🚴 Cycle 5 KM+</span>
-    </div>
+
   </div>
 
   <!-- ── View Toggle ── -->
@@ -473,6 +469,18 @@
     btn.classList.add('active-' + key);
     if (key === 'entries') { window.aeRender && window.aeRender(); }
   }
+  // Calculate day number from challenge start
+  (function() {
+    const start = new Date('2026-06-01');
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    start.setHours(0,0,0,0);
+    const day = Math.floor((today - start) / 86400000) + 1;
+    const clamped = Math.max(1, Math.min(day, 100));
+    const el = document.getElementById('hero-day-text');
+    if (el) el.textContent = 'Day ' + clamped + ' of 100';
+  })();
+
   function switchView(v) {
     document.getElementById('view-lb').style.display = v === 'lb' ? '' : 'none';
     document.getElementById('view-wk').style.display = v === 'wk' ? '' : 'none';
