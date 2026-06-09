@@ -741,9 +741,19 @@
   });
 
   // Single logs listener — feeds leaderboard (logsMap + buildEntries) and weekly
+  // ── Name correction aliases (Firebase typo → correct display name) ──
+  const NAME_ALIASES = {
+    'saksham tandone': 'Saksham Tandon',
+    'pooja gupta':     'Puja Gupta',
+  };
+  function correctName(name) {
+    if (!name) return name;
+    return NAME_ALIASES[name.trim().toLowerCase()] || name;
+  }
+
   onValue(ref(db, 'logs'), snap => {
     const raw = snap.val() || {};
-    allLogs = Object.values(raw);
+    allLogs = Object.values(raw).map(l => ({ ...l, name: correctName(l.name) }));
 
     // Rebuild logsMap for week-dot tracker (Set of dates per name+activity)
     logsMap = {};
@@ -1118,7 +1128,7 @@
     { id:2, emoji:'🟢', members:['Shobha','Aakash Rayate','Sonam Agnihotri','Neha Goel','Binay Lal'] },
     { id:3, emoji:'🟠', members:['Poulomi Mukherjee','Puneet Ahuja','Jaya Bharti','Ankit','Puja Gupta'] },
     { id:4, emoji:'🟣', members:['Shibani Pattnaik','Shubham Singh','Pritam Kumari','Shilpy Pateriya','Gaurav Verma'] },
-    { id:5, emoji:'🔴', members:['Praveen Choudhary','Shyamala','Jyotika Bhurani','Saksham Tandone','Kali Tripathy'] },
+    { id:5, emoji:'🔴', members:['Praveen Choudhary','Shyamala','Jyotika Bhurani','Saksham Tandon','Kali Tripathy'] },
     { id:6, emoji:'🟡', members:['Aparna Shinde','Aman Gupta','Kumar Abhishek','Shikha Tandon','Mayuri Hegde'] },
     { id:7, emoji:'🟡', members:['Renu Goel','BIBEK LAL','Dikshant Ohri','Surabhi Telang','Pooja'] },
     { id:8, emoji:'⚫', members:['Saswati Mahapatra','Amar Shinde','Richa Johar','Thavakumar Swaminathan','Shubham Lakhotia','Parita Kachhela'] },
