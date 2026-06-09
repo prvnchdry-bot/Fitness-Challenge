@@ -41,14 +41,17 @@
     .view-btn:hover:not(.active){color:#aaa;}
 
     /* ── Category tabs ── */
-    .cat-tabs{display:flex;gap:6px;padding:12px 14px 0;overflow-x:auto;scrollbar-width:none;}
-    .cat-tabs::-webkit-scrollbar{display:none;}
-    .cat-tab{flex-shrink:0;padding:7px 16px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:transparent;color:#555;transition:all .2s;}
+    .cat-tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:12px 12px 0;}
+    .cat-tab{padding:8px 6px;border-radius:10px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);color:#555;transition:all .2s;text-align:center;white-space:nowrap;}
     .cat-tab.active-walk {background:rgba(105,255,71,.12);border-color:rgba(105,255,71,.4);color:#69FF47;}
     .cat-tab.active-run  {background:rgba(0,229,255,.12);border-color:rgba(0,229,255,.4);color:#00E5FF;}
     .cat-tab.active-cycle{background:rgba(255,107,53,.15);border-color:rgba(255,107,53,.4);color:#FF6B35;}
     .cat-tab:hover:not([class*="active"]){border-color:rgba(255,255,255,.2);color:#aaa;}
     .cat-tab.active-entries{background:rgba(180,120,255,.12);border-color:rgba(180,120,255,.4);color:#b87fff;}
+    /* All Entries — full-width row below the 3 activity tabs */
+    .cat-tab-entries{grid-column:1/-1;padding:10px;border-radius:10px;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border:1px solid rgba(180,120,255,.2);background:rgba(180,120,255,.06);color:#888;transition:all .2s;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;}
+    .cat-tab-entries:hover{border-color:rgba(180,120,255,.4);color:#b87fff;background:rgba(180,120,255,.1);}
+    .cat-tab-entries.active-entries{border-color:rgba(180,120,255,.5);color:#b87fff;background:rgba(180,120,255,.14);box-shadow:0 0 16px rgba(180,120,255,.1);}
 
     /* ── Category panel ── */
     .cat-panel{display:none;padding:14px 0 0;}
@@ -364,10 +367,10 @@
   <!-- ── LEADERBOARD VIEW (default) ── -->
   <div id="view-lb">
     <div class="cat-tabs">
-      <button class="cat-tab active-walk" onclick="switchCat('walk',this)">🚶 Walking</button>
-      <button class="cat-tab" onclick="switchCat('run',this)">🏃 Running</button>
-      <button class="cat-tab" onclick="switchCat('cycle',this)">🚴 Cycling</button>
-      <button class="cat-tab" onclick="switchCat('entries',this)">📊 All Entries</button>
+      <button class="cat-tab active-walk" id="cat-walk" onclick="switchCat('walk',this)">🚶 Walking</button>
+      <button class="cat-tab" id="cat-run" onclick="switchCat('run',this)">🏃 Running</button>
+      <button class="cat-tab" id="cat-cycle" onclick="switchCat('cycle',this)">🚴 Cycling</button>
+      <button class="cat-tab-entries" id="cat-entries" onclick="switchCat('entries',this)">📊 All Entries <span style="font-size:9px;opacity:.6;font-weight:400;letter-spacing:1px">· Search your day-wise logs</span></button>
     </div>
 
     <div id="panel-walk"  class="cat-panel active"><div class="loading"><div class="loading-spinner"></div></div></div>
@@ -458,7 +461,14 @@
 <script>
   function switchCat(key, btn) {
     document.querySelectorAll('.cat-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.cat-tab').forEach(t => { t.className = 'cat-tab'; });
+    // Reset the 3 activity tabs
+    ['walk','run','cycle'].forEach(k => {
+      const el = document.getElementById('cat-' + k);
+      if (el) el.className = 'cat-tab';
+    });
+    // Reset entries tab
+    const entriesEl = document.getElementById('cat-entries');
+    if (entriesEl) entriesEl.className = 'cat-tab-entries';
     document.getElementById('panel-' + key).classList.add('active');
     btn.classList.add('active-' + key);
     if (key === 'entries') { window.aeRender && window.aeRender(); }
