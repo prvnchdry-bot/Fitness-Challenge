@@ -48,6 +48,7 @@
     .cat-tab.active-run  {background:rgba(0,229,255,.12);border-color:rgba(0,229,255,.4);color:#00E5FF;}
     .cat-tab.active-cycle{background:rgba(255,107,53,.15);border-color:rgba(255,107,53,.4);color:#FF6B35;}
     .cat-tab:hover:not([class*="active"]){border-color:rgba(255,255,255,.2);color:#aaa;}
+    .cat-tab.active-entries{background:rgba(180,120,255,.12);border-color:rgba(180,120,255,.4);color:#b87fff;}
 
     /* ── Category panel ── */
     .cat-panel{display:none;padding:14px 0 0;}
@@ -179,8 +180,101 @@
     .wk-dot.off{background:rgba(255,255,255,.07);}
     .wk-empty{text-align:center;padding:28px 20px;color:#555;font-size:12px;}
     .wk-spinner{width:20px;height:20px;border:2px solid rgba(255,107,53,.15);border-top-color:#FF6B35;border-radius:50%;animation:spin .8s linear infinite;margin:28px auto;}
+    /* ═══════════════════════════════════════════
+       GROUPS VIEW
+    ════════════════════════════════════════════ */
+    .grp-wrap{padding:14px 12px 40px;max-width:700px;margin:0 auto;}
+    .grp-date-bar{text-align:center;font-size:11px;color:#555;margin-bottom:16px;letter-spacing:.5px;}
+    .grp-date-bar strong{color:#FF6B35;}
+
+    /* Group card */
+    .grp-card{background:#0d0d1a;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px;margin-bottom:14px;position:relative;}
+    .grp-card.g-active{border-color:rgba(105,255,71,.2);}
+    .grp-card.g-partial{border-color:rgba(255,152,0,.2);}
+    .grp-card.g-none{border-color:rgba(255,255,255,.06);}
+
+    /* Group header */
+    .grp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .grp-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#f0f0f0;}
+    .grp-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+    .grp-dot.green{background:#69FF47;box-shadow:0 0 6px rgba(105,255,71,.5);}
+    .grp-dot.orange{background:#FF9800;box-shadow:0 0 6px rgba(255,152,0,.5);}
+    .grp-dot.grey{background:#444;}
+    .grp-status{font-size:10px;font-weight:700;letter-spacing:.5px;}
+    .grp-status.done{color:#69FF47;}
+    .grp-status.partial{color:#FF9800;}
+    .grp-status.none{color:#555;}
+
+    /* Members row */
+    .grp-members{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+    .grp-member{display:flex;flex-direction:column;align-items:center;gap:4px;width:72px;}
+    .grp-avatar-wrap{position:relative;}
+    .grp-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;border:2px solid transparent;transition:border-color .2s;}
+    .grp-avatar.av-active{border-color:#69FF47;box-shadow:0 0 10px rgba(105,255,71,.25);}
+    .grp-avatar.av-run{border-color:#00E5FF;box-shadow:0 0 10px rgba(0,229,255,.25);}
+    .grp-avatar.av-cycle{border-color:#FF6B35;box-shadow:0 0 10px rgba(255,107,53,.25);}
+    .grp-fire{position:absolute;top:-4px;right:-2px;font-size:12px;}
+    .grp-member-name{font-size:10px;font-weight:600;color:#ccc;text-align:center;line-height:1.2;max-width:72px;word-break:break-word;}
+    .grp-member-km{font-family:'Bebas Neue',sans-serif;font-size:13px;color:#FF6B35;line-height:1;}
+    .grp-member-act{font-size:8px;letter-spacing:.5px;text-transform:uppercase;color:#555;margin-top:1px;}
+    .grp-member.gm-active .grp-member-km{color:#69FF47;}
+    .grp-member.gm-run .grp-member-km{color:#00E5FF;}
+    .grp-member.gm-cycle .grp-member-km{color:#FF6B35;}
+
+    /* Flow line */
+    .grp-flow{font-size:10px;color:#444;padding-top:8px;border-top:1px solid rgba(255,255,255,.05);line-height:1.6;}
+    .grp-flow strong{color:#FF6B35;}
+    .grp-flow-arrow{color:#333;margin:0 3px;}
+
+    /* Active member card highlight */
+    .grp-member.gm-active .grp-avatar,
+    .grp-member.gm-run .grp-avatar,
+    .grp-member.gm-cycle .grp-avatar{background:rgba(255,255,255,.08);}
+    .grp-member-badge{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 5px;border-radius:4px;margin-top:2px;}
+    .grp-member-badge.walk{background:rgba(105,255,71,.15);color:#69FF47;}
+    .grp-member-badge.run {background:rgba(0,229,255,.15);color:#00E5FF;}
+    .grp-member-badge.cycle{background:rgba(255,107,53,.15);color:#FF6B35;}
+
+
+    /* Groups date nav */
+    .grp-date-nav{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px;}
+    .grp-nav-btn{width:32px;height:32px;border-radius:9px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.04);color:#aaa;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:all .2s;flex-shrink:0;}
+    .grp-nav-btn:hover:not(:disabled){border-color:rgba(255,107,53,.4);color:#FF6B35;}
+    .grp-nav-btn:disabled{opacity:.2;cursor:default;}
+    .grp-date-label{display:flex;align-items:center;gap:8px;}
+    #grp-date-text{font-size:13px;font-weight:600;color:#ccc;letter-spacing:.3px;}
+    .grp-today-badge{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,107,53,.7);background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.25);border-radius:6px;padding:3px 8px;cursor:pointer;transition:all .2s;}
+    .grp-today-badge:hover{color:#FF6B35;background:rgba(255,107,53,.18);}
+    .grp-today-badge.hidden{display:none;}
+    /* Highlighted active member box */
+    .grp-member.gm-active,
+    .grp-member.gm-run,
+    .grp-member.gm-cycle{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:6px 4px;}
+
+    /* ═══ ALL ENTRIES PANEL ═══ */
+    .ae-filter-bar{display:flex;gap:6px;margin:14px 14px 10px;flex-wrap:wrap;align-items:center;}
+    .ae-search{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;flex:1;min-width:180px;transition:border-color .2s;}
+    .ae-search:focus{border-color:rgba(180,120,255,.5);}
+    .ae-search::placeholder{color:#444;}
+    .ae-act-chip{padding:6px 14px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:transparent;color:#555;transition:all .2s;}
+    .ae-act-chip.active{border-color:rgba(180,120,255,.4);color:#b87fff;background:rgba(180,120,255,.1);}
+    .ae-act-chip:hover:not(.active){border-color:rgba(255,255,255,.2);color:#aaa;}
+    .ae-hint{font-size:10px;color:#444;text-align:center;margin-bottom:10px;letter-spacing:.3px;}
+    .ae-count{font-size:10px;color:#555;text-align:center;margin-bottom:8px;letter-spacing:.5px;}
+    .ae-table-wrap{overflow-x:auto;border-radius:14px;border:1px solid rgba(255,255,255,.07);margin:0 10px 30px;}
+    .ae-table{width:100%;border-collapse:collapse;min-width:480px;}
+    .ae-table thead tr{background:#0f0f1a;}
+    .ae-table thead th{padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;text-align:left;border-bottom:1px solid rgba(255,255,255,.07);}
+    .ae-table tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s;}
+    .ae-table tbody tr:hover{background:rgba(255,255,255,.03);}
+    .ae-table tbody td{padding:10px 14px;font-size:12px;color:#ccc;vertical-align:middle;}
+    .ae-td-name{font-weight:600;color:#f0f0f0;}
+    .ae-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;}
+    .ae-badge.walk{background:rgba(105,255,71,.1);color:#69FF47;border:1px solid rgba(105,255,71,.2);}
+    .ae-badge.run {background:rgba(0,229,255,.1);color:#00E5FF;border:1px solid rgba(0,229,255,.2);}
+    .ae-badge.cycle{background:rgba(255,107,53,.1);color:#FF6B35;border:1px solid rgba(255,107,53,.2);}
+    .ae-empty{text-align:center;padding:40px;color:#444;font-size:13px;}
   </style>
-</head>
 <body>
 <div class="lb-root">
 
@@ -211,6 +305,7 @@
     <div class="view-toggle">
       <button class="view-btn active" id="vbtn-lb" onclick="switchView('lb')">🏆 Live Leaderboard</button>
       <button class="view-btn"        id="vbtn-wk" onclick="switchView('wk')">📅 Weekly</button>
+      <button class="view-btn"        id="vbtn-gr" onclick="switchView('gr')">👥 Groups</button>
     </div>
   </div>
 
@@ -220,11 +315,29 @@
       <button class="cat-tab active-walk" onclick="switchCat('walk',this)">🚶 Walking</button>
       <button class="cat-tab" onclick="switchCat('run',this)">🏃 Running</button>
       <button class="cat-tab" onclick="switchCat('cycle',this)">🚴 Cycling</button>
+      <button class="cat-tab" onclick="switchCat('entries',this)">📊 All Entries</button>
     </div>
 
     <div id="panel-walk"  class="cat-panel active"><div class="loading"><div class="loading-spinner"></div></div></div>
     <div id="panel-run"   class="cat-panel"><div class="loading"><div class="loading-spinner"></div></div></div>
     <div id="panel-cycle" class="cat-panel"><div class="loading"><div class="loading-spinner"></div></div></div>
+    <div id="panel-entries" class="cat-panel">
+      <div class="ae-filter-bar">
+        <input class="ae-search" id="ae-search" placeholder="🔍 Search by name…" oninput="window.aeRender && window.aeRender()">
+        <button class="ae-act-chip active" onclick="aeChip('all',this)">All</button>
+        <button class="ae-act-chip" onclick="aeChip('Walking',this)">🚶 Walk</button>
+        <button class="ae-act-chip" onclick="aeChip('Running',this)">🏃 Run</button>
+        <button class="ae-act-chip" onclick="aeChip('Cycling',this)">🚴 Cycle</button>
+      </div>
+      <div class="ae-hint">Search your name to see your personal day-wise entries</div>
+      <div class="ae-count" id="ae-count"></div>
+      <div class="ae-table-wrap">
+        <table class="ae-table">
+          <thead><tr><th>Date</th><th>Name</th><th>Activity</th><th>KM</th><th>Notes</th></tr></thead>
+          <tbody id="ae-tbody"><tr><td colspan="5"><div class="ae-empty"><div class="loading-spinner" style="margin:0 auto 10px"></div></div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
 
     <!-- Status legend -->
     <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:20px 16px 0;">
@@ -267,6 +380,21 @@
     </div>
   </div><!-- /view-wk -->
 
+  <!-- ── GROUPS VIEW ── -->
+  <div id="view-gr" style="display:none">
+    <div class="grp-wrap">
+      <div class="grp-date-nav">
+        <button class="grp-nav-btn" id="grp-btn-prev" onclick="grpShift(-1)">&#8249;</button>
+        <div class="grp-date-label">
+          <span id="grp-date-text">—</span>
+          <span class="grp-today-badge hidden" id="grp-today-badge" onclick="grpGoToday()">TODAY</span>
+        </div>
+        <button class="grp-nav-btn" id="grp-btn-next" onclick="grpShift(1)">&#8250;</button>
+      </div>
+      <div id="grp-list"><div class="loading"><div class="loading-spinner"></div></div></div>
+    </div>
+  </div><!-- /view-gr -->
+
 </div><!-- /lb-root -->
 
 <script>
@@ -275,12 +403,15 @@
     document.querySelectorAll('.cat-tab').forEach(t => { t.className = 'cat-tab'; });
     document.getElementById('panel-' + key).classList.add('active');
     btn.classList.add('active-' + key);
+    if (key === 'entries') { window.aeRender && window.aeRender(); }
   }
   function switchView(v) {
     document.getElementById('view-lb').style.display = v === 'lb' ? '' : 'none';
     document.getElementById('view-wk').style.display = v === 'wk' ? '' : 'none';
+    document.getElementById('view-gr').style.display = v === 'gr' ? '' : 'none';
     document.getElementById('vbtn-lb').classList.toggle('active', v === 'lb');
     document.getElementById('vbtn-wk').classList.toggle('active', v === 'wk');
+    document.getElementById('vbtn-gr').classList.toggle('active', v === 'gr');
   }
 </script>
 
@@ -549,6 +680,8 @@
 
     renderAll();
     wkRender();
+    renderGroups();
+    window.aeRender && window.aeRender();
   });
 
   // ══════════════════════════════════════════════════════
@@ -684,6 +817,231 @@
       </div>`;
     }).join('');
   }
-</script>
 
-</body></html>
+  // ══════════════════════════════════════════════════════
+  //  ALL ENTRIES PANEL (read-only)
+  // ══════════════════════════════════════════════════════
+  let aeFilter = 'all';
+
+  window.aeChip = function(val, btn) {
+    aeFilter = val;
+    document.querySelectorAll('.ae-act-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    window.aeRender();
+  };
+
+  window.aeRender = function() {
+    const tbody = document.getElementById('ae-tbody');
+    if (!tbody) return;
+    const search = (document.getElementById('ae-search') ? document.getElementById('ae-search').value : '').toLowerCase().trim();
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    function fmtD(d) {
+      if (!d) return '';
+      var p = d.split('-');
+      return parseInt(p[2]) + ' ' + months[parseInt(p[1])-1] + ' ' + p[0];
+    }
+    function badgeCls(a) { return a==='Walking'?'walk':a==='Running'?'run':'cycle'; }
+
+    var sorted = allLogs.slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+    var filtered = sorted.filter(function(l) {
+      if (!l.name || !l.date) return false;
+      var matchAct  = aeFilter === 'all' || l.activity === aeFilter;
+      var matchName = !search || l.name.toLowerCase().indexOf(search) !== -1;
+      return matchAct && matchName;
+    });
+
+    var countEl = document.getElementById('ae-count');
+    if (countEl) {
+      countEl.textContent = filtered.length
+        ? filtered.length + ' entr' + (filtered.length===1?'y':'ies') + (search ? ' — “'+search+'”' : '')
+        : '';
+    }
+
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="5"><div class="ae-empty">'
+        + (search ? 'No entries found for your search.' : 'No entries logged yet.')
+        + '</div></td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(function(l) {
+      return '<tr>'
+        + '<td style="color:#888;white-space:nowrap">' + fmtD(l.date) + '</td>'
+        + '<td class="ae-td-name">' + esc(l.name) + '</td>'
+        + '<td><span class="ae-badge ' + badgeCls(l.activity) + '">' + esc(l.activity) + '</span></td>'
+        + '<td style="color:#FF6B35;font-weight:700">' + l.km + ' <span style="color:#555;font-size:10px">km</span></td>'
+        + '<td style="color:#666;font-size:11px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'
+          + (l.notes ? esc(l.notes) : '—') + '</td>'
+        + '</tr>';
+    }).join('');
+  };
+
+  // ══════════════════════════════════════════════════════
+  //  GROUPS VIEW
+  // ══════════════════════════════════════════════════════
+
+  const GROUPS = [
+    { id:1, emoji:'🔵', members:['Asmita Tiwari','Sipra Tripathy','Yogesh Karira','Geeta Sharma','Parveen Bansal'] },
+    { id:2, emoji:'🟢', members:['Shobha','Aakash Rayate','Sonam Agnihotri','Neha Goel','Binay Lal'] },
+    { id:3, emoji:'🟠', members:['Poulomi Mukherjee','Puneet Ahuja','Jaya Bharti','Ankit','Puja Gupta'] },
+    { id:4, emoji:'🟣', members:['Shibani Pattnaik','Shubham Singh','Pritam Kumari','Shilpy Pateriya','Gaurav Verma'] },
+    { id:5, emoji:'🔴', members:['Praveen Choudhary','Shyamala','Jyotika Bhurani','Saksham Tandone','Kali Tripathy'] },
+    { id:6, emoji:'🟡', members:['Aparna Shinde','Aman Gupta','Kumar Abhishek','Shikha Tandon','Mayuri Hegde'] },
+    { id:7, emoji:'🟡', members:['Renu Goel','BIBEK LAL','Dikshant Ohri','Surabhi Telang','Pooja'] },
+    { id:8, emoji:'⚫', members:['Saswati Mahapatra','Amar Shinde','Richa Johar','Thavakumar Swaminathan','Shubham Lakhotia','Parita Kachhela'] },
+  ];
+
+  // Avatar background colours — deterministic per initials
+  const AV_COLORS = [
+    '#3B4F8C','#5B3B8C','#8C3B5B','#8C5B3B','#3B8C5B',
+    '#3B7A8C','#8C3B3B','#5B8C3B','#7A5B3B','#3B5B8C',
+  ];
+
+  function grpColor(name) {
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffffffff;
+    return AV_COLORS[Math.abs(h) % AV_COLORS.length];
+  }
+
+  function grpInitials(name) {
+    const parts = name.trim().split(/\s+/);
+    return parts.length >= 2
+      ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase()
+      : name.slice(0,2).toUpperCase();
+  }
+
+  function grpTodayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  function grpFmtDate(str) {
+    const [y,m,d] = str.split('-');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const dateObj = new Date(parseInt(y), parseInt(m)-1, parseInt(d));
+    return `${days[dateObj.getDay()]}, ${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
+  }
+
+  // Challenge start date
+  const GRP_START = '2026-06-01';
+  let grpOffset = 0; // 0 = today, -1 = yesterday, etc.
+
+  function grpSelectedDate() {
+    const d = new Date();
+    d.setDate(d.getDate() + grpOffset);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  window.grpShift = function(delta) {
+    const next = grpOffset + delta;
+    if (next > 0) return; // can't go into the future
+    const candidate = new Date();
+    candidate.setDate(candidate.getDate() + next);
+    const candidateStr = `${candidate.getFullYear()}-${String(candidate.getMonth()+1).padStart(2,'0')}-${String(candidate.getDate()).padStart(2,'0')}`;
+    if (candidateStr < GRP_START) return; // can't go before challenge start
+    grpOffset = next;
+    renderGroups();
+  };
+
+  window.grpGoToday = function() {
+    grpOffset = 0;
+    renderGroups();
+  };
+
+  function renderGroups() {
+    const today    = grpTodayStr();
+    const selected = grpSelectedDate();
+    const isToday  = selected === today;
+
+    // Update nav UI
+    document.getElementById('grp-date-text').textContent = isToday
+      ? 'Today — ' + grpFmtDate(selected)
+      : grpFmtDate(selected);
+    document.getElementById('grp-today-badge').classList.toggle('hidden', isToday);
+    document.getElementById('grp-btn-next').disabled = grpOffset >= 0;
+
+    // Disable prev if at challenge start
+    const prevDate = new Date();
+    prevDate.setDate(prevDate.getDate() + grpOffset - 1);
+    const prevStr = `${prevDate.getFullYear()}-${String(prevDate.getMonth()+1).padStart(2,'0')}-${String(prevDate.getDate()).padStart(2,'0')}`;
+    document.getElementById('grp-btn-prev').disabled = prevStr < GRP_START;
+
+    // Build selected-day log map: normalised name → { km, activity }
+    const todayMap = {};
+    allLogs.forEach(l => {
+      if (l.date !== selected || !l.name) return;
+      const key = l.name.trim().toLowerCase();
+      const cur = parseFloat(l.km) || 0;
+      // Keep highest KM entry for the day (in case of duplicates)
+      if (!todayMap[key] || cur > todayMap[key].km) {
+        todayMap[key] = { km: cur, activity: l.activity || '' };
+      }
+    });
+
+    const list = document.getElementById('grp-list');
+    list.innerHTML = GROUPS.map(g => {
+      // Count how many logged today
+      const doneCount = g.members.filter(m => todayMap[m.trim().toLowerCase()]).length;
+      const total     = g.members.length;
+      const allDone   = doneCount === total;
+      const noneDone  = doneCount === 0;
+
+      const dotCls    = allDone ? 'green' : noneDone ? 'grey' : 'orange';
+      const cardCls   = allDone ? 'g-active' : noneDone ? 'g-none' : 'g-partial';
+      const statusTxt = noneDone
+        ? 'Not started'
+        : allDone
+          ? 'All done!'
+          : `${doneCount} of ${total} done`;
+      const statusCls = allDone ? 'done' : noneDone ? 'none' : 'partial';
+
+      const membersHtml = g.members.map(name => {
+        const key  = name.trim().toLowerCase();
+        const data = todayMap[key];
+        const km   = data ? data.km : 0;
+        const act  = data ? data.activity : '';
+        const actKey = act === 'Walking' ? 'walk' : act === 'Running' ? 'run' : act === 'Cycling' ? 'cycle' : '';
+        const avCls  = actKey === 'walk' ? 'av-active' : actKey === 'run' ? 'av-run' : actKey === 'cycle' ? 'av-cycle' : '';
+        const gmCls  = actKey === 'walk' ? 'gm-active' : actKey === 'run' ? 'gm-run' : actKey === 'cycle' ? 'gm-cycle' : '';
+
+        const firstName = name.split(' ')[0];
+        const initials  = grpInitials(name);
+        const bg        = grpColor(name);
+        const fireHtml  = km > 0 ? `<span class="grp-fire">🔥</span>` : '';
+
+        const kmHtml   = `<div class="grp-member-km">${km > 0 ? Math.round(km*10)/10 : '0'} <span style="font-size:9px;color:#555">km</span></div>`;
+        const badgeHtml = actKey ? `<div class="grp-member-badge ${actKey}">${act.toUpperCase()}</div>` : '';
+
+        return `<div class="grp-member ${gmCls}">
+          <div class="grp-avatar-wrap">
+            <div class="grp-avatar ${avCls}" style="background:${bg}">${initials}</div>
+            ${fireHtml}
+          </div>
+          <div class="grp-member-name">${esc(firstName === name ? name : name.split(' ').slice(0,2).join(' '))}</div>
+          ${kmHtml}
+          ${badgeHtml}
+        </div>`;
+      }).join('');
+
+      // Flow line
+      const flowNames = [...g.members, g.members[0]];
+      const flowHtml  = flowNames.map((n,i) =>
+        i === 0 ? `<strong>${n.split(' ')[0]}</strong>`
+                : `<span class="grp-flow-arrow">→</span><strong>${n.split(' ')[0]}</strong>`
+      ).join('');
+
+      return `<div class="grp-card ${cardCls}">
+        <div class="grp-header">
+          <div class="grp-title">
+            <div class="grp-dot ${dotCls}"></div>
+            ${g.emoji} Group ${g.id}
+          </div>
+          <div class="grp-status ${statusCls}">${statusTxt}</div>
+        </div>
+        <div class="grp-members">${membersHtml}</div>
+        <div class="grp-flow">Flow: ${flowHtml}</div>
+      </div>`;
+    }).join('');
+  }
+</script>
