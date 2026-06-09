@@ -114,6 +114,58 @@
     @keyframes spin{to{transform:rotate(360deg);}}
     @keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
+
+    /* ═══ WEEKLY PERFORMANCE AWARDS ═══ */
+    .wk-awards{padding:20px 14px 8px;}
+    .wk-awards-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+    .wk-awards-label{font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#F5C842;border:1px solid rgba(245,200,66,.25);padding:5px 14px;border-radius:100px;white-space:nowrap;}
+    .wk-awards-line{flex:1;height:1px;background:rgba(255,255,255,.06);}
+
+    .wk-award-card{border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;}
+    .wk-award-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;}
+
+    /* Distance champion — orange */
+    .wk-award-card.dist{background:linear-gradient(135deg,rgba(255,107,53,.1),rgba(255,107,53,.04));border:1px solid rgba(255,107,53,.25);}
+    .wk-award-card.dist::before{background:linear-gradient(90deg,transparent,#FF6B35,transparent);}
+    /* Iron streak — green */
+    .wk-award-card.streak{background:linear-gradient(135deg,rgba(105,255,71,.08),rgba(105,255,71,.03));border:1px solid rgba(105,255,71,.22);}
+    .wk-award-card.streak::before{background:linear-gradient(90deg,transparent,#69FF47,transparent);}
+    /* Progressive mover — purple */
+    .wk-award-card.prog{background:linear-gradient(135deg,rgba(180,120,255,.1),rgba(180,120,255,.03));border:1px solid rgba(180,120,255,.22);}
+    .wk-award-card.prog::before{background:linear-gradient(90deg,transparent,#b87fff,transparent);}
+    /* Today's champ — gold */
+    .wk-award-card.today{background:linear-gradient(135deg,rgba(245,200,66,.1),rgba(245,200,66,.03));border:1px solid rgba(245,200,66,.25);}
+    .wk-award-card.today::before{background:linear-gradient(90deg,transparent,#F5C842,transparent);}
+
+    .wk-award-icon-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;width:52px;}
+    .wk-award-icon{font-size:26px;line-height:1;}
+    .wk-award-type{font-size:7px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;text-align:center;line-height:1.2;}
+    .wk-award-card.dist  .wk-award-type{color:#FF6B35;}
+    .wk-award-card.streak .wk-award-type{color:#69FF47;}
+    .wk-award-card.prog  .wk-award-type{color:#b87fff;}
+    .wk-award-card.today .wk-award-type{color:#F5C842;}
+
+    .wk-award-body{flex:1;min-width:0;}
+    .wk-award-cat{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
+    .wk-award-card.dist  .wk-award-cat{color:#FF6B35;}
+    .wk-award-card.streak .wk-award-cat{color:#69FF47;}
+    .wk-award-card.prog  .wk-award-cat{color:#b87fff;}
+    .wk-award-card.today .wk-award-cat{color:#F5C842;}
+
+    .wk-award-nameline{display:flex;align-items:center;gap:8px;margin-bottom:3px;}
+    .wk-award-avatar{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+    .wk-award-name{font-size:14px;font-weight:700;color:#f0f0f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .wk-award-sub{font-size:10px;color:#666;margin-top:1px;}
+
+    .wk-award-val{text-align:right;flex-shrink:0;}
+    .wk-award-num{font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;}
+    .wk-award-card.dist  .wk-award-num{color:#FF6B35;}
+    .wk-award-card.streak .wk-award-num{color:#69FF47;}
+    .wk-award-card.prog  .wk-award-num{color:#b87fff;}
+    .wk-award-card.today .wk-award-num{color:#F5C842;}
+    .wk-award-unit{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#555;margin-top:1px;}
+
+    .wk-awards-empty{text-align:center;padding:24px;color:#444;font-size:12px;border:1px solid rgba(255,255,255,.06);border-radius:12px;}
     /* ═══════════════════════════════════════════
        WEEKLY CHAMPIONS SECTION
     ════════════════════════════════════════════ */
@@ -377,6 +429,12 @@
       </div>
 
       <div class="wk-list" id="wk-list"><div class="wk-spinner"></div></div>
+
+      <!-- Performance Awards -->
+      <div class="wk-awards">
+        <div class="wk-awards-header"><span class="wk-awards-label">🏅 Weekly Performance Awards</span><span class="wk-awards-line"></span></div>
+        <div id="wk-awards-body"><div class="wk-awards-empty">Loading…</div></div>
+      </div>
     </div>
   </div><!-- /view-wk -->
 
@@ -785,6 +843,7 @@
     const list = document.getElementById('wk-list');
     if (!sorted.length) {
       list.innerHTML = `<div class="wk-empty">🏁 No ${wkTab.toLowerCase()} logged this week yet.</div>`;
+      renderAwards();
       return;
     }
 
@@ -816,6 +875,162 @@
         </div>
       </div>`;
     }).join('');
+    renderAwards();
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  WEEKLY PERFORMANCE AWARDS
+  // ══════════════════════════════════════════════════════
+  const AWARD_COLORS = [
+    '#3B4F8C','#5B3B8C','#8C3B5B','#8C5B3B','#3B8C5B',
+    '#3B7A8C','#8C3B3B','#5B8C3B','#7A5B3B','#3B5B8C',
+  ];
+  function awardColor(name) {
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffffffff;
+    return AWARD_COLORS[Math.abs(h) % AWARD_COLORS.length];
+  }
+  function awardInitials(name) {
+    const p = name.trim().split(/\s+/);
+    return p.length >= 2 ? (p[0][0] + p[p.length-1][0]).toUpperCase() : name.slice(0,2).toUpperCase();
+  }
+  function awardAvatar(name) {
+    return `<div class="wk-award-avatar" style="background:${awardColor(name)}">${awardInitials(name)}</div>`;
+  }
+
+  function renderAwards() {
+    const el = document.getElementById('wk-awards-body');
+    if (!el) return;
+    const dates = wkDates(); // current week dates array
+    const today = dates[dates.length - 1]; // last day we care about for "today"
+    // Use actual today's date string for "today's champ"
+    const realToday = (function() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    })();
+
+    const weekLogs = allLogs.filter(l => dates.includes(l.date) && l.name && l.date);
+
+    if (!weekLogs.length) {
+      el.innerHTML = '<div class="wk-awards-empty">No activity logged this week yet.</div>';
+      return;
+    }
+
+    // ── Award 1: Distance Champion (most total km across ALL activities this week) ──
+    const distAgg = {};
+    weekLogs.forEach(l => {
+      if (!distAgg[l.name]) distAgg[l.name] = { km: 0, _byDateAct: {} };
+      const k = l.date + '_' + l.activity;
+      const prev = distAgg[l.name]._byDateAct[k] || 0;
+      const cur  = parseFloat(l.km) || 0;
+      if (cur > prev) { distAgg[l.name].km += cur - prev; distAgg[l.name]._byDateAct[k] = cur; }
+    });
+    const distWinner = Object.entries(distAgg).sort((a,b) => b[1].km - a[1].km)[0];
+
+    // ── Award 2: Iron Streak (longest consecutive days logged, any activity) ──
+    const streakAgg = {};
+    weekLogs.forEach(l => {
+      if (!streakAgg[l.name]) streakAgg[l.name] = new Set();
+      streakAgg[l.name].add(l.date);
+    });
+    // Also look at allLogs for full streak (not just this week)
+    const fullStreakAgg = {};
+    allLogs.forEach(l => {
+      if (!l.name || !l.date) return;
+      if (!fullStreakAgg[l.name]) fullStreakAgg[l.name] = new Set();
+      fullStreakAgg[l.name].add(l.date);
+    });
+    function longestStreak(dateSet) {
+      const sorted = [...dateSet].sort();
+      let max = 1, cur = 1;
+      for (let i = 1; i < sorted.length; i++) {
+        const prev = new Date(sorted[i-1]), next = new Date(sorted[i]);
+        const diff = (next - prev) / 86400000;
+        if (diff === 1) { cur++; max = Math.max(max, cur); }
+        else cur = 1;
+      }
+      return sorted.length ? max : 0;
+    }
+    let streakWinner = null, streakMax = 0;
+    Object.entries(fullStreakAgg).forEach(([name, dates]) => {
+      const s = longestStreak(dates);
+      if (s > streakMax) { streakMax = s; streakWinner = name; }
+    });
+
+    // ── Award 3: Progressive Mover (biggest km growth day-over-day this week, any activity) ──
+    // Per person: compare daily km (any act) across consecutive days logged
+    const progAgg = {};
+    weekLogs.forEach(l => {
+      if (!progAgg[l.name]) progAgg[l.name] = {};
+      const prev = progAgg[l.name][l.date] || 0;
+      const cur  = parseFloat(l.km) || 0;
+      progAgg[l.name][l.date] = Math.max(prev, cur);
+    });
+    let progWinner = null, progGrowth = -Infinity, progDays = 0;
+    Object.entries(progAgg).forEach(([name, byDate]) => {
+      const sortedDates = Object.keys(byDate).sort();
+      if (sortedDates.length < 2) return;
+      let growth = 0, growDays = 0;
+      for (let i = 1; i < sortedDates.length; i++) {
+        const diff = byDate[sortedDates[i]] - byDate[sortedDates[i-1]];
+        if (diff > 0) { growth += diff; growDays++; }
+      }
+      if (growDays > 0 && growth > progGrowth) { progGrowth = growth; progWinner = name; progDays = growDays; }
+    });
+
+    // ── Award 4: Today's Distance Champion (highest km today, any activity) ──
+    const todayLogs = allLogs.filter(l => l.date === realToday && l.name && l.date);
+    const todayAgg = {};
+    todayLogs.forEach(l => {
+      const prev = todayAgg[l.name] || { km: 0, activity: '' };
+      const cur  = parseFloat(l.km) || 0;
+      if (cur > prev.km) todayAgg[l.name] = { km: cur, activity: l.activity };
+    });
+    const todayWinner = Object.entries(todayAgg).sort((a,b) => b[1].km - a[1].km)[0];
+
+    let html = '';
+
+    // Card builder
+    function card(cls, icon, typeLbl, catLbl, name, sub, numVal, unitLbl) {
+      return `<div class="wk-award-card ${cls}">
+        <div class="wk-award-icon-wrap">
+          <div class="wk-award-icon">${icon}</div>
+          <div class="wk-award-type">${typeLbl}</div>
+        </div>
+        <div class="wk-award-body">
+          <div class="wk-award-cat">${catLbl}</div>
+          <div class="wk-award-nameline">${awardAvatar(name)}<div class="wk-award-name">${esc(name)}</div></div>
+          <div class="wk-award-sub">${sub}</div>
+        </div>
+        <div class="wk-award-val">
+          <div class="wk-award-num">${numVal}</div>
+          <div class="wk-award-unit">${unitLbl}</div>
+        </div>
+      </div>`;
+    }
+
+    if (distWinner) {
+      const km = Math.round(distWinner[1].km * 10) / 10;
+      html += card('dist','🏅','Distance\nChampion','Distance Champion',
+        distWinner[0], 'Total this week · All activities', km, 'KM This Week');
+    }
+    if (streakWinner && streakMax > 0) {
+      html += card('streak','🔥','Iron\nStreak','Iron Streak',
+        streakWinner, `Longest consecutive days logged · ${streakMax} total days`, streakMax, 'Day Streak');
+    }
+    if (progWinner && progGrowth > 0) {
+      const g = Math.round(progGrowth * 10) / 10;
+      html += card('prog','📈','Progressive\nMover','Progressive Mover',
+        progWinner, `KM growing day by day · ${progDays} day${progDays!==1?'s':''}`, '+' + g, 'KM Growth');
+    }
+    if (todayWinner) {
+      const km = Math.round(todayWinner[1].km * 10) / 10;
+      const act = todayWinner[1].activity;
+      html += card("today","⚡","Today's\nChamp","Today's Distance Champion",
+        todayWinner[0], `${act} · Today 🔥`, km, 'KM Today');
+    }
+
+    el.innerHTML = html || '<div class="wk-awards-empty">No award data available yet.</div>';
   }
 
   // ══════════════════════════════════════════════════════
