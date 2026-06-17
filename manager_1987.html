@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin — 100 Days Fitness Challenge</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:#080810;font-family:'DM Sans',sans-serif;color:#eee;min-height:100vh;}
+
+    .topbar{background:#0f0f1a;border-bottom:1px solid rgba(255,107,53,.2);padding:14px 24px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+    .topbar-title{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#FF6B35;letter-spacing:2px;}
+    .topbar-badge{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;background:rgba(255,107,53,.15);border:1px solid rgba(255,107,53,.3);color:#FF6B35;padding:4px 12px;border-radius:100px;}
+    .topbar-link{font-size:11px;color:#555;text-decoration:none;border:1px solid rgba(255,255,255,.1);padding:6px 14px;border-radius:8px;transition:all .2s;}
+    .topbar-link:hover{border-color:rgba(255,107,53,.4);color:#FF6B35;}
+
+    .page{padding:20px 16px 60px;max-width:960px;margin:0 auto;}
+
+    /* Nav tabs */
+    .nav-tabs{display:flex;gap:6px;margin-bottom:24px;border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:0;}
+    .nav-tab{padding:10px 20px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer;border:none;background:transparent;color:#555;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;}
+    .nav-tab.active{color:#FF6B35;border-bottom-color:#FF6B35;}
+    .nav-tab:hover:not(.active){color:#aaa;}
+    .nav-section{display:none;}.nav-section.active{display:block;}
+
+    /* Cards */
+    .card{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:20px;margin-bottom:20px;}
+    .card-title{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#FF6B35;margin-bottom:4px;letter-spacing:1px;}
+    .card-sub{font-size:11px;color:#555;margin-bottom:16px;line-height:1.5;}
+
+    /* Forms */
+    .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+    .form-grid.cols3{grid-template-columns:1fr 1fr 1fr;}
+    @media(max-width:520px){.form-grid,.form-grid.cols3{grid-template-columns:1fr;}}
+    .fg{display:flex;flex-direction:column;gap:4px;}
+    .fg label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:#555;}
+    .fg input,.fg select,.fg textarea{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;}
+    .fg input:focus,.fg select:focus,.fg textarea:focus{border-color:rgba(255,107,53,.5);background:rgba(255,107,53,.05);}
+    .fg select option{background:#1a1a2e;color:#eee;}
+    .fg textarea{resize:vertical;min-height:60px;font-size:12px;}
+    .btn{border:none;border-radius:10px;padding:10px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:700;cursor:pointer;transition:opacity .15s,transform .1s;letter-spacing:.5px;}
+    .btn:hover{opacity:.88;transform:translateY(-1px);}
+    .btn:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+    .btn-orange{background:#FF6B35;color:#000;}
+    .btn-full{width:100%;}
+    .btn-sm{padding:5px 12px;font-size:11px;border-radius:7px;}
+    .btn-red{background:rgba(231,76,60,.15);color:#E74C3C;border:1px solid rgba(231,76,60,.3);}
+    .btn-green{background:rgba(105,255,71,.1);color:#69FF47;border:1px solid rgba(105,255,71,.25);}
+    .btn-grey{background:rgba(255,255,255,.06);color:#888;border:1px solid rgba(255,255,255,.1);}
+    .edit-row td{background:rgba(255,107,53,.04) !important;border-top:1px solid rgba(255,107,53,.15);}
+    .edit-input{background:rgba(255,255,255,.06);border:1px solid rgba(255,107,53,.35);border-radius:6px;padding:5px 8px;font-family:'DM Sans',sans-serif;font-size:12px;color:#eee;outline:none;width:100%;}
+    .edit-input:focus{border-color:rgba(255,107,53,.6);background:rgba(255,107,53,.06);}
+    .edit-select{background:#1a1a2e;border:1px solid rgba(255,107,53,.35);border-radius:6px;padding:5px 8px;font-family:'DM Sans',sans-serif;font-size:12px;color:#eee;outline:none;width:100%;}
+    .btn-blue{background:rgba(0,229,255,.1);color:#00E5FF;border:1px solid rgba(0,229,255,.2);}
+
+    /* Daily log table */
+    .table-wrap{overflow-x:auto;border-radius:12px;border:1px solid rgba(255,255,255,.07);}
+    table{width:100%;border-collapse:collapse;min-width:620px;}
+    thead tr{background:#0f0f1a;}
+    thead th{padding:10px 12px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#555;text-align:left;border-bottom:1px solid rgba(255,255,255,.07);}
+    tbody tr{border-bottom:1px solid rgba(255,255,255,.04);transition:background .15s;}
+    tbody tr:hover{background:rgba(255,255,255,.03);}
+    tbody td{padding:9px 12px;font-size:12px;color:#ccc;vertical-align:middle;}
+    .td-name{font-weight:600;color:#f0f0f0;}
+
+    .act-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;}
+    .act-walk {background:rgba(105,255,71,.1);color:#69FF47;border:1px solid rgba(105,255,71,.2);}
+    .act-run  {background:rgba(0,229,255,.1);color:#00E5FF;border:1px solid rgba(0,229,255,.2);}
+    .act-cycle{background:rgba(255,107,53,.1);color:#FF6B35;border:1px solid rgba(255,107,53,.2);}
+
+    .proof-link{font-size:11px;color:#5bb8e8;text-decoration:none;display:inline-flex;align-items:center;gap:4px;}
+    .proof-link:hover{text-decoration:underline;}
+
+    /* Summary cards */
+    .summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:20px;}
+    .summary-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px;}
+    .summary-name{font-size:12px;font-weight:700;color:#f0f0f0;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .summary-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#666;margin-bottom:4px;}
+    .summary-val{font-family:'Bebas Neue',sans-serif;font-size:16px;color:#FF6B35;}
+    .summary-act{font-size:9px;padding:2px 7px;border-radius:100px;margin-right:4px;}
+
+    /* Token section */
+    .token-list{display:flex;flex-direction:column;gap:8px;}
+    .token-row-item{display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 14px;gap:10px;flex-wrap:wrap;}
+    .token-name{font-size:13px;font-weight:600;color:#f0f0f0;flex:1;min-width:120px;}
+    .token-dots{display:flex;gap:5px;align-items:center;}
+    .token-dot{width:10px;height:10px;border-radius:50%;}
+    .token-dot.used{background:#E74C3C;box-shadow:0 0 4px rgba(231,76,60,.5);}
+    .token-dot.left{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);}
+    .token-count{font-size:11px;color:#555;min-width:90px;text-align:right;}
+    .token-count.warn{color:#E74C3C;font-weight:700;}
+    .token-edit{display:flex;align-items:center;gap:6px;}
+    .token-select{background:#1a1a2e;border:1px solid rgba(255,107,53,.3);border-radius:6px;padding:4px 8px;font-family:'DM Sans',sans-serif;font-size:12px;color:#eee;outline:none;}
+
+    /* Filter bar */
+    .filter-bar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;align-items:center;}
+    .filter-chip{padding:5px 12px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:transparent;color:#555;transition:all .2s;}
+    .filter-chip.active{border-color:rgba(255,107,53,.4);color:#FF6B35;background:rgba(255,107,53,.08);}
+    .search-input{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:6px 12px;font-family:'DM Sans',sans-serif;font-size:12px;color:#eee;outline:none;flex:1;min-width:140px;}
+    .search-input:focus{border-color:rgba(255,107,53,.4);}
+
+    .empty{text-align:center;padding:32px;color:#444;font-size:13px;}
+    .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#1e1e2e;border:1px solid rgba(255,107,53,.3);color:#eee;padding:12px 24px;border-radius:12px;font-size:13px;font-weight:600;opacity:0;transition:all .3s;z-index:999;white-space:nowrap;}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+    .toast.success{border-color:rgba(105,255,71,.4);color:#69FF47;}
+    .toast.error{border-color:rgba(231,76,60,.4);color:#E74C3C;}
+    .spinner{width:24px;height:24px;border:2px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+  </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<div class="topbar">
+  <div><div class="topbar-title">⚙️ Admin Panel</div></div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <span class="topbar-badge">🔒 Private</span>
+    <a class="topbar-link" href="index.html" target="_blank">👁 Leaderboard</a>
+    <a class="topbar-link" href="weekly.html" target="_blank">🏆 Weekly</a>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- Nav -->
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="switchNav('log',this)">📋 Log Activity</button>
+    <button class="nav-tab" onclick="switchNav('entries',this)">📊 All Entries</button>
+    <button class="nav-tab" onclick="switchNav('summary',this)">🏆 Summary</button>
+    <button class="nav-tab" onclick="switchNav('tokens',this)">🎟 Tokens</button>
+  </div>
+
+  <!-- ── TAB 1: Log Activity ── -->
+  <div id="nav-log" class="nav-section active">
+    <div class="card">
+      <div class="card-title">📋 Log Daily Activity</div>
+      <div class="card-sub">Enter each participant's daily submission. KMs will be added to their running total automatically.</div>
+      <div class="form-grid">
+        <div class="fg">
+          <label>Participant Name</label>
+          <input id="l-name" placeholder="e.g. Aakash Rayate" list="names-datalist" autocomplete="off">
+          <datalist id="names-datalist">
+            <option value="Amar Shinde">
+            <option value="Shobha">
+            <option value="Aakash Rayate">
+            <option value="Poulomi Mukherjee">
+            <option value="Sipra Tripathy">
+            <option value="Shibani Pattnaik">
+            <option value="Puneet Ahuja">
+            <option value="Shubham Singh">
+            <option value="Praveen Choudhary">
+            <option value="Surabhi Telang">
+            <option value="Aparna Shinde">
+            <option value="Renu Goel">
+            <option value="Saswati Mahapatra">
+            <option value="Sonam Agnihotri">
+            <option value="Jyotika Bhurani">
+            <option value="Yogesh Karira">
+            <option value="Mayuri Hegde">
+            <option value="Asmita Tiwari">
+            <option value="Jaya Bharti">
+            <option value="Mithun Vakharia">
+            <option value="Aman Gupta">
+            <option value="BIBEK LAL">
+            <option value="Richa Johar">
+            <option value="Dikshant Ohri">
+            <option value="Shyamala">
+            <option value="Shubham Lakhotia">
+            <option value="Kumar Abhishek">
+            <option value="Kali Tripathy">
+            <option value="Thavakumar Swaminathan">
+            <option value="Binay lal">
+            <option value="Shilpy pateriya">
+            <option value="Geeta Sharma">
+          </datalist>
+        </div>
+        <div class="fg">
+          <label>Activity</label>
+          <select id="l-activity">
+            <option value="Walking">🚶 Walking</option>
+            <option value="Running">🏃 Running</option>
+            <option value="Cycling">🚴 Cycling</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Date</label>
+          <input id="l-date" type="date">
+        </div>
+        <div class="fg">
+          <label>KM Today</label>
+          <input id="l-km" type="number" placeholder="e.g. 5.2" min="0" step="0.1">
+        </div>
+        <div class="fg" style="grid-column:1/-1">
+          <label>Proof Link (optional — Google Drive / WhatsApp screenshot link)</label>
+          <input id="l-proof" placeholder="https://drive.google.com/... or paste any link">
+        </div>
+        <div class="fg" style="grid-column:1/-1">
+          <label>Notes (optional)</label>
+          <textarea id="l-notes" placeholder="Any notes about this entry…"></textarea>
+        </div>
+      </div>
+      <button class="btn btn-orange btn-full" id="btn-log" onclick="logActivity()">✅ LOG ACTIVITY</button>
+    </div>
+
+    <!-- Recent logs -->
+    <div class="card-title" style="margin-bottom:12px">Recent Logs</div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Name</th><th>Activity</th><th>KM</th><th>Proof</th><th>Notes</th><th></th></tr></thead>
+        <tbody id="recent-tbody"><tr><td colspan="7"><div style="text-align:center;padding:24px"><div class="spinner"></div></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── TAB 2: All Entries ── -->
+  <div id="nav-entries" class="nav-section">
+    <div class="filter-bar">
+      <input class="search-input" id="search-input" placeholder="🔍 Search by name…" oninput="renderEntries()">
+      <button class="filter-chip active" onclick="setActFilter('all',this)">All</button>
+      <button class="filter-chip" onclick="setActFilter('Walking',this)">🚶 Walk</button>
+      <button class="filter-chip" onclick="setActFilter('Running',this)">🏃 Run</button>
+      <button class="filter-chip" onclick="setActFilter('Cycling',this)">🚴 Cycle</button>
+      <button class="btn btn-sm" onclick="exportToExcel()" style="margin-left:auto;background:rgba(105,255,71,.1);color:#69FF47;border:1px solid rgba(105,255,71,.25);padding:6px 14px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;">⬇️ Export Excel</button>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Date</th><th>Name</th><th>Activity</th><th>KM</th><th>Proof</th><th>Notes</th><th></th></tr></thead>
+        <tbody id="all-tbody"><tr><td colspan="7"><div style="text-align:center;padding:24px"><div class="spinner"></div></div></td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── TAB 3: Summary ── -->
+  <div id="nav-summary" class="nav-section">
+    <div class="card-title" style="margin-bottom:4px">Cumulative Totals</div>
+    <div style="font-size:11px;color:#555;margin-bottom:16px">Auto-calculated from all daily logs. This is what the leaderboard shows.</div>
+    <div id="summary-grid" class="summary-grid"><div class="empty"><div class="spinner"></div></div></div>
+  </div>
+
+  <!-- ── TAB 4: Tokens ── -->
+  <div id="nav-tokens" class="nav-section">
+    <div class="card">
+      <div class="card-title">🎟 Log Token Usage</div>
+      <div class="card-sub">When a participant uses a rest day token, log their name and the date. Tokens protect their streak. Max 6 per person.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-bottom:8px;">
+        <div class="fg">
+          <label>Participant Name</label>
+          <select id="t-name" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;">
+            <option value="">— Select participant —</option>
+            <option>Amar Shinde</option><option>Shobha</option><option>Aakash Rayate</option>
+            <option>Poulomi Mukherjee</option><option>Sipra Tripathy</option><option>Shibani Pattnaik</option>
+            <option>Puneet Ahuja</option><option>Shubham Singh</option><option>Praveen Choudhary</option>
+            <option>Surabhi Telang</option><option>Aparna Shinde</option><option>Renu Goel</option>
+            <option>Saswati Mahapatra</option><option>Sonam Agnihotri</option><option>Jyotika Bhurani</option>
+            <option>Yogesh Karira</option><option>Mayuri Hegde</option><option>Asmita Tiwari</option>
+            <option>Jaya Bharti</option><option>Mithun Vakharia</option><option>Aman Gupta</option>
+            <option>BIBEK LAL</option><option>Richa Johar</option><option>Dikshant Ohri</option>
+            <option>Shyamala</option><option>Shubham Lakhotia</option><option>Kumar Abhishek</option>
+            <option>Kali Tripathy</option><option>Thavakumar Swaminathan</option><option>Binay lal</option>
+            <option>Shilpy pateriya</option><option>Geeta Sharma</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Token Date (rest day)</label>
+          <input id="t-date" type="date" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;">
+        </div>
+        <button class="btn btn-orange" onclick="saveToken()">Log Token</button>
+      </div>
+      <div style="font-size:11px;color:#555;margin-top:4px;">💡 Each token date saved separately. Click ✕ next to a date below to remove it.</div>
+    </div>
+    <div class="token-list" id="token-list"><div class="empty"><div class="spinner"></div></div></div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // Set today's date on token date input
+  document.addEventListener('DOMContentLoaded', () => {
+    const td = document.getElementById('t-date');
+    if (td) td.value = new Date().toISOString().split('T')[0];
+  });
+
+  function switchNav(key, btn) {
+    document.querySelectorAll('.nav-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('nav-' + key).classList.add('active');
+    btn.classList.add('active');
+    if (key === 'summary') renderSummary();
+    if (key === 'entries') renderEntries();
+  }
+
+  // Set today's date by default
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('l-date').value = today;
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, push, remove, onValue, set, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCrxTZEUB5x8VolI31091hqrZKvtdnbkmM",
+    authDomain: "fitness-leaderboard-ed631.firebaseapp.com",
+    databaseURL: "https://fitness-leaderboard-ed631-default-rtdb.firebaseio.com",
+    projectId: "fitness-leaderboard-ed631",
+    storageBucket: "fitness-leaderboard-ed631.firebasestorage.app",
+    messagingSenderId: "861678454829",
+    appId: "1:861678454829:web:f375e12cf6970d7d6cd0a4"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+  const logsRef   = ref(db, 'logs');
+  const tokensRef = ref(db, 'tokens');
+
+  const MAX_TOKENS = 6;
+  let logs   = {};   // all daily logs keyed by Firebase ID
+  let tokens = {};   // { sanitized_name: { name, used } }
+
+  // ── Toast ──────────────────────────────────────────────────────────────────
+  function toast(msg, type='success') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = `toast show ${type}`;
+    setTimeout(() => { el.className = 'toast'; }, 2800);
+  }
+
+  // ── Helpers ────────────────────────────────────────────────────────────────
+  function sanitizeKey(name) { return name.trim().toLowerCase().replace(/[^a-z0-9]/g,'_'); }
+  function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function actClass(a) { return a==='Walking'?'act-walk':a==='Running'?'act-run':'act-cycle'; }
+  function fmtDate(d) {
+    if (!d) return '';
+    const [y,m,day] = d.split('-');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${parseInt(day)} ${months[parseInt(m)-1]}`;
+  }
+
+  // ── Unique names datalist ──────────────────────────────────────────────────
+  const PRESET_NAMES = ['Amar Shinde', 'Shobha', 'Aakash Rayate', 'Poulomi Mukherjee', 'Sipra Tripathy', 'Shibani Pattnaik', 'Puneet Ahuja', 'Shubham Singh', 'Praveen Choudhary', 'Surabhi Telang', 'Aparna Shinde', 'Renu Goel', 'Saswati Mahapatra', 'Sonam Agnihotri', 'Jyotika Bhurani', 'Yogesh Karira', 'Mayuri Hegde', 'Asmita Tiwari', 'Jaya Bharti', 'Mithun Vakharia', 'Aman Gupta', 'BIBEK LAL', 'Richa Johar', 'Dikshant Ohri', 'Shyamala', 'Shubham Lakhotia', 'Kumar Abhishek', 'Kali Tripathy', 'Thavakumar Swaminathan', 'Binay lal', 'Shilpy pateriya'];
+
+  function updateNamesList() {
+    // Merge preset names with any logged names
+    const loggedNames = Object.values(logs).map(l => l.name);
+    const names = [...new Set([...PRESET_NAMES, ...loggedNames])].sort();
+    const el = document.getElementById('names-datalist');
+    if (el) el.innerHTML = names.map(n => `<option value="${esc(n)}">`).join('');
+  }
+
+  // ── Compute cumulative totals from logs ────────────────────────────────────
+  function computeTotals() {
+    // totals[name][activity] = { km, days: Set of dates }
+    const totals = {};
+    Object.values(logs).forEach(l => {
+      if (!totals[l.name]) totals[l.name] = {};
+      if (!totals[l.name][l.activity]) totals[l.name][l.activity] = { km: 0, dates: new Set() };
+      totals[l.name][l.activity].km += parseFloat(l.km) || 0;
+      if (l.date) totals[l.name][l.activity].dates.add(l.date);
+    });
+    return totals;
+  }
+
+  // ── Push totals to participants node (for leaderboard) ────────────────────
+  async function syncToParticipants() {
+    const totals = computeTotals();
+    const entries = {};
+    Object.entries(totals).forEach(([name, activities]) => {
+      Object.entries(activities).forEach(([activity, data]) => {
+        const key = sanitizeKey(name) + '_' + sanitizeKey(activity);
+        entries[key] = { name, activity, km: Math.round(data.km * 10) / 10, days: data.dates.size };
+      });
+    });
+    await set(ref(db, 'participants'), entries);
+  }
+
+  // ── Log Activity ───────────────────────────────────────────────────────────
+  window.logActivity = async function() {
+    const name  = document.getElementById('l-name').value.trim();
+    const act   = document.getElementById('l-activity').value;
+    const date  = document.getElementById('l-date').value;
+    const km    = parseFloat(document.getElementById('l-km').value);
+    const proof = document.getElementById('l-proof').value.trim();
+    const notes = document.getElementById('l-notes').value.trim();
+
+    if (!name) { toast('Enter participant name','error'); return; }
+    if (!date) { toast('Select a date','error'); return; }
+    if (!km || km <= 0) { toast('Enter KM > 0','error'); return; }
+
+    // Check duplicate: same name + activity + date
+    const duplicate = Object.values(logs).some(l =>
+      l.name.toLowerCase() === name.toLowerCase() && l.activity === act && l.date === date
+    );
+    if (duplicate) { toast(`${name} already has a ${act} entry for ${fmtDate(date)}!`, 'error'); return; }
+
+    const btn = document.getElementById('btn-log');
+    btn.disabled = true; btn.textContent = 'Saving…';
+    try {
+      await push(logsRef, { name, activity: act, date, km, proof: proof || '', notes: notes || '', logged: Date.now() });
+      await syncToParticipants();
+      // Clear form
+      document.getElementById('l-name').value  = '';
+      document.getElementById('l-km').value    = '';
+      document.getElementById('l-proof').value = '';
+      document.getElementById('l-notes').value = '';
+      document.getElementById('l-date').value  = new Date().toISOString().split('T')[0];
+      toast(`✅ ${name} — ${km}km ${act} on ${fmtDate(date)} logged!`);
+    } catch(e) { toast('Error saving. Check Firebase.','error'); console.error(e); }
+    finally { btn.disabled = false; btn.textContent = '✅ LOG ACTIVITY'; }
+  };
+
+  // ── Delete log entry ───────────────────────────────────────────────────────
+  // ── Inline edit log entry ─────────────────────────────────────────────────
+  let editingLogKey = null;
+
+  window._editLog = function(key) {
+    editingLogKey = key;
+    renderRecent();
+    renderEntries();
+  };
+
+  window._cancelLogEdit = function() {
+    editingLogKey = null;
+    renderRecent();
+    renderEntries();
+  };
+
+  window._saveLogEdit = async function(key) {
+    const l = logs[key]; if (!l) return;
+    const name     = document.getElementById(`el-name-${key}`)?.value.trim()     || l.name;
+    const activity = document.getElementById(`el-act-${key}`)?.value             || l.activity;
+    const date     = document.getElementById(`el-date-${key}`)?.value            || l.date;
+    const km       = parseFloat(document.getElementById(`el-km-${key}`)?.value)  || 0;
+    const proof    = document.getElementById(`el-proof-${key}`)?.value.trim()    || '';
+    const notes    = document.getElementById(`el-notes-${key}`)?.value.trim()    || '';
+    try {
+      await update(ref(db, `logs/${key}`), { name, activity, date, km, proof, notes });
+      await syncToParticipants();
+      editingLogKey = null;
+      renderRecent();
+      renderEntries();
+      toast('✅ Entry updated!');
+    } catch(e) { toast('Error saving edits.','error'); console.error(e); }
+  };
+
+  window._deleteLog = async function(key) {
+    const l = logs[key];
+    if (!confirm(`Delete ${l?.name}'s ${l?.activity} entry for ${fmtDate(l?.date)}?`)) return;
+    try {
+      await remove(ref(db, `logs/${key}`));
+      await syncToParticipants();
+      toast('🗑 Entry deleted.');
+    } catch(e) { toast('Error deleting.','error'); }
+  };
+
+  // ── Render recent logs (last 30) ───────────────────────────────────────────
+  function renderRecent() {
+    const tbody = document.getElementById('recent-tbody');
+    const sorted = Object.entries(logs).sort((a,b) => (b[1].logged||0) - (a[1].logged||0)).slice(0,30);
+    if (!sorted.length) { tbody.innerHTML = `<tr><td colspan="7"><div class="empty">No logs yet. Start logging above!</div></td></tr>`; return; }
+    tbody.innerHTML = sorted.map(([key,l]) => {
+      if (editingLogKey === key) {
+        return `<tr class="edit-row">
+          <td><input class="edit-input" id="el-date-${key}" type="date" value="${esc(l.date)}" style="width:120px"/></td>
+          <td><input class="edit-input" id="el-name-${key}" value="${esc(l.name)}" list="names-datalist"/></td>
+          <td><select class="edit-select" id="el-act-${key}">
+            ${['Walking','Running','Cycling'].map(a=>`<option${l.activity===a?' selected':''}>${a}</option>`).join('')}
+          </select></td>
+          <td><input class="edit-input" id="el-km-${key}" type="number" value="${l.km}" step="0.1" style="width:70px"/></td>
+          <td><input class="edit-input" id="el-proof-${key}" value="${esc(l.proof||'')}" placeholder="Proof link…"/></td>
+          <td><input class="edit-input" id="el-notes-${key}" value="${esc(l.notes||'')}" placeholder="Notes…"/></td>
+          <td style="white-space:nowrap">
+            <button class="btn btn-sm btn-green" onclick="window._saveLogEdit('${key}')" style="margin-right:4px">✅</button>
+            <button class="btn btn-sm btn-grey" onclick="window._cancelLogEdit()">✖</button>
+          </td>
+        </tr>`;
+      }
+      return `<tr>
+        <td style="color:#888;white-space:nowrap">${fmtDate(l.date)}</td>
+        <td class="td-name">${esc(l.name)}</td>
+        <td><span class="act-badge ${actClass(l.activity)}">${l.activity}</span></td>
+        <td style="color:#FF6B35;font-weight:700">${l.km} <span style="color:#555;font-size:10px">km</span></td>
+        <td>${l.proof ? `<a class="proof-link" href="${esc(l.proof)}" target="_blank">🔗 View</a>` : '<span style="color:#333;font-size:11px">—</span>'}</td>
+        <td style="color:#666;font-size:11px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(l.notes)||'—'}</td>
+        <td style="white-space:nowrap"><button class="btn btn-sm btn-blue" onclick="window._editLog('${key}')" style="margin-right:4px">✏️</button><button class="btn btn-sm btn-red" onclick="window._deleteLog('${key}')">🗑</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  // ── Render all entries with filter ────────────────────────────────────────
+  let actFilter = 'all';
+  window.setActFilter = function(val, btn) {
+    actFilter = val;
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    renderEntries();
+  };
+
+  window.renderEntries = function() {
+    const tbody  = document.getElementById('all-tbody');
+    const search = (document.getElementById('search-input')?.value || '').toLowerCase();
+    const sorted = Object.entries(logs).sort((a,b) => (b[1].date||'').localeCompare(a[1].date||''));
+    const filtered = sorted.filter(([,l]) => {
+      const matchAct  = actFilter === 'all' || l.activity === actFilter;
+      const matchName = !search || l.name.toLowerCase().includes(search);
+      return matchAct && matchName;
+    });
+    if (!filtered.length) { tbody.innerHTML = `<tr><td colspan="7"><div class="empty">No entries found.</div></td></tr>`; return; }
+    tbody.innerHTML = filtered.map(([key,l]) => {
+      if (editingLogKey === key) {
+        return `<tr class="edit-row">
+          <td><input class="edit-input" id="el-date-${key}" type="date" value="${esc(l.date)}" style="width:120px"/></td>
+          <td><input class="edit-input" id="el-name-${key}" value="${esc(l.name)}" list="names-datalist"/></td>
+          <td><select class="edit-select" id="el-act-${key}">
+            ${['Walking','Running','Cycling'].map(a=>`<option${l.activity===a?' selected':''}>${a}</option>`).join('')}
+          </select></td>
+          <td><input class="edit-input" id="el-km-${key}" type="number" value="${l.km}" step="0.1" style="width:70px"/></td>
+          <td><input class="edit-input" id="el-proof-${key}" value="${esc(l.proof||'')}" placeholder="Proof link…"/></td>
+          <td><input class="edit-input" id="el-notes-${key}" value="${esc(l.notes||'')}" placeholder="Notes…"/></td>
+          <td style="white-space:nowrap">
+            <button class="btn btn-sm btn-green" onclick="window._saveLogEdit('${key}')" style="margin-right:4px">✅</button>
+            <button class="btn btn-sm btn-grey" onclick="window._cancelLogEdit()">✖</button>
+          </td>
+        </tr>`;
+      }
+      return `<tr>
+        <td style="color:#888;white-space:nowrap">${fmtDate(l.date)}</td>
+        <td class="td-name">${esc(l.name)}</td>
+        <td><span class="act-badge ${actClass(l.activity)}">${l.activity}</span></td>
+        <td style="color:#FF6B35;font-weight:700">${l.km} <span style="color:#555;font-size:10px">km</span></td>
+        <td>${l.proof ? `<a class="proof-link" href="${esc(l.proof)}" target="_blank">🔗 View</a>` : '<span style="color:#333;font-size:11px">—</span>'}</td>
+        <td style="color:#666;font-size:11px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(l.notes)||'—'}</td>
+        <td style="white-space:nowrap"><button class="btn btn-sm btn-blue" onclick="window._editLog('${key}')" style="margin-right:4px">✏️</button><button class="btn btn-sm btn-red" onclick="window._deleteLog('${key}')">🗑</button></td>
+      </tr>`;
+    }).join('');
+  };
+
+  // ── Render summary ─────────────────────────────────────────────────────────
+  window.renderSummary = function() {
+    const grid = document.getElementById('summary-grid');
+    const totals = computeTotals();
+    const names = Object.keys(totals).sort();
+    if (!names.length) { grid.innerHTML = `<div class="empty">No data yet.</div>`; return; }
+    grid.innerHTML = names.map(name => {
+      const activities = totals[name];
+      const rows = Object.entries(activities).map(([act, data]) =>
+        `<div class="summary-row">
+          <span class="act-badge summary-act ${actClass(act)}">${act[0]}</span>
+          <span style="color:#888">${data.dates.size}d</span>
+          <span class="summary-val">${Math.round(data.km*10)/10}km</span>
+        </div>`
+      ).join('');
+      const used = (tokens[sanitizeKey(name)]?.dates || []).length;
+      return `<div class="summary-card">
+        <div class="summary-name">${esc(name)}</div>
+        ${rows}
+        <div style="margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);font-size:10px;color:${used>=MAX_TOKENS?'#E74C3C':'#555'}">🎟 ${used}/${MAX_TOKENS} tokens</div>
+      </div>`;
+    }).join('');
+  };
+
+  // ── Tokens ─────────────────────────────────────────────────────────────────
+  function renderTokens() {
+    const list  = document.getElementById('token-list');
+    const PRESET_NAMES = [
+      "Amar Shinde","Shobha","Aakash Rayate","Poulomi Mukherjee","Sipra Tripathy",
+      "Shibani Pattnaik","Puneet Ahuja","Shubham Singh","Praveen Choudhary","Surabhi Telang",
+      "Aparna Shinde","Renu Goel","Saswati Mahapatra","Sonam Agnihotri","Jyotika Bhurani",
+      "Yogesh Karira","Mayuri Hegde","Asmita Tiwari","Jaya Bharti","Mithun Vakharia",
+      "Aman Gupta","BIBEK LAL","Richa Johar","Dikshant Ohri","Shyamala",
+      "Shubham Lakhotia","Kumar Abhishek","Kali Tripathy","Thavakumar Swaminathan",
+      "Binay lal","Shilpy pateriya","Geeta Sharma"
+    ];
+    const loggedNames = Object.values(logs).map(l => l.name);
+    const names = [...new Set([...PRESET_NAMES, ...loggedNames])].sort();
+    if (!names.length) { list.innerHTML = `<div class="empty">No participants yet.</div>`; return; }
+    list.innerHTML = names.map(name => {
+      const key      = sanitizeKey(name);
+      const dates    = tokens[key]?.dates || [];
+      const used     = dates.length;
+      const warn     = used >= MAX_TOKENS;
+      const dots     = Array.from({length:MAX_TOKENS},(_,i) =>
+        `<div class="token-dot ${i<used?'used':'left'}"></div>`).join('');
+      const dateList = dates.length
+        ? dates.sort().map(d => {
+            const [y,m,day] = d.split('-');
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            return `<span style="display:inline-flex;align-items:center;gap:4px;background:rgba(255,152,0,.1);border:1px solid rgba(255,152,0,.2);border-radius:6px;padding:2px 8px;font-size:9px;color:#FF9800;margin:2px;">
+              🟠 ${parseInt(day)} ${months[parseInt(m)-1]}
+              <button onclick="window._removeTokenDate('${esc(name)}','${d}')" style="background:none;border:none;color:#E74C3C;cursor:pointer;font-size:10px;padding:0;margin-left:2px;">✕</button>
+            </span>`;
+          }).join('')
+        : '<span style="font-size:10px;color:#444;">No tokens used yet</span>';
+      return `<div class="token-row-item">
+        <div style="flex:1;min-width:0;">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;">
+            <span class="token-name">${esc(name)}</span>
+            <div class="token-dots">${dots}</div>
+            <span class="token-count ${warn?'warn':''}">${warn?'⚠️ No tokens left':`${used}/${MAX_TOKENS}`}</span>
+          </div>
+          <div style="display:flex;flex-wrap:wrap;gap:2px;">${dateList}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  window._removeTokenDate = async function(name, date) {
+    const key   = sanitizeKey(name);
+    const entry = tokens[key] || { name, dates: [] };
+    const newDates = (entry.dates || []).filter(d => d !== date);
+    try {
+      await set(ref(db, `tokens/${key}`), { name, dates: newDates });
+      toast(`🗑 Token removed for ${name} on ${date}`);
+    } catch(e) { toast('Error removing token','error'); }
+  };
+
+  window.saveToken = async function() {
+    const name = document.getElementById('t-name').value.trim();
+    const date = document.getElementById('t-date').value;
+    if (!name) { toast('Select a participant first','error'); return; }
+    if (!date) { toast('Select a date','error'); return; }
+    const key   = sanitizeKey(name);
+    const entry = tokens[key] || { name, dates: [] };
+    const dates = entry.dates || [];
+    if (dates.includes(date)) { toast(`${name} already has a token for this date!`,'error'); return; }
+    if (dates.length >= MAX_TOKENS) { toast(`${name} has used all ${MAX_TOKENS} tokens!`,'error'); return; }
+    try {
+      await set(ref(db, `tokens/${key}`), { name, dates: [...dates, date] });
+      toast(`✅ Token logged for ${name} on ${date}`);
+      document.getElementById('t-name').value = '';
+      document.getElementById('t-date').value = '';
+    } catch(e) { toast('Error saving token','error'); }
+  };
+
+  // ── Listeners ──────────────────────────────────────────────────────────────
+  // ── Export to Excel ──────────────────────────────────────────────────────
+  window.exportToExcel = function() {
+    const search   = (document.getElementById('search-input')?.value || '').toLowerCase();
+    const allEntries = Object.entries(logs).sort((a,b) => (b[1].date||'').localeCompare(a[1].date||''));
+    const filtered = allEntries.filter(([,l]) => {
+      const matchAct  = actFilter === 'all' || l.activity === actFilter;
+      const matchName = !search || l.name.toLowerCase().includes(search);
+      return matchAct && matchName;
+    });
+
+    if (!filtered.length) { toast('No entries to export','error'); return; }
+
+    // Build rows
+    const rows = [['Date','Name','Activity','KM','Days Active (cumulative)','Proof Link','Notes']];
+    filtered.forEach(([,l]) => {
+      rows.push([
+        l.date || '',
+        l.name || '',
+        l.activity || '',
+        l.km || 0,
+        '',   // days active is cumulative, left blank per entry
+        l.proof || '',
+        l.notes || ''
+      ]);
+    });
+
+    // Create workbook
+    const wb  = XLSX.utils.book_new();
+    const ws  = XLSX.utils.aoa_to_sheet(rows);
+
+    // Column widths
+    ws['!cols'] = [
+      {wch:12},{wch:22},{wch:12},{wch:8},{wch:20},{wch:36},{wch:28}
+    ];
+
+    // Style header row bold (basic)
+    const headerRange = XLSX.utils.decode_range(ws['!ref']);
+    for (let C = headerRange.s.c; C <= headerRange.e.c; C++) {
+      const cell = ws[XLSX.utils.encode_cell({r:0, c:C})];
+      if (cell) cell.s = { font: { bold: true } };
+    }
+
+    XLSX.utils.book_append_sheet(wb, ws, 'Activity Log');
+
+    // Also add a summary sheet
+    const totals = computeTotals();
+    const summaryRows = [['Name','Activity','Total KM','Days Active']];
+    Object.entries(totals).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([name, acts]) => {
+      Object.entries(acts).forEach(([act, data]) => {
+        summaryRows.push([name, act, Math.round(data.km*10)/10, data.dates.size]);
+      });
+    });
+    const ws2 = XLSX.utils.aoa_to_sheet(summaryRows);
+    ws2['!cols'] = [{wch:22},{wch:12},{wch:12},{wch:14}];
+    XLSX.utils.book_append_sheet(wb, ws2, 'Summary');
+
+    // File name with date
+    const today = new Date().toISOString().split('T')[0];
+    const filter = actFilter === 'all' ? 'All' : actFilter;
+    XLSX.writeFile(wb, `FitnessChallenge_${filter}_${today}.xlsx`);
+    toast(`✅ Exported ${filtered.length} entries to Excel!`);
+  };
+
+  onValue(logsRef, snap => {
+    logs = snap.val() || {};
+    updateNamesList();
+    renderRecent();
+    renderEntries();
+    renderSummary();
+    renderTokens();
+  });
+
+  onValue(tokensRef, snap => {
+    const raw = snap.val() || {};
+    tokens = {};
+    Object.entries(raw).forEach(([key, t]) => {
+      if (t.name) {
+        // Support both old format {name, used} and new format {name, dates:[]}
+        if (Array.isArray(t.dates)) {
+          tokens[key] = { name: t.name, dates: t.dates };
+        } else {
+          tokens[key] = { name: t.name, dates: [] };
+        }
+      }
+    });
+    renderTokens();
+    renderSummary();
+  });
+</script>
+
+</body></html>
