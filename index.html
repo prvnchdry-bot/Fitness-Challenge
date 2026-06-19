@@ -329,6 +329,63 @@
     .ae-badge.run {background:rgba(0,229,255,.1);color:#00E5FF;border:1px solid rgba(0,229,255,.2);}
     .ae-badge.cycle{background:rgba(255,107,53,.1);color:#FF6B35;border:1px solid rgba(255,107,53,.2);}
     .ae-empty{text-align:center;padding:40px;color:#444;font-size:13px;}
+
+    /* ═══ SUGAR-FREE CHALLENGE ═══ */
+    .sf-wrap{padding:14px 16px 0;}
+    .sf-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+    .sf-icon{font-size:30px;line-height:1;}
+    .sf-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:#fff;}
+    .sf-sub{font-size:11px;color:#777;margin-top:3px;line-height:1.4;}
+    .sf-rules{font-size:10px;color:#666;line-height:1.7;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:10px 12px;margin:10px 0 18px;}
+    .sf-rules strong{color:#aaa;}
+    .sf-item{display:grid;grid-template-columns:36px 1fr auto;align-items:center;gap:10px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:10px 12px;margin-bottom:6px;animation:fadeUp .3s ease both;}
+    .sf-item.done{border-color:rgba(255,215,0,.25);background:rgba(255,215,0,.04);}
+    .sf-rank{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;background:rgba(255,255,255,.06);color:#777;flex-shrink:0;}
+    .sf-rank.gold{background:rgba(255,215,0,.15);color:#FFD700;font-size:16px;}
+    .sf-name{font-size:13px;font-weight:600;color:#f0f0f0;margin-bottom:3px;}
+    .sf-meta{font-size:9px;color:#555;margin-bottom:4px;letter-spacing:.3px;}
+    .sf-right{text-align:right;padding-left:6px;}
+    .sf-day{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#69FF47;line-height:1;}
+    .sf-day.done-day{color:#FFD700;}
+
+    /* Sugar-Free Challenge Start Banner */
+    .sf-start-banner{
+      margin:0 0 18px;
+      border-radius:14px;
+      padding:16px 18px;
+      background:linear-gradient(135deg,rgba(233,90,180,.12),rgba(180,60,120,.06));
+      border:1px solid rgba(233,90,180,.35);
+      position:relative;
+      overflow:hidden;
+    }
+    .sf-start-banner::before{
+      content:'';
+      position:absolute;top:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,#e95ab4,transparent);
+    }
+    .sf-banner-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+    .sf-banner-icon{font-size:28px;line-height:1;flex-shrink:0;}
+    .sf-banner-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#f0b0e0;line-height:1.1;}
+    .sf-banner-date-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .sf-banner-date-pill{
+      display:inline-flex;align-items:center;gap:7px;
+      background:rgba(233,90,180,.18);border:1px solid rgba(233,90,180,.4);
+      border-radius:100px;padding:6px 16px;
+      font-size:13px;font-weight:700;color:#f0c0e8;letter-spacing:.5px;
+    }
+    .sf-banner-date-dot{width:8px;height:8px;border-radius:50%;background:#e95ab4;animation:pulse 1.6s ease-in-out infinite;flex-shrink:0;}
+    .sf-banner-info{font-size:11px;color:#a06080;line-height:1.5;margin-top:8px;}
+    .sf-banner-info strong{color:#d080b0;}
+
+    /* "No participants yet" placeholder */
+    .sf-waiting{
+      text-align:center;padding:36px 20px;
+      background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.08);
+      border-radius:12px;color:#444;font-size:13px;line-height:1.7;
+    }
+    .sf-waiting-icon{font-size:32px;margin-bottom:10px;}
+    .sf-waiting-sub{font-size:11px;color:#333;margin-top:6px;}
+    .sf-day-unit{font-size:9px;color:#555;}
   </style>
 <body>
 <div class="lb-root">
@@ -357,6 +414,7 @@
       <button class="view-btn active" id="vbtn-lb" onclick="switchView('lb')">🏆 Live Leaderboard</button>
       <button class="view-btn"        id="vbtn-wk" onclick="switchView('wk')">📅 Weekly</button>
       <button class="view-btn"        id="vbtn-gr" onclick="switchView('gr')">👥 Groups</button>
+      <button class="view-btn"        id="vbtn-sf" onclick="switchView('sf')">🍬 Sugar Free</button>
     </div>
   </div>
 
@@ -452,6 +510,63 @@
     </div>
   </div><!-- /view-gr -->
 
+  <!-- ── SUGAR-FREE CHALLENGE VIEW ── -->
+  <div id="view-sf" style="display:none">
+    <div class="sf-wrap">
+      <div class="sf-header">
+        <div class="sf-icon">🍬</div>
+        <div>
+          <div class="sf-title">14-DAY SUGAR-FREE CHALLENGE</div>
+          <div class="sf-sub">Zero added sugar, 14 days straight. One slip and the clock resets to Day 1 — back to square one, no judgment.</div>
+        </div>
+      </div>
+
+      <!-- Challenge Start Banner -->
+      <div class="sf-start-banner" id="sf-start-banner">
+        <div class="sf-banner-top">
+          <div class="sf-banner-icon">🗓️</div>
+          <div class="sf-banner-title">Challenge Begins 21 June 2026</div>
+        </div>
+        <div class="sf-banner-date-row">
+          <div class="sf-banner-date-pill">
+            <span class="sf-banner-date-dot"></span>
+            
+          </div>
+        </div>
+        <div class="sf-banner-info">
+          <strong>14 days</strong> of zero added sugar. Enrollments open now — DM Praveen or Amar to sign up.<br>
+          Streaks go live once participants are enrolled by the admin.
+        </div>
+      </div>
+
+      <div class="sf-rules">
+        <strong>Counts as sugar:</strong> sweets, desserts, sweetened tea/coffee/drinks, chocolate, sweetened yogurt/cereal, jaggery/honey, sauces with added sugar (ketchup etc).<br>
+        <strong>Doesn't count:</strong> whole fruit, natural sugars in milk/dairy.<br>
+        Slipped up? Just DM Praveen or Amar — it's honesty-based, no one's watching.
+      </div>
+
+      <!-- Populated once admin enrolls people -->
+      <div id="sf-participants-wrap" style="display:none">
+        <div class="section-label">ACTIVE STREAKS</div>
+        <div id="sf-active-list" class="list-wrap"></div>
+
+        <div class="section-label" id="sf-completed-label" style="display:none">COMPLETED 🏅</div>
+        <div id="sf-completed-list" class="list-wrap"></div>
+      </div>
+
+      <!-- Shown only before anyone is enrolled -->
+      <div id="sf-waiting-block">
+        <div class="sf-waiting">
+          <div class="sf-waiting-icon">⏳</div>
+          <div>Waiting for participants to be enrolled</div>
+          <div class="sf-waiting-sub">Once the admin adds participants, live streaks will appear here automatically.</div>
+        </div>
+      </div>
+
+      <div class="ae-empty" id="sf-empty" style="display:none">No one has joined the Sugar-Free Challenge yet. DM Praveen or Amar to sign up!</div>
+    </div>
+  </div><!-- /view-sf -->
+
 </div><!-- /lb-root -->
 
 <script>
@@ -485,9 +600,11 @@
     document.getElementById('view-lb').style.display = v === 'lb' ? '' : 'none';
     document.getElementById('view-wk').style.display = v === 'wk' ? '' : 'none';
     document.getElementById('view-gr').style.display = v === 'gr' ? '' : 'none';
+    document.getElementById('view-sf').style.display = v === 'sf' ? '' : 'none';
     document.getElementById('vbtn-lb').classList.toggle('active', v === 'lb');
     document.getElementById('vbtn-wk').classList.toggle('active', v === 'wk');
     document.getElementById('vbtn-gr').classList.toggle('active', v === 'gr');
+    document.getElementById('vbtn-sf').classList.toggle('active', v === 'sf');
   }
 </script>
 
@@ -1287,4 +1404,107 @@
       </div>`;
     }).join('');
   }
+
+  // ═══ SUGAR-FREE CHALLENGE ═══
+  function sfTodayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  function sfDaysBetween(d1, d2) {
+    const a = new Date(d1 + 'T00:00:00Z');
+    const b = new Date(d2 + 'T00:00:00Z');
+    return Math.round((b - a) / 86400000);
+  }
+
+  // Day count of current streak, 1-indexed (start date itself = Day 1), capped at 14
+  function sfDaysClean(startDate, todayStr) {
+    const diff = sfDaysBetween(startDate, todayStr);
+    return Math.max(0, diff) + 1;
+  }
+
+  function renderSugarChallenge() {
+    const today = sfTodayStr();
+    const entries = Object.values(sugarChallenge || {}).map(p => {
+      const raw = sfDaysClean(p.streakStartDate, today);
+      return { ...p, days: Math.min(raw, 14), completed: p.status === 'completed' || raw >= 14 };
+    });
+
+    const hasParticipants = entries.length > 0;
+
+    // Banner: always show, but tweak wording once challenge is live (after Jun 21 + participants exist)
+    const challengeStart = new Date('2026-06-21T00:00:00');
+    const todayDate = new Date(today + 'T00:00:00');
+    const challengeLive = todayDate >= challengeStart && hasParticipants;
+    const banner = document.getElementById('sf-start-banner');
+    if (banner) {
+      if (challengeLive) {
+        // Challenge is active with participants — condense banner
+        const dayNum = Math.floor((todayDate - challengeStart) / 86400000) + 1;
+        banner.style.borderColor = 'rgba(105,255,71,.3)';
+        banner.style.background  = 'linear-gradient(135deg,rgba(105,255,71,.07),rgba(57,255,20,.03))';
+        banner.querySelector('.sf-banner-icon').textContent = '🔥';
+        banner.querySelector('.sf-banner-title').textContent = 'Challenge In Progress — Day ' + Math.min(dayNum, 14) + ' of 14';
+        banner.querySelector('.sf-banner-title').style.color = '#90ff90';
+        banner.querySelector('.sf-banner-date-pill').style.background = 'rgba(105,255,71,.15)';
+        banner.querySelector('.sf-banner-date-pill').style.borderColor = 'rgba(105,255,71,.4)';
+        banner.querySelector('.sf-banner-date-pill').style.color = '#90ff90';
+        banner.querySelector('.sf-banner-date-dot').style.background = '#69FF47';
+      }
+    }
+
+    // Show/hide participants section vs waiting block
+    const participantsWrap = document.getElementById('sf-participants-wrap');
+    const waitingBlock     = document.getElementById('sf-waiting-block');
+    if (participantsWrap) participantsWrap.style.display = hasParticipants ? '' : 'none';
+    if (waitingBlock)     waitingBlock.style.display     = hasParticipants ? 'none' : '';
+
+    document.getElementById('sf-empty').style.display = 'none'; // handled by waiting block
+
+    if (!hasParticipants) return;
+
+    const active = entries.filter(e => !e.completed)
+      .sort((a,b) => b.days - a.days || (a.resetCount||0) - (b.resetCount||0));
+    const completed = entries.filter(e => e.completed)
+      .sort((a,b) => (b.longestStreak||0) - (a.longestStreak||0));
+
+    document.getElementById('sf-active-list').innerHTML = active.map((p,i) => {
+      const pct = Math.round(p.days/14*100);
+      return `<div class="sf-item" style="animation-delay:${i*.04}s">
+        <div class="sf-rank">${i+1}</div>
+        <div>
+          <div class="sf-name">${esc(p.name)}</div>
+          <div class="sf-meta">Best streak: ${p.longestStreak||0}d &nbsp;·&nbsp; Resets: ${p.resetCount||0}</div>
+          <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:#e95ab4"></div></div>
+        </div>
+        <div class="sf-right">
+          <div class="sf-day">${p.days}</div>
+          <div class="sf-day-unit">of 14</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('sf-completed-label').style.display = completed.length ? '' : 'none';
+    document.getElementById('sf-completed-list').innerHTML = completed.map(p => {
+      return `<div class="sf-item done">
+        <div class="sf-rank gold">🏅</div>
+        <div>
+          <div class="sf-name">${esc(p.name)}</div>
+          <div class="sf-meta">Resets along the way: ${p.resetCount||0}</div>
+          <div class="progress-track"><div class="progress-fill" style="width:100%;background:#FFD700"></div></div>
+        </div>
+        <div class="sf-right">
+          <div class="sf-day done-day">14</div>
+          <div class="sf-day-unit">DONE</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  let sugarChallenge = {};
+  onValue(ref(db, 'sugarChallenge'), snap => {
+    sugarChallenge = snap.val() || {};
+    renderSugarChallenge();
+  });
+
 </script>

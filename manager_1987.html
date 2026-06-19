@@ -128,6 +128,7 @@
     <button class="nav-tab" onclick="switchNav('entries',this)">📊 All Entries</button>
     <button class="nav-tab" onclick="switchNav('summary',this)">🏆 Summary</button>
     <button class="nav-tab" onclick="switchNav('tokens',this)">🎟 Tokens</button>
+    <button class="nav-tab" onclick="switchNav('sugar',this)">🍬 Sugar Challenge</button>
   </div>
 
   <!-- ── TAB 1: Log Activity ── -->
@@ -271,7 +272,57 @@
     <div class="token-list" id="token-list"><div class="empty"><div class="spinner"></div></div></div>
   </div>
 
-</div>
+  <!-- ── TAB 5: Sugar Challenge ── -->
+  <div id="nav-sugar" class="nav-section">
+    <!-- Join form -->
+    <div class="card">
+      <div class="card-title">🍬 Enroll Participant</div>
+      <div class="card-sub">Add someone to the 14-day sugar-free challenge. Their streak clock starts from the date you set.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-bottom:8px;">
+        <div class="fg">
+          <label>Participant Name</label>
+          <select id="sf-join-name" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;">
+            <option value="">— Select participant —</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Streak Start Date</label>
+          <input id="sf-join-date" type="date" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;">
+        </div>
+        <button class="btn btn-orange" id="sf-join-btn" onclick="sfJoin()">Enroll</button>
+      </div>
+    </div>
+
+    <!-- Log a break form -->
+    <div class="card">
+      <div class="card-title">↩ Log Sugar Break</div>
+      <div class="card-sub">When someone notifies you they had sugar, log it here. Their streak resets to the day after the break date.</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-bottom:8px;">
+        <div class="fg">
+          <label>Participant</label>
+          <select id="sf-break-name" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;">
+            <option value="">— Select active participant —</option>
+          </select>
+        </div>
+        <div class="fg">
+          <label>Date of Break</label>
+          <input id="sf-break-date" type="date" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;">
+        </div>
+        <button class="btn btn-red" id="sf-break-btn" onclick="sfLogBreak()" style="border-radius:10px;padding:10px 20px;font-size:13px;font-weight:700;cursor:pointer;">Log Break</button>
+      </div>
+      <div style="font-size:11px;color:#555;">Their new streak will start from the day after the break date.</div>
+    </div>
+
+    <!-- Active participants -->
+    <div class="card-title" style="margin-bottom:12px;">🔥 Active Streaks</div>
+    <div id="sf-admin-active"><div class="empty"><div class="spinner"></div></div></div>
+
+    <!-- Completed -->
+    <div id="sf-admin-completed-wrap" style="margin-top:24px;display:none">
+      <div class="card-title" style="margin-bottom:12px;">🏅 Completed (14 Days)</div>
+      <div id="sf-admin-completed"></div>
+    </div>
+  </div>
 
 <div class="toast" id="toast"></div>
 
@@ -280,6 +331,10 @@
   document.addEventListener('DOMContentLoaded', () => {
     const td = document.getElementById('t-date');
     if (td) td.value = new Date().toISOString().split('T')[0];
+    const sjd = document.getElementById('sf-join-date');
+    if (sjd) sjd.value = new Date().toISOString().split('T')[0];
+    const sbd = document.getElementById('sf-break-date');
+    if (sbd) sbd.value = new Date().toISOString().split('T')[0];
   });
 
   function switchNav(key, btn) {
@@ -722,6 +777,181 @@
     renderTokens();
     renderSummary();
   });
-</script>
 
+  // ── Sugar Free Challenge ───────────────────────────────────────────────────
+  const sugarRef  = ref(db, 'sugarChallenge');
+  let sugarData   = {};
+
+  const SUGAR_NAMES = ['Amar Shinde','Shobha','Aakash Rayate','Poulomi Mukherjee','Sipra Tripathy','Shibani Pattnaik','Puneet Ahuja','Shubham Singh','Praveen Choudhary','Surabhi Telang','Aparna Shinde','Renu Goel','Saswati Mahapatra','Sonam Agnihotri','Jyotika Bhurani','Yogesh Karira','Mayuri Hegde','Asmita Tiwari','Jaya Bharti','Mithun Vakharia','Aman Gupta','BIBEK LAL','Richa Johar','Dikshant Ohri','Shyamala','Shubham Lakhotia','Kumar Abhishek','Kali Tripathy','Thavakumar Swaminathan','Binay lal','Shilpy pateriya','Geeta Sharma'];
+
+  function sfTodayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  function sfDaysClean(streakStartDate) {
+    const start = new Date(streakStartDate + 'T00:00:00');
+    const today = new Date(); today.setHours(0,0,0,0);
+    return Math.floor((today - start) / 86400000) + 1;
+  }
+
+  function sfDatePlusDays(dateStr, n) {
+    const d = new Date(dateStr + 'T00:00:00');
+    d.setDate(d.getDate() + n);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  function sfPopulateDropdowns() {
+    const enrolled = new Set(Object.values(sugarData).map(e => e.name));
+    const joinSel = document.getElementById('sf-join-name');
+    if (joinSel) {
+      const unenrolled = SUGAR_NAMES.filter(n => !enrolled.has(n));
+      joinSel.innerHTML = '<option value="">— Select participant —</option>' +
+        unenrolled.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+    }
+    const breakSel = document.getElementById('sf-break-name');
+    if (breakSel) {
+      const active = Object.values(sugarData).filter(e => e.status === 'active');
+      breakSel.innerHTML = '<option value="">— Select active participant —</option>' +
+        active.map(e => `<option value="${esc(e.name)}">${esc(e.name)}</option>`).join('');
+    }
+  }
+
+  function renderSugarAdmin() {
+    sfPopulateDropdowns();
+
+    const active = Object.values(sugarData).filter(e => e.status === 'active');
+    const activeEl = document.getElementById('sf-admin-active');
+    const sorted = [...active]
+      .map(e => ({ ...e, daysClean: Math.min(14, sfDaysClean(e.streakStartDate)) }))
+      .sort((a,b) => b.daysClean - a.daysClean);
+
+    if (!sorted.length) {
+      activeEl.innerHTML = '<div class="empty">No active participants yet. Enroll someone above.</div>';
+    } else {
+      activeEl.innerHTML = sorted.map(p => {
+        const key = p.name.trim().toLowerCase().replace(/[^a-z0-9]/g,'_');
+        const atDay14 = p.daysClean >= 14;
+        return `
+        <div class="token-row-item" style="margin-bottom:8px;${atDay14?'border-color:rgba(245,200,66,.3);':''}">
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:#f0f0f0;margin-bottom:3px;">${esc(p.name)}</div>
+            <div style="font-size:11px;color:#666;">Day ${p.daysClean}/14 · ${p.resetCount||0} reset${(p.resetCount||0)===1?'':'s'}${p.longestStreak>0?' · Best: '+p.longestStreak+'d':''}</div>
+            <div style="width:100%;height:3px;background:rgba(255,255,255,.07);border-radius:2px;margin-top:5px;overflow:hidden"><div style="height:100%;border-radius:2px;background:${atDay14?'#F5C842':'#e74c9a'};width:${Math.round(p.daysClean/14*100)}%"></div></div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;margin-left:12px;flex-shrink:0">
+            <div style="text-align:right">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:26px;color:${atDay14?'#F5C842':'#e74c9a'};line-height:1">${p.daysClean}</div>
+              <div style="font-size:9px;color:#555;letter-spacing:1px">/ 14 DAYS</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end;">
+              ${atDay14 ? `<button class="btn btn-sm" style="background:rgba(245,200,66,.12);color:#F5C842;border:1px solid rgba(245,200,66,.3);font-size:10px;padding:4px 10px;border-radius:7px;cursor:pointer;white-space:nowrap;" onclick="sfMarkComplete('${esc(key)}','${esc(p.name)}')">🏅 Mark Complete</button>` : ''}
+              <button class="btn btn-sm btn-red" style="padding:4px 8px;font-size:11px;" onclick="window.sfDeleteParticipant('${esc(key)}','${esc(p.name)}')">🗑</button>
+            </div>
+          </div>
+        </div>`;
+      }).join('');
+    }
+
+    const completed = Object.values(sugarData).filter(e => e.status === 'completed');
+    const compWrap = document.getElementById('sf-admin-completed-wrap');
+    const compEl   = document.getElementById('sf-admin-completed');
+    if (completed.length) {
+      compWrap.style.display = '';
+      compEl.innerHTML = completed.map(p => {
+        const key = p.name.trim().toLowerCase().replace(/[^a-z0-9]/g,'_');
+        return `
+        <div class="token-row-item" style="margin-bottom:8px;border-color:rgba(245,200,66,.25)">
+          <div style="flex:1">
+            <div style="font-size:13px;font-weight:700;color:#f0f0f0;">${esc(p.name)}</div>
+            <div style="font-size:11px;color:#666;margin-top:2px;">✅ Completed 14 days · ${p.resetCount||0} reset${(p.resetCount||0)===1?'':'s'}</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:#F5C842">🏅</div>
+            <button class="btn btn-sm btn-red" style="padding:4px 8px;font-size:11px;" onclick="window.sfDeleteParticipant('${esc(key)}','${esc(p.name)}')">🗑</button>
+          </div>
+        </div>`;
+      }).join('');
+    } else {
+      compWrap.style.display = 'none';
+    }
+  }
+
+  // Pre-populate dropdowns immediately on tab load (before Firebase responds)
+  document.addEventListener('DOMContentLoaded', () => {
+    const joinSel = document.getElementById('sf-join-name');
+    if (joinSel) {
+      joinSel.innerHTML = '<option value="">— Select participant —</option>' +
+        SUGAR_NAMES.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+    }
+  });
+
+  window.sfJoin = async function() {
+    const name = document.getElementById('sf-join-name').value;
+    const date = document.getElementById('sf-join-date').value;
+    if (!name) { toast('Select a participant', 'error'); return; }
+    if (!date) { toast('Set a start date', 'error'); return; }
+    const key = name.trim().toLowerCase().replace(/[^a-z0-9]/g,'_');
+    const btn = document.getElementById('sf-join-btn');
+    btn.disabled = true; btn.textContent = 'Enrolling…';
+    try {
+      await set(ref(db, `sugarChallenge/${key}`), {
+        name, streakStartDate: date, resetCount: 0, longestStreak: 0, status: 'active'
+      });
+      toast(`✅ ${name} enrolled — Day 1 starts ${date}!`);
+      document.getElementById('sf-join-name').value = '';
+    } catch(e) { toast('Error: ' + e.message, 'error'); }
+    btn.disabled = false; btn.textContent = 'Enroll';
+  };
+
+  window.sfLogBreak = async function() {
+    const name = document.getElementById('sf-break-name').value;
+    const breakDate = document.getElementById('sf-break-date').value;
+    if (!name) { toast('Select a participant', 'error'); return; }
+    if (!breakDate) { toast('Set the break date', 'error'); return; }
+    const key = name.trim().toLowerCase().replace(/[^a-z0-9]/g,'_');
+    const current = sugarData[key];
+    if (!current) { toast('Participant not found', 'error'); return; }
+    const daysClean = Math.max(0, sfDaysClean(current.streakStartDate) - 1); // days before break
+    const newLongest = Math.max(current.longestStreak || 0, daysClean);
+    const newStart = sfDatePlusDays(breakDate, 1); // streak restarts day after break
+    const btn = document.getElementById('sf-break-btn');
+    btn.disabled = true; btn.textContent = 'Saving…';
+    try {
+      await update(ref(db, `sugarChallenge/${key}`), {
+        streakStartDate: newStart,
+        resetCount: (current.resetCount || 0) + 1,
+        longestStreak: newLongest,
+        status: 'active'
+      });
+      toast(`↩ ${name} reset — new streak starts ${newStart}`);
+      document.getElementById('sf-break-name').value = '';
+    } catch(e) { toast('Error: ' + e.message, 'error'); }
+    btn.disabled = false; btn.textContent = 'Log Break';
+  };
+
+  window.sfMarkComplete = async function(key, name) {
+    if (!confirm(`Mark ${name} as completed? This will move them to the 14-day hall of fame.`)) return;
+    try {
+      await update(ref(db, `sugarChallenge/${key}`), { status: 'completed', longestStreak: 14 });
+      toast(`🏅 ${name} marked as complete!`);
+    } catch(e) { toast('Error: ' + e.message, 'error'); }
+  };
+
+window.sfDeleteParticipant = async function(key, name) {
+    if (!confirm(`Are you sure you want to completely remove ${name} from the Sugar Challenge records?`)) return;
+    try {
+      await remove(ref(db, `sugarChallenge/${key}`));
+      toast(`🗑 ${name} removed from Sugar Challenge.`);
+    } catch(e) { 
+      toast('Error deleting entry', 'error'); 
+      console.error(e); 
+    }
+  };
+  
+  onValue(sugarRef, snap => {
+    sugarData = snap.val() || {};
+    renderSugarAdmin();
+  });
+</script>
 </body></html>
