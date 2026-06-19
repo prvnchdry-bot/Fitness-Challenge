@@ -35,7 +35,16 @@
 
     /* ── View toggle ── */
     .lb-label{text-align:center;padding:2px 0 4px;}
-    .view-toggle{display:inline-flex;gap:4px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:100px;padding:4px;}
+    .view-toggle {
+    display: inline-flex;
+    flex-wrap: wrap;       /* Added to allow wrapping */
+    justify-content: center; /* Added to center alignment if it breaks line */
+    gap: 4px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 100px;
+    padding: 4px;
+  }
     .view-btn{padding:7px 20px;border-radius:100px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#555;cursor:pointer;transition:all .2s;white-space:nowrap;}
     .view-btn.active{background:#FF6B35;color:#fff;box-shadow:0 2px 12px rgba(255,107,53,.35);}
     .view-btn:hover:not(.active){color:#aaa;}
@@ -414,7 +423,9 @@
       <button class="view-btn active" id="vbtn-lb" onclick="switchView('lb')">🏆 Live Leaderboard</button>
       <button class="view-btn"        id="vbtn-wk" onclick="switchView('wk')">📅 Weekly</button>
       <button class="view-btn"        id="vbtn-gr" onclick="switchView('gr')">👥 Groups</button>
-      <!-- Moved directly beneath the others in the banner row -->
+    </div>
+  
+    <br> <div class="view-toggle">
       <button class="view-btn"        id="vbtn-sf" onclick="switchView('sf')">🍬 Sugar Free</button>
     </div>
   </div>
