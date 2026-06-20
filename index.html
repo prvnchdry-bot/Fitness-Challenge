@@ -395,8 +395,244 @@
     .sf-waiting-icon{font-size:32px;margin-bottom:10px;}
     .sf-waiting-sub{font-size:11px;color:#333;margin-top:6px;}
     .sf-day-unit{font-size:9px;color:#555;}
+
+    /* ═══════════════════════════════════════════════════
+       AUTO DAY / NIGHT THEME
+       Dark = original colours (all untouched).
+       Light = only what needs fixing for readability.
+    ════════════════════════════════════════════════════ */
+
+    body.theme-light { background: #f0f2f5; color: #1a1a2e; }
+
+    body.theme-light .lb-root {
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255,107,53,.12) 0%, transparent 60%),
+        repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(0,0,0,.025) 60px, rgba(0,0,0,.025) 61px),
+        repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(0,0,0,.025) 60px, rgba(0,0,0,.025) 61px);
+    }
+
+    /* Hero */
+    body.theme-light .hero-100,
+    body.theme-light .hero-fitness        { color: #1a1a2e; }
+    body.theme-light .hero-community      { color: #888; }
+    body.theme-light .hero-community-line { background: #ccc; }
+    body.theme-light .hero-dates          { background: rgba(255,255,255,.8); border-color: rgba(0,0,0,.12); color: #333; }
+    body.theme-light .hero-dates-sep      { background: #ccc; }
+    body.theme-light .hero-pill           { background: rgba(255,255,255,.8); border-color: rgba(0,0,0,.12); color: #444; }
+
+    /* "DAY 20 OF 100" badge — neon #39FF14 vanishes on white; use deep forest green */
+    body.theme-light .hero-starting       { color: #1a7a1a; background: rgba(20,140,20,.1); border-color: rgba(20,140,20,.4); }
+    body.theme-light .hero-starting-dot   { background: #1a7a1a; }
+
+    /* View toggle */
+    body.theme-light .view-toggle         { background: rgba(0,0,0,.05); border-color: rgba(0,0,0,.1); }
+    body.theme-light .view-btn            { color: #777; }
+    body.theme-light .view-btn:hover:not(.active) { color: #333; }
+
+    /* Category tabs (inactive) */
+    body.theme-light .cat-tab             { background: rgba(255,255,255,.8); border-color: rgba(0,0,0,.12); color: #777; }
+    body.theme-light .cat-tab:hover:not([class*="active"]) { border-color: rgba(0,0,0,.2); color: #333; }
+
+    /* Active Walk — neon #69FF47 → deep green */
+    body.theme-light .cat-tab.active-walk { background: rgba(20,130,20,.12); border-color: rgba(20,130,20,.45); color: #177017; }
+    /* Active Run  — neon cyan #00E5FF → deep teal */
+    body.theme-light .cat-tab.active-run  { background: rgba(0,130,150,.12); border-color: rgba(0,130,150,.45); color: #006e80; }
+    /* Active Cycle — #FF6B35 darkened slightly so the wash/border show up on light bg */
+    body.theme-light .cat-tab.active-cycle{ background: rgba(220,90,30,.14); border-color: rgba(220,90,30,.5); color: #c0501a; }
+
+    body.theme-light .cat-tab-entries     { border-color: rgba(140,80,220,.25); background: rgba(140,80,220,.07); color: #777; }
+    body.theme-light .cat-tab-entries:hover           { color: #7030c0; background: rgba(140,80,220,.12); }
+    body.theme-light .cat-tab-entries.active-entries  { color: #7030c0; background: rgba(140,80,220,.15); }
+
+    /* Category panel heading */
+    body.theme-light .cat-title.walk      { color: #177017; }   /* neon → deep green */
+    body.theme-light .cat-title.run       { color: #006e80; }   /* neon cyan → deep teal */
+    body.theme-light .cat-title.cycle     { color: #c0501a; }   /* neon orange → deep orange */
+    body.theme-light .cat-divider         { background: rgba(0,0,0,.08); }
+    body.theme-light .cat-count           { color: #999; }
+
+    /* Podium */
+    body.theme-light .podium-card.first   { background: linear-gradient(160deg,#fffbe6,#fff4cc); }
+    body.theme-light .podium-card.second  { background: linear-gradient(160deg,#f2f2f2,#e6e6e6); }
+    body.theme-light .podium-card.third   { background: linear-gradient(160deg,#fef0dc,#fde3bb); }
+    body.theme-light .podium-name         { color: #1a1a2e; }
+    body.theme-light .podium-km-unit      { color: #888; }
+    body.theme-light .podium-days         { color: #888; }
+    body.theme-light .podium-empty        { color: #aaa; }
+
+    /* List */
+    body.theme-light .section-label       { color: #aaa; }
+    body.theme-light .list-item           { background: rgba(255,255,255,.85); border-color: rgba(0,0,0,.08); }
+    body.theme-light .list-item:hover     { background: #fff; }
+    body.theme-light .rank-badge          { background: rgba(0,0,0,.07); color: #888; }
+    body.theme-light .list-name           { color: #1a1a2e; }
+    body.theme-light .list-meta           { color: #777; }
+    body.theme-light .list-km-unit        { color: #888; }
+    body.theme-light .progress-track      { background: rgba(0,0,0,.09); }
+    body.theme-light .token-dot.left      { background: rgba(0,0,0,.08); border-color: rgba(0,0,0,.15); }
+    body.theme-light .token-label         { color: #777; }
+    body.theme-light .week-label          { color: #aaa; }
+    body.theme-light .day-dot.today       { background: rgba(0,0,0,.06); color: #666; border-color: rgba(0,0,0,.18); }
+    body.theme-light .day-dot.future      { background: rgba(0,0,0,.04); color: #ccc;  border-color: rgba(0,0,0,.08); }
+    /* Active day dot neon green → deep green */
+    body.theme-light .day-dot.active      { background: rgba(20,130,20,.15); color: #177017; border-color: rgba(20,130,20,.4); }
+    /* Streak indicator */
+    body.theme-light .wk-streak           { color: #177017; }
+    body.theme-light .wk-streak::before   { background: #177017; }
+
+    body.theme-light .loading             { color: #888; }
+
+    /* Weekly awards */
+    body.theme-light .wk-awards-line      { background: rgba(0,0,0,.08); }
+    body.theme-light .wk-award-name       { color: #1a1a2e; }
+    body.theme-light .wk-award-sub        { color: #888; }
+    body.theme-light .wk-award-unit       { color: #888; }
+    body.theme-light .wk-awards-empty     { color: #aaa; border-color: rgba(0,0,0,.08); }
+
+    /* Weekly champions */
+    body.theme-light .wk-section-line     { background: rgba(0,0,0,.08); }
+    body.theme-light .wk-nav-btn          { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.1); color: #555; }
+    body.theme-light .wk-nav-text         { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.1); color: #555; }
+    body.theme-light .wk-tabs             { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.08); }
+    body.theme-light .wk-tab              { color: #777; }
+    body.theme-light .wk-tab:hover:not(.active) { color: #333; }
+    body.theme-light .wk-pill             { background: rgba(255,255,255,.8); border-color: rgba(0,0,0,.08); }
+    body.theme-light .wk-pill-lbl         { color: #888; }
+    body.theme-light .wk-pill-sep         { background: rgba(0,0,0,.08); }
+    body.theme-light .wk-card             { background: rgba(255,255,255,.85); border-color: rgba(0,0,0,.08); }
+    body.theme-light .wk-card.r1          { background: linear-gradient(135deg,rgba(255,215,0,.1),rgba(255,255,255,.9)); }
+    body.theme-light .wk-card.r2          { background: linear-gradient(135deg,rgba(180,180,180,.08),rgba(255,255,255,.9)); }
+    body.theme-light .wk-card.r3          { background: linear-gradient(135deg,rgba(180,100,30,.08),rgba(255,255,255,.9)); }
+    body.theme-light .wk-medal.mx         { background: rgba(0,0,0,.05); color: #aaa; }
+    body.theme-light .wk-name             { color: #1a1a2e; }
+    body.theme-light .wk-meta             { color: #777; }
+    body.theme-light .wk-km-unit          { color: #888; }
+    body.theme-light .wk-dot.off          { background: rgba(0,0,0,.1); }
+    body.theme-light .wk-empty            { color: #aaa; }
+
+    /* Groups */
+    body.theme-light .grp-date-bar        { color: #888; }
+    body.theme-light .grp-card            { background: #fff; border-color: rgba(0,0,0,.1); }
+    body.theme-light .grp-card.g-active   { border-color: rgba(20,130,20,.3); }
+    body.theme-light .grp-card.g-partial  { border-color: rgba(200,120,0,.3); }
+    body.theme-light .grp-title           { color: #1a1a2e; }
+    body.theme-light .grp-status.none     { color: #aaa; }
+    body.theme-light .grp-member-name     { color: #444; }
+    body.theme-light .grp-member-act      { color: #888; }
+    body.theme-light .grp-member.gm-active,
+    body.theme-light .grp-member.gm-run,
+    body.theme-light .grp-member.gm-cycle { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.12); }
+    body.theme-light .grp-flow            { color: #aaa; border-top-color: rgba(0,0,0,.07); }
+    body.theme-light .grp-flow-arrow      { color: #ccc; }
+    body.theme-light .grp-nav-btn         { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.1); color: #666; }
+    body.theme-light #grp-date-text       { color: #444; }
+    /* Group walk km neon green → deep green */
+    body.theme-light .grp-member.gm-active .grp-member-km { color: #177017; }
+    body.theme-light .grp-dot.green       { background: #1a8a1a; box-shadow: 0 0 6px rgba(20,130,20,.4); }
+
+    /* All Entries */
+    body.theme-light .ae-search           { background: rgba(255,255,255,.9); border-color: rgba(0,0,0,.12); color: #1a1a2e; }
+    body.theme-light .ae-search::placeholder { color: #bbb; }
+    body.theme-light .ae-act-chip         { border-color: rgba(0,0,0,.12); color: #777; }
+    body.theme-light .ae-act-chip:hover:not(.active) { border-color: rgba(0,0,0,.2); color: #333; }
+    body.theme-light .ae-hint             { color: #aaa; }
+    body.theme-light .ae-count            { color: #888; }
+    body.theme-light .ae-table-wrap       { border-color: rgba(0,0,0,.08); }
+    body.theme-light .ae-table thead tr   { background: #e8eaf0; }
+    body.theme-light .ae-table thead th   { color: #888; border-bottom-color: rgba(0,0,0,.08); }
+    body.theme-light .ae-table tbody tr   { border-bottom-color: rgba(0,0,0,.05); }
+    body.theme-light .ae-table tbody tr:hover { background: rgba(0,0,0,.03); }
+    body.theme-light .ae-table tbody td   { color: #444; }
+    body.theme-light .ae-td-name          { color: #1a1a2e; }
+    body.theme-light .ae-empty            { color: #aaa; }
+    /* Walk badge neon → deep green */
+    body.theme-light .ae-badge.walk       { background: rgba(20,130,20,.1); color: #177017; border-color: rgba(20,130,20,.3); }
+    /* Run badge neon cyan → deep teal */
+    body.theme-light .ae-badge.run        { background: rgba(0,100,130,.1); color: #006070; border-color: rgba(0,100,130,.3); }
+
+    /* Sugar-Free challenge */
+    body.theme-light .sf-title            { color: #1a1a2e; }
+    body.theme-light .sf-sub              { color: #888; }
+    body.theme-light .sf-rules            { background: rgba(255,255,255,.7); border-color: rgba(0,0,0,.08); color: #777; }
+    body.theme-light .sf-rules strong     { color: #444; }
+    body.theme-light .sf-item             { background: rgba(255,255,255,.85); border-color: rgba(0,0,0,.08); }
+    body.theme-light .sf-rank             { background: rgba(0,0,0,.07); color: #888; }
+    body.theme-light .sf-name             { color: #1a1a2e; }
+    body.theme-light .sf-meta             { color: #888; }
+    body.theme-light .sf-day-unit         { color: #888; }
+    body.theme-light .sf-waiting          { background: rgba(0,0,0,.03); border-color: rgba(0,0,0,.1); color: #aaa; }
+    body.theme-light .sf-waiting-sub      { color: #bbb; }
+    /* Sugar-free active day count neon green → deep green */
+    body.theme-light .sf-day              { color: #177017; }
+
+    /* ── Theme toggle button ── */
+    #theme-toggle {
+      position: fixed; bottom: 20px; right: 16px; z-index: 9999;
+      width: 46px; height: 46px; border-radius: 50%;
+      border: 1px solid rgba(255,107,53,.4);
+      background: rgba(15,15,28,.88);
+      backdrop-filter: blur(10px);
+      cursor: pointer; font-size: 20px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 18px rgba(0,0,0,.45);
+      transition: background .3s, border-color .3s, transform .2s;
+    }
+    #theme-toggle:hover { transform: scale(1.12); border-color: #FF6B35; }
+    body.theme-light #theme-toggle {
+      background: rgba(248,248,252,.92);
+      border-color: rgba(255,107,53,.45);
+      box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    }
+    #theme-label {
+      position: fixed; bottom: 70px; right: 7px; z-index: 9999;
+      font-size: 8px; font-weight: 700; letter-spacing: 1px;
+      text-transform: uppercase; color: #666;
+      text-align: center; width: 62px; pointer-events: none;
+    }
+    body.theme-light #theme-label { color: #999; }
+
   </style>
 <body>
+
+<!-- Auto day/night theme -->
+<button id="theme-toggle" title="Toggle light / dark">🌙</button>
+<div id="theme-label">Auto</div>
+<script>
+(function () {
+  var STORE = 'fitThemeMode'; /* 'auto' | 'light' | 'dark' */
+  var mode  = localStorage.getItem(STORE) || 'auto';
+
+  function isDay() { var h = new Date().getHours(); return h >= 6 && h < 18; }
+  function resolved(m) { return m === 'light' ? 'light' : m === 'dark' ? 'dark' : (isDay() ? 'light' : 'dark'); }
+
+  function apply(m) {
+    var theme = resolved(m);
+    document.body.classList.toggle('theme-light', theme === 'light');
+    var btn = document.getElementById('theme-toggle');
+    var lbl = document.getElementById('theme-label');
+    if (!btn) return;
+    btn.textContent = theme === 'light' ? '🌙' : '☀️';
+    lbl.textContent = m === 'auto' ? 'Auto' : (m === 'light' ? 'Light' : 'Dark');
+  }
+
+  apply(mode); /* immediate — avoids flash */
+
+  document.addEventListener('DOMContentLoaded', function () {
+    apply(mode);
+    document.getElementById('theme-toggle').addEventListener('click', function () {
+      if (mode === 'auto') mode = resolved('auto') === 'light' ? 'dark' : 'light';
+      else if (mode === 'dark') mode = 'light';
+      else mode = 'auto';
+      localStorage.setItem(STORE, mode);
+      apply(mode);
+    });
+  });
+
+  /* Re-check every minute so the page auto-switches at 6 AM / 6 PM */
+  setInterval(function () { if (mode === 'auto') apply('auto'); }, 60000);
+})();
+</script>
+
 <div class="lb-root">
 
   <!-- Hero -->
