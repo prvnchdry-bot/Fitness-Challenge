@@ -749,6 +749,15 @@
     return ['S','M','T','W','T','F','S'][d.getDay()];
   }
 
+  function getChallengeWeek() {
+    const start = new Date('2026-06-01T00:00:00');
+    const now   = new Date();
+    now.setHours(0,0,0,0);
+    start.setHours(0,0,0,0);
+    const dayNum = Math.floor((now - start) / 86400000); // 0-indexed days since start
+    return Math.max(1, Math.floor(dayNum / 7) + 1);
+  }
+
   function renderWeekTracker(name, activity) {
     const key        = sanitizeKey(name) + '_' + sanitizeKey(activity);
     const logged     = logsMap[key] || new Set();
@@ -778,9 +787,10 @@
     const datesList = [...tokenDates].sort().map(d => fmtTokenDate(d)).join(', ');
     const datesText = datesList ? ` • ${datesList}` : '';
 
+    const challengeWeek = getChallengeWeek();
     return `
       <div class="week-row">
-        <span class="week-label">Week</span>
+        <span class="week-label" title="Week ${challengeWeek} of the 100-day challenge" style="min-width:36px;color:#FF6B35;font-weight:700;font-size:9px;">Wk ${challengeWeek}</span>
         ${dayDots}
       </div>
       <div class="token-row">
