@@ -281,9 +281,10 @@
       <div style="display:grid;grid-template-columns:1fr 1fr auto;gap:10px;align-items:end;margin-bottom:8px;">
         <div class="fg">
           <label>Participant Name</label>
-          <select id="sf-join-name" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;">
+          <select id="sf-join-name" onchange="sfToggleJoinOther()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;">
             <option value="">— Select participant —</option>
           </select>
+          <input id="sf-join-name-other" type="text" placeholder="Type participant name" style="display:none;margin-top:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,107,53,.35);border-radius:8px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;">
         </div>
         <div class="fg">
           <label>Streak Start Date</label>
@@ -806,8 +807,11 @@
     const joinSel = document.getElementById('sf-join-name');
     if (joinSel) {
       const unenrolled = SUGAR_NAMES.filter(n => !enrolled.has(n));
+      const prevVal = joinSel.value;
       joinSel.innerHTML = '<option value="">— Select participant —</option>' +
-        unenrolled.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+        unenrolled.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('') +
+        '<option value="__other__">+ Other (type a name)</option>';
+      if ([...joinSel.options].some(o => o.value === prevVal)) joinSel.value = prevVal;
     }
     const breakSel = document.getElementById('sf-break-name');
     if (breakSel) {
@@ -882,16 +886,35 @@
     const joinSel = document.getElementById('sf-join-name');
     if (joinSel) {
       joinSel.innerHTML = '<option value="">— Select participant —</option>' +
-        SUGAR_NAMES.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+        SUGAR_NAMES.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('') +
+        '<option value="__other__">+ Other (type a name)</option>';
     }
   });
 
+  window.sfToggleJoinOther = function() {
+    const sel = document.getElementById('sf-join-name');
+    const other = document.getElementById('sf-join-name-other');
+    if (!sel || !other) return;
+    if (sel.value === '__other__') {
+      other.style.display = '';
+      other.focus();
+    } else {
+      other.style.display = 'none';
+      other.value = '';
+    }
+  };
+
   window.sfJoin = async function() {
-    const name = document.getElementById('sf-join-name').value;
+    const sel = document.getElementById('sf-join-name');
+    let name = sel.value;
+    if (name === '__other__') {
+      name = document.getElementById('sf-join-name-other').value.trim();
+    }
     const date = document.getElementById('sf-join-date').value;
-    if (!name) { toast('Select a participant', 'error'); return; }
+    if (!name) { toast(sel.value === '__other__' ? 'Type a participant name' : 'Select a participant', 'error'); return; }
     if (!date) { toast('Set a start date', 'error'); return; }
     const key = name.trim().toLowerCase().replace(/[^a-z0-9]/g,'_');
+    if (sugarData[key]) { toast(`${name} is already enrolled`, 'error'); return; }
     const btn = document.getElementById('sf-join-btn');
     btn.disabled = true; btn.textContent = 'Enrolling…';
     try {
@@ -900,6 +923,8 @@
       });
       toast(`✅ ${name} enrolled — Day 1 starts ${date}!`);
       document.getElementById('sf-join-name').value = '';
+      document.getElementById('sf-join-name-other').value = '';
+      document.getElementById('sf-join-name-other').style.display = 'none';
     } catch(e) { toast('Error: ' + e.message, 'error'); }
     btn.disabled = false; btn.textContent = 'Enroll';
   };
