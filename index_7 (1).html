@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>100 Days Fitness Challenge — Leaderboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{background:#f5f5f0;font-family:'DM Sans',sans-serif;color:#111;}
+
+    .lb-root{
+      min-height:100vh;
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -20%,rgba(255,107,53,.15) 0%,transparent 60%);
+      padding:0 0 32px;
+    }
+
+    /* ── Hero ── */
+    .hero{text-align:center;padding:28px 24px 20px;}
+    .hero-starting{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#39FF14;background:rgba(57,255,20,.08);border:1px solid rgba(57,255,20,.35);padding:6px 18px;border-radius:100px;margin-bottom:18px;}
+    .hero-starting-dot{width:7px;height:7px;border-radius:50%;background:#39FF14;animation:pulse 1.6s ease-in-out infinite;}
+    @keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.5;transform:scale(.8);}}
+    .hero-100{font-family:'Bebas Neue',sans-serif;font-size:clamp(80px,22vw,160px);line-height:.85;color:#111;letter-spacing:2px;display:block;}
+    .hero-days{font-family:'Bebas Neue',sans-serif;font-size:clamp(52px,15vw,110px);line-height:.85;color:#FF6B35;letter-spacing:4px;display:block;}
+    .hero-fitness{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,10vw,72px);line-height:1;color:#111;letter-spacing:8px;display:block;margin-bottom:2px;}
+    .hero-quote{font-family:'Georgia',serif;font-style:italic;font-size:clamp(13px,3.5vw,17px);color:#5bb8e8;margin-bottom:10px;line-height:1.4;}
+    .hero-community{font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#888;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:20px;}
+    .hero-community-line{width:28px;height:1px;background:#bbb;}
+    .hero-dates{display:inline-flex;align-items:center;gap:12px;background:rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.12);border-radius:100px;padding:10px 22px;font-size:13px;font-weight:600;color:#333;margin-bottom:16px;}
+    .hero-dates-sep{width:28px;height:1px;background:#bbb;}
+    .hero-pills{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;}
+    .hero-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.1);border-radius:100px;padding:8px 18px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#444;}
+
+    /* ── View toggle ── */
+    .lb-label{text-align:center;padding:2px 0 4px;}
+    .view-toggle{display:inline-flex;gap:4px;background:rgba(0,0,0,.05);border:1px solid rgba(0,0,0,.1);border-radius:100px;padding:4px;}
+    .view-btn{padding:7px 20px;border-radius:100px;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#666;cursor:pointer;transition:all .2s;white-space:nowrap;}
+    .view-btn.active{background:#FF6B35;color:#fff;box-shadow:0 2px 12px rgba(255,107,53,.35);}
+    .view-btn:hover:not(.active){color:#333;}
+
+    /* ── Category tabs ── */
+    .cat-tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;padding:12px 12px 0;}
+    .cat-tab{padding:8px 6px;border-radius:10px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border:1px solid rgba(0,0,0,.1);background:rgba(0,0,0,.03);color:#666;transition:all .2s;text-align:center;white-space:nowrap;}
+    .cat-tab.active-walk {background:rgba(105,255,71,.12);border-color:rgba(105,255,71,.4);color:#69FF47;}
+    .cat-tab.active-run  {background:rgba(0,229,255,.12);border-color:rgba(0,229,255,.4);color:#00E5FF;}
+    .cat-tab.active-cycle{background:rgba(255,107,53,.15);border-color:rgba(255,107,53,.4);color:#FF6B35;}
+    .cat-tab:hover:not([class*="active"]){border-color:rgba(0,0,0,.18);color:#333;}
+    .cat-tab.active-entries{background:rgba(180,120,255,.12);border-color:rgba(180,120,255,.4);color:#b87fff;}
+    /* All Entries — full-width row below the 3 activity tabs */
+    .cat-tab-entries{grid-column:1/-1;padding:10px;border-radius:10px;font-size:12px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border:1px solid rgba(180,120,255,.2);background:rgba(180,120,255,.06);color:#555;transition:all .2s;text-align:center;display:flex;align-items:center;justify-content:center;gap:6px;}
+    .cat-tab-entries:hover{border-color:rgba(180,120,255,.4);color:#b87fff;background:rgba(180,120,255,.1);}
+    .cat-tab-entries.active-entries{border-color:rgba(180,120,255,.5);color:#b87fff;background:rgba(180,120,255,.14);box-shadow:0 0 16px rgba(180,120,255,.1);}
+
+    /* ── Category panel ── */
+    .cat-panel{display:none;padding:14px 0 0;}
+    .cat-panel.active{display:block;}
+    .cat-header{display:flex;align-items:center;gap:10px;padding:0 16px 12px;}
+    .cat-icon{font-size:22px;}
+    .cat-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;}
+    .cat-title.walk{color:#69FF47;}
+    .cat-title.run {color:#00E5FF;}
+    .cat-title.cycle{color:#FF6B35;}
+    .cat-divider{flex:1;height:1px;background:rgba(0,0,0,.1);}
+    .cat-count{font-size:10px;color:#888;letter-spacing:1px;text-transform:uppercase;}
+
+    /* ── Podium ── */
+    .podium{display:flex;align-items:flex-end;justify-content:center;gap:6px;padding:0 12px 20px;}
+    .podium-slot{flex:1;max-width:160px;display:flex;flex-direction:column;align-items:center;}
+    .podium-card{width:100%;border-radius:14px 14px 0 0;padding:12px 10px 10px;text-align:center;transition:transform .2s;}
+    .podium-card:hover{transform:translateY(-3px);}
+    .podium-card.first {background:linear-gradient(160deg,#fff8e0,#fff3cc);border:1px solid rgba(255,215,0,.25);box-shadow:0 0 30px rgba(255,215,0,.08);padding-bottom:20px;}
+    .podium-card.second{background:linear-gradient(160deg,#f5f5f5,#ececec);border:1px solid rgba(192,192,192,.2);}
+    .podium-card.third {background:linear-gradient(160deg,#fdf0e4,#f8e4cc);border:1px solid rgba(205,127,50,.2);}
+    .podium-medal{font-size:20px;margin-bottom:5px;}
+    .podium-name{font-size:11px;font-weight:700;color:#111;margin-bottom:2px;line-height:1.2;}
+    .podium-km{font-family:'Bebas Neue',sans-serif;font-size:24px;color:#FF6B35;line-height:1;}
+    .podium-km-unit{font-size:9px;color:#888;margin-bottom:3px;}
+    .podium-days{font-size:9px;color:#666;}
+    .podium-base{width:100%;border-radius:0 0 6px 6px;font-family:'Bebas Neue',sans-serif;font-size:15px;letter-spacing:2px;display:flex;align-items:center;justify-content:center;}
+    .podium-base.first {background:#FFD700;color:#000;height:44px;}
+    .podium-base.second{background:#909090;color:#000;height:32px;}
+    .podium-base.third {background:#7B4F2B;color:#fff;height:22px;}
+    .podium-empty{text-align:center;padding:20px;color:#888;font-size:11px;letter-spacing:1px;}
+
+    /* ── List ── */
+    .section-label{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#888;padding:0 16px;margin-bottom:10px;}
+    .list-wrap{padding:0 10px;margin-bottom:8px;}
+    .list-item{display:grid;grid-template-columns:36px 1fr auto;align-items:center;gap:10px;background:rgba(255,255,255,.9);border:1px solid rgba(0,0,0,.07);border-radius:12px;padding:10px 12px;margin-bottom:6px;transition:background .15s,border-color .15s;animation:fadeUp .3s ease both;}
+    .list-item:hover{background:#fff;border-color:rgba(255,107,53,.3);}
+    .rank-badge{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;background:rgba(0,0,0,.06);color:#666;flex-shrink:0;}
+    .list-name{font-size:13px;font-weight:600;color:#111;margin-bottom:1px;}
+    .list-meta{font-size:10px;color:#777;display:flex;gap:8px;flex-wrap:wrap;}
+    .list-right{text-align:right;}
+    .list-km{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#FF6B35;line-height:1;}
+    .list-km-unit{font-size:9px;color:#888;}
+    .progress-track{width:100%;height:3px;background:rgba(0,0,0,.08);border-radius:2px;margin-top:4px;overflow:hidden;}
+    .progress-fill{height:100%;border-radius:2px;transition:width .6s ease;}
+    .status-pill{display:inline-block;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:100px;margin-top:4px;}
+    .token-row{display:flex;align-items:center;gap:5px;margin-top:4px;}
+    .token-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+    .token-dot.used{background:#E74C3C;box-shadow:0 0 4px rgba(231,76,60,.5);}
+    .token-dot.left{background:rgba(0,0,0,.08);border:1px solid rgba(0,0,0,.15);}
+    .token-label{font-size:9px;color:#777;}
+    .token-label.all-used{color:#E74C3C;font-weight:700;}
+    .week-row{display:flex;align-items:center;gap:4px;margin-top:5px;flex-wrap:wrap;}
+    .week-label{font-size:9px;color:#888;letter-spacing:.5px;margin-right:2px;min-width:28px;}
+    .day-dot{width:18px;height:18px;border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700;flex-shrink:0;}
+    .day-dot.active{background:rgba(105,255,71,.2);color:#69FF47;border:1px solid rgba(105,255,71,.4);}
+    .day-dot.today{border:1px solid rgba(0,0,0,.2);background:rgba(0,0,0,.04);color:#888;}
+    .day-dot.future{background:rgba(0,0,0,.03);color:#bbb;border:1px solid rgba(0,0,0,.06);}
+    .day-dot.token{background:rgba(255,152,0,.15);color:#FF9800;border:1px solid rgba(255,152,0,.3);}
+
+    .loading{text-align:center;padding:60px 24px;color:#888;}
+    .loading-spinner{width:28px;height:28px;border:2px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+
+    /* ═══ WEEKLY PERFORMANCE AWARDS ═══ */
+    .wk-awards{padding:20px 14px 8px;}
+    .wk-awards-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+    .wk-awards-label{font-size:9px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#F5C842;border:1px solid rgba(245,200,66,.25);padding:5px 14px;border-radius:100px;white-space:nowrap;}
+    .wk-awards-line{flex:1;height:1px;background:rgba(0,0,0,.1);}
+
+    .wk-award-card{border-radius:14px;padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:14px;position:relative;overflow:hidden;}
+    .wk-award-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;}
+
+    /* Distance champion — orange */
+    .wk-award-card.dist{background:linear-gradient(135deg,rgba(255,107,53,.1),rgba(255,107,53,.04));border:1px solid rgba(255,107,53,.25);}
+    .wk-award-card.dist::before{background:linear-gradient(90deg,transparent,#FF6B35,transparent);}
+    /* Iron streak — green */
+    .wk-award-card.streak{background:linear-gradient(135deg,rgba(105,255,71,.08),rgba(105,255,71,.03));border:1px solid rgba(105,255,71,.22);}
+    .wk-award-card.streak::before{background:linear-gradient(90deg,transparent,#69FF47,transparent);}
+    /* Progressive mover — purple */
+    .wk-award-card.prog{background:linear-gradient(135deg,rgba(180,120,255,.1),rgba(180,120,255,.03));border:1px solid rgba(180,120,255,.22);}
+    .wk-award-card.prog::before{background:linear-gradient(90deg,transparent,#b87fff,transparent);}
+    /* Today's champ — gold */
+    .wk-award-card.today{background:linear-gradient(135deg,rgba(245,200,66,.1),rgba(245,200,66,.03));border:1px solid rgba(245,200,66,.25);}
+    .wk-award-card.today::before{background:linear-gradient(90deg,transparent,#F5C842,transparent);}
+
+    .wk-award-icon-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0;width:52px;}
+    .wk-award-icon{font-size:26px;line-height:1;}
+    .wk-award-type{font-size:7px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;text-align:center;line-height:1.2;}
+    .wk-award-card.dist  .wk-award-type{color:#FF6B35;}
+    .wk-award-card.streak .wk-award-type{color:#69FF47;}
+    .wk-award-card.prog  .wk-award-type{color:#b87fff;}
+    .wk-award-card.today .wk-award-type{color:#F5C842;}
+
+    .wk-award-body{flex:1;min-width:0;}
+    .wk-award-cat{font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:5px;}
+    .wk-award-card.dist  .wk-award-cat{color:#FF6B35;}
+    .wk-award-card.streak .wk-award-cat{color:#69FF47;}
+    .wk-award-card.prog  .wk-award-cat{color:#b87fff;}
+    .wk-award-card.today .wk-award-cat{color:#F5C842;}
+
+    .wk-award-nameline{display:flex;align-items:center;gap:8px;margin-bottom:3px;}
+    .wk-award-avatar{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+    .wk-award-name{font-size:14px;font-weight:700;color:#111;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .wk-award-sub{font-size:10px;color:#888;margin-top:1px;}
+
+    .wk-award-val{text-align:right;flex-shrink:0;}
+    .wk-award-num{font-family:'Bebas Neue',sans-serif;font-size:32px;line-height:1;}
+    .wk-award-card.dist  .wk-award-num{color:#FF6B35;}
+    .wk-award-card.streak .wk-award-num{color:#69FF47;}
+    .wk-award-card.prog  .wk-award-num{color:#b87fff;}
+    .wk-award-card.today .wk-award-num{color:#F5C842;}
+    .wk-award-unit{font-size:9px;letter-spacing:1px;text-transform:uppercase;color:#888;margin-top:1px;}
+
+    .wk-awards-empty{text-align:center;padding:24px;color:#888;font-size:12px;border:1px solid rgba(0,0,0,.08);border-radius:12px;}
+    /* ═══════════════════════════════════════════
+       WEEKLY CHAMPIONS SECTION
+    ════════════════════════════════════════════ */
+    .wk-section{padding:8px 14px 24px;max-width:600px;margin:0 auto;}
+
+    /* Section header */
+    .wk-section-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+    .wk-section-label{font-size:10px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#FF6B35;border:1px solid rgba(255,107,53,.3);padding:5px 18px;border-radius:100px;}
+    .wk-section-line{flex:1;height:1px;background:rgba(0,0,0,.1);}
+
+    /* Nav */
+    .wk-nav{display:flex;align-items:center;gap:7px;margin-bottom:10px;}
+    .wk-nav-btn{width:28px;height:28px;border-radius:7px;border:1px solid rgba(0,0,0,.1);background:rgba(0,0,0,.04);color:#777;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+    .wk-nav-btn:hover{border-color:rgba(245,200,66,.4);color:#F5C842;}
+    .wk-nav-btn:disabled{opacity:.2;cursor:default;}
+    .wk-nav-label{flex:1;text-align:center;position:relative;}
+    .wk-nav-label input[type="date"]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;border:none;background:transparent;}
+    .wk-nav-text{font-size:11px;font-weight:600;color:#333;letter-spacing:.3px;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.1);border-radius:7px;padding:6px 10px;cursor:pointer;white-space:nowrap;display:block;transition:border-color .2s;}
+    .wk-nav-label:hover .wk-nav-text{border-color:rgba(245,200,66,.4);color:#F5C842;}
+    .wk-nav-now{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:rgba(245,200,66,.6);background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.2);border-radius:6px;padding:4px 8px;cursor:pointer;white-space:nowrap;transition:all .2s;}
+    .wk-nav-now:hover{color:#F5C842;background:rgba(245,200,66,.14);}
+    .wk-nav-now.hidden{display:none;}
+
+    /* Activity tabs */
+    .wk-tabs{display:flex;gap:4px;background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:3px;margin-bottom:10px;}
+    .wk-tab{flex:1;padding:6px 4px;border:none;background:transparent;color:#666;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border-radius:7px;transition:all .2s;}
+    .wk-tab.active{background:rgba(245,200,66,.1);color:#F5C842;border:1px solid rgba(245,200,66,.2);}
+    .wk-tab:hover:not(.active){color:#222;}
+
+    /* Summary pill */
+    .wk-pill{display:flex;align-items:center;justify-content:center;gap:12px;background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.08);border-radius:10px;padding:8px 16px;margin-bottom:10px;}
+    .wk-pill-item{text-align:center;}
+    .wk-pill-val{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#F5C842;line-height:1;}
+    .wk-pill-lbl{font-size:8px;color:#888;letter-spacing:1px;text-transform:uppercase;margin-top:2px;}
+    .wk-pill-sep{width:1px;height:20px;background:rgba(0,0,0,.1);}
+
+    /* Rank cards */
+    .wk-list{display:flex;flex-direction:column;gap:7px;}
+    .wk-card{display:grid;grid-template-columns:34px 1fr auto;align-items:center;gap:10px;background:rgba(255,255,255,.9);border:1px solid rgba(0,0,0,.08);border-radius:12px;padding:10px 12px;position:relative;overflow:hidden;animation:fadeUp .35s ease both;}
+    .wk-card.r1{border-color:rgba(255,215,0,.4);background:linear-gradient(135deg,rgba(255,215,0,.1),rgba(255,255,255,.95));}
+    .wk-card.r2{border-color:rgba(192,192,192,.3);background:linear-gradient(135deg,rgba(192,192,192,.08),rgba(255,255,255,.95));}
+    .wk-card.r3{border-color:rgba(205,127,50,.25);background:linear-gradient(135deg,rgba(205,127,50,.08),rgba(255,255,255,.95));}
+    .wk-card.r1::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#FFD700,transparent);}
+    .wk-card.r2::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#C0C0C0,transparent);}
+    .wk-card.r3::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,#CD7F32,transparent);}
+    .wk-medal{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+    .wk-medal.m1{background:rgba(255,215,0,.1);}
+    .wk-medal.m2{background:rgba(192,192,192,.07);}
+    .wk-medal.m3{background:rgba(205,127,50,.07);}
+    .wk-medal.mx{background:rgba(0,0,0,.04);font-family:'Bebas Neue',sans-serif;font-size:15px;color:#888;}
+    .wk-name{font-size:13px;font-weight:600;color:#111;margin-bottom:2px;line-height:1.2;}
+    .wk-meta{font-size:10px;color:#777;display:flex;align-items:center;gap:7px;}
+    .wk-streak{display:inline-flex;align-items:center;gap:3px;font-size:9px;color:#69FF47;font-weight:700;}
+    .wk-streak::before{content:'';width:4px;height:4px;border-radius:50%;background:#69FF47;display:inline-block;}
+    .wk-km-val{font-family:'Bebas Neue',sans-serif;font-size:24px;line-height:1;}
+    .wk-km-val.k1{color:#FFD700;}
+    .wk-km-val.k2{color:#C0C0C0;}
+    .wk-km-val.k3{color:#CD7F32;}
+    .wk-km-val.kx{color:#aaa;}
+    .wk-km-unit{font-size:9px;color:#888;letter-spacing:1px;text-align:right;}
+    .wk-dots{display:flex;gap:2px;margin-top:3px;}
+    .wk-dot{width:7px;height:7px;border-radius:2px;}
+    .wk-dot.on{background:#69FF47;box-shadow:0 0 4px rgba(105,255,71,.4);}
+    .wk-dot.off{background:rgba(0,0,0,.1);}
+    .wk-empty{text-align:center;padding:28px 20px;color:#888;font-size:12px;}
+    .wk-spinner{width:20px;height:20px;border:2px solid rgba(255,107,53,.15);border-top-color:#FF6B35;border-radius:50%;animation:spin .8s linear infinite;margin:28px auto;}
+    /* ═══════════════════════════════════════════
+       GROUPS VIEW
+    ════════════════════════════════════════════ */
+    .grp-wrap{padding:14px 12px 40px;max-width:700px;margin:0 auto;}
+    .grp-date-bar{text-align:center;font-size:11px;color:#888;margin-bottom:16px;letter-spacing:.5px;}
+    .grp-date-bar strong{color:#FF6B35;}
+
+    /* Group card */
+    .grp-card{background:#ffffff;border:1px solid rgba(0,0,0,.08);border-radius:16px;padding:16px;margin-bottom:14px;position:relative;}
+    .grp-card.g-active{border-color:rgba(105,255,71,.2);}
+    .grp-card.g-partial{border-color:rgba(255,152,0,.2);}
+    .grp-card.g-none{border-color:rgba(0,0,0,.06);}
+
+    /* Group header */
+    .grp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+    .grp-title{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:#111;}
+    .grp-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+    .grp-dot.green{background:#69FF47;box-shadow:0 0 6px rgba(105,255,71,.5);}
+    .grp-dot.orange{background:#FF9800;box-shadow:0 0 6px rgba(255,152,0,.5);}
+    .grp-dot.grey{background:#bbb;}
+    .grp-status{font-size:10px;font-weight:700;letter-spacing:.5px;}
+    .grp-status.done{color:#69FF47;}
+    .grp-status.partial{color:#FF9800;}
+    .grp-status.none{color:#aaa;}
+
+    /* Members row */
+    .grp-members{display:flex;gap:4px;flex-wrap:nowrap;justify-content:center;margin-bottom:6px;overflow-x:auto;scrollbar-width:none;}
+    .grp-member{display:flex;flex-direction:column;align-items:center;gap:3px;width:56px;flex-shrink:0;}
+    .grp-avatar-wrap{position:relative;}
+    .grp-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;border:2px solid transparent;transition:border-color .2s;}
+    .grp-avatar.av-active{border-color:#69FF47;box-shadow:0 0 10px rgba(105,255,71,.25);}
+    .grp-avatar.av-run{border-color:#00E5FF;box-shadow:0 0 10px rgba(0,229,255,.25);}
+    .grp-avatar.av-cycle{border-color:#FF6B35;box-shadow:0 0 10px rgba(255,107,53,.25);}
+    .grp-fire{position:absolute;top:-4px;right:-2px;font-size:12px;}
+    .grp-member-name{font-size:9px;font-weight:600;color:#444;text-align:center;line-height:1.2;max-width:56px;word-break:break-word;}
+    .grp-member-km{font-family:'Bebas Neue',sans-serif;font-size:13px;color:#FF6B35;line-height:1;}
+    .grp-member-act{font-size:8px;letter-spacing:.5px;text-transform:uppercase;color:#888;margin-top:1px;}
+    .grp-member.gm-active .grp-member-km{color:#69FF47;}
+    .grp-member.gm-run .grp-member-km{color:#00E5FF;}
+    .grp-member.gm-cycle .grp-member-km{color:#FF6B35;}
+
+    /* Flow line */
+    .grp-flow{font-size:10px;color:#888;padding-top:8px;border-top:1px solid rgba(0,0,0,.07);line-height:1.6;}
+    .grp-flow strong{color:#FF6B35;}
+    .grp-flow-arrow{color:#bbb;margin:0 3px;}
+
+    /* Active member card highlight */
+    .grp-member.gm-active .grp-avatar,
+    .grp-member.gm-run .grp-avatar,
+    .grp-member.gm-cycle .grp-avatar{background:rgba(0,0,0,.06);}
+    .grp-member-badge{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:2px 5px;border-radius:4px;margin-top:2px;}
+    .grp-member-badge.walk{background:rgba(105,255,71,.15);color:#69FF47;}
+    .grp-member-badge.run {background:rgba(0,229,255,.15);color:#00E5FF;}
+    .grp-member-badge.cycle{background:rgba(255,107,53,.15);color:#FF6B35;}
+
+
+    /* Groups date nav */
+    .grp-date-nav{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px;}
+    .grp-nav-btn{width:32px;height:32px;border-radius:9px;border:1px solid rgba(0,0,0,.1);background:rgba(0,0,0,.04);color:#777;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:all .2s;flex-shrink:0;}
+    .grp-nav-btn:hover:not(:disabled){border-color:rgba(255,107,53,.4);color:#FF6B35;}
+    .grp-nav-btn:disabled{opacity:.2;cursor:default;}
+    .grp-date-label{display:flex;align-items:center;gap:8px;}
+    #grp-date-text{font-size:13px;font-weight:600;color:#333;letter-spacing:.3px;}
+    .grp-today-badge{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,107,53,.7);background:rgba(255,107,53,.1);border:1px solid rgba(255,107,53,.25);border-radius:6px;padding:3px 8px;cursor:pointer;transition:all .2s;}
+    .grp-today-badge:hover{color:#FF6B35;background:rgba(255,107,53,.18);}
+    .grp-today-badge.hidden{display:none;}
+    /* Highlighted active member box */
+    .grp-member.gm-active,
+    .grp-member.gm-run,
+    .grp-member.gm-cycle{background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.1);border-radius:10px;padding:6px 4px;}
+
+    /* ═══ ALL ENTRIES PANEL ═══ */
+    .ae-filter-bar{display:flex;gap:6px;margin:14px 14px 10px;flex-wrap:wrap;align-items:center;}
+    .ae-search{background:rgba(0,0,0,.04);border:1px solid rgba(0,0,0,.1);border-radius:10px;padding:8px 14px;font-family:'DM Sans',sans-serif;font-size:13px;color:#111;outline:none;flex:1;min-width:180px;transition:border-color .2s;}
+    .ae-search:focus{border-color:rgba(180,120,255,.5);}
+    .ae-search::placeholder{color:#aaa;}
+    .ae-act-chip{padding:6px 14px;border-radius:100px;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;cursor:pointer;border:1px solid rgba(0,0,0,.1);background:transparent;color:#666;transition:all .2s;}
+    .ae-act-chip.active{border-color:rgba(180,120,255,.4);color:#b87fff;background:rgba(180,120,255,.1);}
+    .ae-act-chip:hover:not(.active){border-color:rgba(0,0,0,.2);color:#222;}
+    .ae-hint{font-size:10px;color:#999;text-align:center;margin-bottom:10px;letter-spacing:.3px;}
+    .ae-count{font-size:10px;color:#777;text-align:center;margin-bottom:8px;letter-spacing:.5px;}
+    .ae-table-wrap{overflow-x:auto;border-radius:14px;border:1px solid rgba(0,0,0,.08);margin:0 10px 30px;}
+    .ae-table{width:100%;border-collapse:collapse;min-width:480px;}
+    .ae-table thead tr{background:#f0f0f5;}
+    .ae-table thead th{padding:10px 14px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#666;text-align:left;border-bottom:1px solid rgba(0,0,0,.07);}
+    .ae-table tbody tr{border-bottom:1px solid rgba(0,0,0,.05);transition:background .15s;}
+    .ae-table tbody tr:hover{background:rgba(0,0,0,.02);}
+    .ae-table tbody td{padding:10px 14px;font-size:12px;color:#333;vertical-align:middle;}
+    .ae-td-name{font-weight:600;color:#111;}
+    .ae-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:100px;}
+    .ae-badge.walk{background:rgba(105,255,71,.1);color:#69FF47;border:1px solid rgba(105,255,71,.2);}
+    .ae-badge.run {background:rgba(0,229,255,.1);color:#00E5FF;border:1px solid rgba(0,229,255,.2);}
+    .ae-badge.cycle{background:rgba(255,107,53,.1);color:#FF6B35;border:1px solid rgba(255,107,53,.2);}
+    .ae-empty{text-align:center;padding:40px;color:#aaa;font-size:13px;}
+
+    /* ═══ SUGAR-FREE CHALLENGE ═══ */
+    .sf-wrap{padding:14px 16px 0;}
+    .sf-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:10px;}
+    .sf-icon{font-size:30px;line-height:1;}
+    .sf-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:#111;}
+    .sf-sub{font-size:11px;color:#666;margin-top:3px;line-height:1.4;}
+    .sf-rules{font-size:10px;color:#555;line-height:1.7;background:rgba(0,0,0,.03);border:1px solid rgba(0,0,0,.07);border-radius:10px;padding:10px 12px;margin:10px 0 18px;}
+    .sf-rules strong{color:#333;}
+    .sf-item{display:grid;grid-template-columns:36px 1fr auto;align-items:center;gap:10px;background:rgba(255,255,255,.9);border:1px solid rgba(0,0,0,.07);border-radius:12px;padding:10px 12px;margin-bottom:6px;animation:fadeUp .3s ease both;}
+    .sf-item.done{border-color:rgba(255,215,0,.4);background:rgba(255,215,0,.08);}
+    .sf-rank{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;background:rgba(0,0,0,.06);color:#777;flex-shrink:0;}
+    .sf-rank.gold{background:rgba(255,215,0,.15);color:#FFD700;font-size:16px;}
+    .sf-name{font-size:13px;font-weight:600;color:#111;margin-bottom:3px;}
+    .sf-meta{font-size:9px;color:#888;margin-bottom:4px;letter-spacing:.3px;}
+    .sf-right{text-align:right;padding-left:6px;}
+    .sf-day{font-family:'Bebas Neue',sans-serif;font-size:22px;color:#69FF47;line-height:1;}
+    .sf-day.done-day{color:#FFD700;}
+
+    /* Sugar-Free Challenge Start Banner */
+    .sf-start-banner{
+      margin:0 0 18px;
+      border-radius:14px;
+      padding:16px 18px;
+      background:linear-gradient(135deg,rgba(233,90,180,.12),rgba(180,60,120,.06));
+      border:1px solid rgba(233,90,180,.35);
+      position:relative;
+      overflow:hidden;
+    }
+    .sf-start-banner::before{
+      content:'';
+      position:absolute;top:0;left:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,#e95ab4,transparent);
+    }
+    .sf-banner-top{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+    .sf-banner-icon{font-size:28px;line-height:1;flex-shrink:0;}
+    .sf-banner-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:2px;color:#f0b0e0;line-height:1.1;}
+    .sf-banner-date-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+    .sf-banner-date-pill{
+      display:inline-flex;align-items:center;gap:7px;
+      background:rgba(233,90,180,.18);border:1px solid rgba(233,90,180,.4);
+      border-radius:100px;padding:6px 16px;
+      font-size:13px;font-weight:700;color:#f0c0e8;letter-spacing:.5px;
+    }
+    .sf-banner-date-dot{width:8px;height:8px;border-radius:50%;background:#e95ab4;animation:pulse 1.6s ease-in-out infinite;flex-shrink:0;}
+    .sf-banner-info{font-size:11px;color:#a06080;line-height:1.5;margin-top:8px;}
+    .sf-banner-info strong{color:#d080b0;}
+
+    /* "No participants yet" placeholder */
+    .sf-waiting{
+      text-align:center;padding:36px 20px;
+      background:rgba(0,0,0,.02);border:1px dashed rgba(0,0,0,.1);
+      border-radius:12px;color:#888;font-size:13px;line-height:1.7;
+    }
+    .sf-waiting-icon{font-size:32px;margin-bottom:10px;}
+    .sf-waiting-sub{font-size:11px;color:#aaa;margin-top:6px;}
+    .sf-day-unit{font-size:9px;color:#888;}
+  </style>
+<body>
+<div class="lb-root">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-starting" id="hero-day-badge"><span class="hero-starting-dot"></span><span id="hero-day-text">Day — of 100</span></div>
+    <div>
+      <span class="hero-100">100</span>
+      <span class="hero-days">DAYS</span>
+      <span class="hero-fitness">FITNESS</span>
+    </div>
+    <div class="hero-quote">"Lets move together, stronger everyday!"</div>
+    <div class="hero-community">
+      <span class="hero-community-line"></span>Keya Apartments Community<span class="hero-community-line"></span>
+    </div>
+    <div class="hero-dates">
+      <span>1 June 2026</span><span class="hero-dates-sep"></span><span>9 September 2026</span>
+    </div>
+
+  </div>
+
+  <!-- ── View Toggle ── -->
+  <div class="lb-label">
+    <div class="view-toggle">
+      <button class="view-btn active" id="vbtn-lb" onclick="switchView('lb')">🏆 Live Leaderboard</button>
+      <button class="view-btn"        id="vbtn-wk" onclick="switchView('wk')">📅 Weekly</button>
+      <button class="view-btn"        id="vbtn-gr" onclick="switchView('gr')">👥 Groups</button>
+      <button class="view-btn"        id="vbtn-sf" onclick="switchView('sf')">🍬 Sugar Free</button>
+    </div>
+  </div>
+
+  <!-- ── LEADERBOARD VIEW (default) ── -->
+  <div id="view-lb">
+    <div class="cat-tabs">
+      <button class="cat-tab active-walk" id="cat-walk" onclick="switchCat('walk',this)">🚶 Walking</button>
+      <button class="cat-tab" id="cat-run" onclick="switchCat('run',this)">🏃 Running</button>
+      <button class="cat-tab" id="cat-cycle" onclick="switchCat('cycle',this)">🚴 Cycling</button>
+      <button class="cat-tab-entries" id="cat-entries" onclick="switchCat('entries',this)">📊 All Entries <span style="font-size:9px;opacity:.6;font-weight:400;letter-spacing:1px">· Search your day-wise logs</span></button>
+    </div>
+
+    <div id="panel-walk"  class="cat-panel active"><div class="loading"><div class="loading-spinner"></div></div></div>
+    <div id="panel-run"   class="cat-panel"><div class="loading"><div class="loading-spinner"></div></div></div>
+    <div id="panel-cycle" class="cat-panel"><div class="loading"><div class="loading-spinner"></div></div></div>
+    <div id="panel-entries" class="cat-panel">
+      <div class="ae-filter-bar">
+        <input class="ae-search" id="ae-search" placeholder="🔍 Search by name…" oninput="window.aeRender && window.aeRender()">
+        <button class="ae-act-chip active" onclick="aeChip('all',this)">All</button>
+        <button class="ae-act-chip" onclick="aeChip('Walking',this)">🚶 Walk</button>
+        <button class="ae-act-chip" onclick="aeChip('Running',this)">🏃 Run</button>
+        <button class="ae-act-chip" onclick="aeChip('Cycling',this)">🚴 Cycle</button>
+      </div>
+      <div class="ae-hint">Search your name to see your personal day-wise entries</div>
+      <div class="ae-count" id="ae-count"></div>
+      <div class="ae-table-wrap">
+        <table class="ae-table">
+          <thead><tr><th>Date</th><th>Name</th><th>Activity</th><th>KM</th><th>Notes</th></tr></thead>
+          <tbody id="ae-tbody"><tr><td colspan="5"><div class="ae-empty"><div class="loading-spinner" style="margin:0 auto 10px"></div></div></td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Status legend -->
+    <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:20px 16px 0;">
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#999;"><div style="width:6px;height:6px;border-radius:50%;background:#FFD700;flex-shrink:0;"></div>Champion ≥90d</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#999;"><div style="width:6px;height:6px;border-radius:50%;background:#00E5FF;flex-shrink:0;"></div>Elite ≥70d</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#999;"><div style="width:6px;height:6px;border-radius:50%;background:#69FF47;flex-shrink:0;"></div>Active ≥50d</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#999;"><div style="width:6px;height:6px;border-radius:50%;background:#FF9800;flex-shrink:0;"></div>Started ≥1d</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#999;"><div style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;"></div>Pending</div>
+    </div>
+  </div><!-- /view-lb -->
+
+  <!-- ── WEEKLY VIEW (hidden by default) ── -->
+  <div id="view-wk" style="display:none">
+    <div class="wk-section">
+      <div class="wk-nav">
+        <button class="wk-nav-btn" id="wk-btn-prev" onclick="wkShift(-1)">‹</button>
+        <div class="wk-nav-label">
+          <span class="wk-nav-text" id="wk-nav-text">Loading…</span>
+          <input type="date" id="wk-picker" oninput="wkJump(this.value)">
+        </div>
+        <button class="wk-nav-btn wk-nav-now hidden" id="wk-btn-now" onclick="wkNow()">Now</button>
+        <button class="wk-nav-btn" id="wk-btn-next" onclick="wkShift(1)">›</button>
+      </div>
+
+      <div class="wk-tabs">
+        <button class="wk-tab active" onclick="wkSwitchTab('Walking',this)">🚶 Walking</button>
+        <button class="wk-tab"       onclick="wkSwitchTab('Running',this)">🏃 Running</button>
+        <button class="wk-tab"       onclick="wkSwitchTab('Cycling',this)">🚴 Cycling</button>
+      </div>
+
+      <div class="wk-pill">
+        <div class="wk-pill-item"><div class="wk-pill-val" id="wk-s-athletes">—</div><div class="wk-pill-lbl">Athletes</div></div>
+        <div class="wk-pill-sep"></div>
+        <div class="wk-pill-item"><div class="wk-pill-val" id="wk-s-km">—</div><div class="wk-pill-lbl">Total KM</div></div>
+        <div class="wk-pill-sep"></div>
+        <div class="wk-pill-item"><div class="wk-pill-val" id="wk-s-days">—</div><div class="wk-pill-lbl">Days Active</div></div>
+      </div>
+
+      <div class="wk-list" id="wk-list"><div class="wk-spinner"></div></div>
+
+      <!-- Performance Awards -->
+      <div class="wk-awards">
+        <div class="wk-awards-header"><span class="wk-awards-label">🏅 Weekly Performance Awards</span><span class="wk-awards-line"></span></div>
+        <div id="wk-awards-body"><div class="wk-awards-empty">Loading…</div></div>
+      </div>
+    </div>
+  </div><!-- /view-wk -->
+
+  <!-- ── GROUPS VIEW ── -->
+  <div id="view-gr" style="display:none">
+    <div class="grp-wrap">
+      <div class="grp-date-nav">
+        <button class="grp-nav-btn" id="grp-btn-prev" onclick="grpShift(-1)">&#8249;</button>
+        <div class="grp-date-label">
+          <span id="grp-date-text">—</span>
+          <span class="grp-today-badge hidden" id="grp-today-badge" onclick="grpGoToday()">TODAY</span>
+        </div>
+        <button class="grp-nav-btn" id="grp-btn-next" onclick="grpShift(1)">&#8250;</button>
+      </div>
+      <div id="grp-list"><div class="loading"><div class="loading-spinner"></div></div></div>
+    </div>
+  </div><!-- /view-gr -->
+
+  <!-- ── SUGAR-FREE CHALLENGE VIEW ── -->
+  <div id="view-sf" style="display:none">
+    <div class="sf-wrap">
+      <div class="sf-header">
+        <div class="sf-icon">🍬</div>
+        <div>
+          <div class="sf-title">14-DAY SUGAR-FREE CHALLENGE</div>
+          <div class="sf-sub">Zero added sugar, 14 days straight. One slip and the clock resets to Day 1 — back to square one, no judgment.</div>
+        </div>
+      </div>
+
+      <!-- Challenge Start Banner -->
+      <div class="sf-start-banner" id="sf-start-banner">
+        <div class="sf-banner-top">
+          <div class="sf-banner-icon">🗓️</div>
+          <div class="sf-banner-title">Challenge Begins 21 June 2026</div>
+        </div>
+        <div class="sf-banner-date-row">
+          <div class="sf-banner-date-pill">
+            <span class="sf-banner-date-dot"></span>
+            Sat, 21 June 2026 &nbsp;→&nbsp; Fri, 4 July 2026
+          </div>
+        </div>
+        <div class="sf-banner-info">
+          <strong>14 days</strong> of zero added sugar. Enrollments open now — DM Praveen to sign up.<br>
+          Streaks go live once participants are enrolled by the admin.
+        </div>
+      </div>
+
+      <div class="sf-rules">
+        <strong>Counts as sugar:</strong> sweets, desserts, sweetened tea/coffee/drinks, chocolate, sweetened yogurt/cereal, jaggery/honey, sauces with added sugar (ketchup etc).<br>
+        <strong>Doesn't count:</strong> whole fruit, natural sugars in milk/dairy.<br>
+        Slipped up? Just DM Praveen — it's honesty-based, no one's watching.
+      </div>
+
+      <!-- Populated once admin enrolls people -->
+      <div id="sf-participants-wrap" style="display:none">
+        <div class="section-label">ACTIVE STREAKS</div>
+        <div id="sf-active-list" class="list-wrap"></div>
+
+        <div class="section-label" id="sf-completed-label" style="display:none">COMPLETED 🏅</div>
+        <div id="sf-completed-list" class="list-wrap"></div>
+      </div>
+
+      <!-- Shown only before anyone is enrolled -->
+      <div id="sf-waiting-block">
+        <div class="sf-waiting">
+          <div class="sf-waiting-icon">⏳</div>
+          <div>Waiting for participants to be enrolled</div>
+          <div class="sf-waiting-sub">Once the admin adds participants, live streaks will appear here automatically.</div>
+        </div>
+      </div>
+
+      <div class="ae-empty" id="sf-empty" style="display:none">No one has joined the Sugar-Free Challenge yet. DM Praveen to sign up!</div>
+    </div>
+  </div><!-- /view-sf -->
+
+</div><!-- /lb-root -->
+
+<script>
+  function switchCat(key, btn) {
+    document.querySelectorAll('.cat-panel').forEach(p => p.classList.remove('active'));
+    // Reset the 3 activity tabs
+    ['walk','run','cycle'].forEach(k => {
+      const el = document.getElementById('cat-' + k);
+      if (el) el.className = 'cat-tab';
+    });
+    // Reset entries tab
+    const entriesEl = document.getElementById('cat-entries');
+    if (entriesEl) entriesEl.className = 'cat-tab-entries';
+    document.getElementById('panel-' + key).classList.add('active');
+    btn.classList.add('active-' + key);
+    if (key === 'entries') { window.aeRender && window.aeRender(); }
+  }
+  // Calculate day number from challenge start
+  (function() {
+    const start = new Date('2026-06-01');
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    start.setHours(0,0,0,0);
+    const day = Math.floor((today - start) / 86400000) + 1;
+    const clamped = Math.max(1, Math.min(day, 100));
+    const el = document.getElementById('hero-day-text');
+    if (el) el.textContent = 'Day ' + clamped + ' of 100';
+  })();
+
+  function switchView(v) {
+    document.getElementById('view-lb').style.display = v === 'lb' ? '' : 'none';
+    document.getElementById('view-wk').style.display = v === 'wk' ? '' : 'none';
+    document.getElementById('view-gr').style.display = v === 'gr' ? '' : 'none';
+    document.getElementById('view-sf').style.display = v === 'sf' ? '' : 'none';
+    document.getElementById('vbtn-lb').classList.toggle('active', v === 'lb');
+    document.getElementById('vbtn-wk').classList.toggle('active', v === 'wk');
+    document.getElementById('vbtn-gr').classList.toggle('active', v === 'gr');
+    document.getElementById('vbtn-sf').classList.toggle('active', v === 'sf');
+  }
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCrxTZEUB5x8VolI31091hqrZKvtdnbkmM",
+    authDomain: "fitness-leaderboard-ed631.firebaseapp.com",
+    databaseURL: "https://fitness-leaderboard-ed631-default-rtdb.firebaseio.com",
+    projectId: "fitness-leaderboard-ed631",
+    storageBucket: "fitness-leaderboard-ed631.firebasestorage.app",
+    messagingSenderId: "861678454829",
+    appId: "1:861678454829:web:f375e12cf6970d7d6cd0a4"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getDatabase(app);
+  const CHALLENGE_DAYS = 100;
+  const MAX_TOKENS = 6;
+
+  let allParticipants = []; // roster from participants node: [{name, activity}]
+  let allLogs        = []; // raw log entries from logs node
+  let tokensMap      = {};
+  let logsMap        = {}; // { "name_activity": Set<date> } for week-dot tracker
+
+  const CATEGORIES = [
+    { key:'walk',  activity:'Walking', icon:'🚶', label:'Walking', cls:'walk'  },
+    { key:'run',   activity:'Running', icon:'🏃', label:'Running', cls:'run'   },
+    { key:'cycle', activity:'Cycling', icon:'🚴', label:'Cycling', cls:'cycle' },
+  ];
+
+  function sanitizeKey(name) {
+    return name.trim().toLowerCase().replace(/[^a-z0-9]/g,'_');
+  }
+
+  // ── Derive aggregated entries from logs ────────────────────────────────────
+  // Returns [{name, activity, km, days}] for all registered participants,
+  // with km and days computed purely from the logs node.
+  function buildEntries() {
+    // Aggregate logs by name+activity
+    const agg = {}; // key → { name, activity, km, dateSet }
+    allLogs.forEach(l => {
+      if (!l.name || !l.activity || !l.date) return;
+      const k = sanitizeKey(l.name) + '_' + sanitizeKey(l.activity);
+      if (!agg[k]) agg[k] = { name: l.name, activity: l.activity, km: 0, dateSet: new Set() };
+      // Deduplicate by date — take the max km for a given date if logged twice
+      // We store per-date km separately to handle duplicates
+      if (!agg[k]._byDate) agg[k]._byDate = {};
+      const prev = agg[k]._byDate[l.date] || 0;
+      const cur  = parseFloat(l.km) || 0;
+      if (cur > prev) {
+        agg[k].km += cur - prev;
+        agg[k]._byDate[l.date] = cur;
+      }
+      agg[k].dateSet.add(l.date);
+    });
+
+    // Merge with participant roster so zero-log athletes still appear
+    const result = {};
+    allParticipants.forEach(p => {
+      if (!p.name || !p.activity) return;
+      const k = sanitizeKey(p.name) + '_' + sanitizeKey(p.activity);
+      result[k] = {
+        name: p.name,
+        activity: p.activity,
+        km:   agg[k] ? Math.round(agg[k].km * 10) / 10 : 0,
+        days: agg[k] ? agg[k].dateSet.size : 0,
+      };
+    });
+
+    // Also include anyone in logs not in participants roster
+    Object.values(agg).forEach(a => {
+      const k = sanitizeKey(a.name) + '_' + sanitizeKey(a.activity);
+      if (!result[k]) result[k] = {
+        name: a.name, activity: a.activity,
+        km: Math.round(a.km * 10) / 10, days: a.dateSet.size,
+      };
+    });
+
+    return Object.values(result);
+  }
+
+  function getStatus(days) {
+    if (days >= 90) return { label:"Champion", color:"#FFD700", bg:"#2a2000", icon:"🏆" };
+    if (days >= 70) return { label:"Elite",    color:"#00E5FF", bg:"#001a1f", icon:"🥇" };
+    if (days >= 50) return { label:"Active",   color:"#69FF47", bg:"#001a00", icon:"💪" };
+    if (days >= 1)  return { label:"Started",  color:"#FF9800", bg:"#1a0d00", icon:"🌱" };
+    return               { label:"Pending",  color:"#888",    bg:"#111",    icon:"⏳" };
+  }
+  function getMedal(r) { return r===1?"🥇":r===2?"🥈":"🥉"; }
+  function pcColor(p)  { return p>=90?"#FFD700":p>=70?"#00E5FF":p>=50?"#69FF47":"#FF6B35"; }
+  function esc(s)      { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function sortBy(arr) { return [...arr].sort((a,b)=>b.km-a.km||b.days-a.days); }
+
+  function getTokens(name)      { return tokensMap[sanitizeKey(name)]?.count || 0; }
+  function getTokenDates(name)  { return tokensMap[sanitizeKey(name)]?.dates || new Set(); }
+  function fmtTokenDate(d) {
+    if (!d) return '';
+    const [y,m,day] = d.split('-');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${parseInt(day)} ${months[parseInt(m)-1]}`;
+  }
+
+  // ── Week tracker helpers ───────────────────────────────────────────────────
+  function getWeekDates() {
+    const now = new Date();
+    const day = now.getDay();
+    const diffToMon = (day === 0 ? -6 : 1 - day);
+    const mon = new Date(now);
+    mon.setDate(now.getDate() + diffToMon);
+    const days = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(mon);
+      d.setDate(mon.getDate() + i);
+      days.push(d);
+    }
+    return days;
+  }
+
+  function dateStr(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function dayInitial(d) {
+    return ['S','M','T','W','T','F','S'][d.getDay()];
+  }
+
+  function renderWeekTracker(name, activity) {
+    const key        = sanitizeKey(name) + '_' + sanitizeKey(activity);
+    const logged     = logsMap[key] || new Set();
+    const used       = getTokens(name);
+    const tokenDates = getTokenDates(name);
+    const days       = getWeekDates();
+
+    const dayDots = days.map(d => {
+      const ds     = dateStr(d);
+      const now    = new Date(); now.setHours(0,0,0,0);
+      const dt     = new Date(d); dt.setHours(0,0,0,0);
+      const isActive = logged.has(ds);
+      const isToken  = tokenDates.has(ds);
+      const isFuture = dt > now;
+      let cls, title;
+      if (isActive)      { cls = 'active'; title = 'Activity logged'; }
+      else if (isToken)  { cls = 'token';  title = 'Token used (rest day)'; }
+      else if (isFuture) { cls = 'future'; title = 'Upcoming'; }
+      else               { cls = 'today';  title = 'No activity'; }
+      return `<div class="day-dot ${cls}" title="${title}">${dayInitial(d)}</div>`;
+    }).join('');
+
+    const tokenDots = Array.from({length: MAX_TOKENS}, (_,i) =>
+      `<div class="token-dot ${i < used ? 'used' : 'left'}"></div>`
+    ).join('');
+    const allUsed   = used >= MAX_TOKENS;
+    const datesList = [...tokenDates].sort().map(d => fmtTokenDate(d)).join(', ');
+    const datesText = datesList ? ` • ${datesList}` : '';
+
+    return `
+      <div class="week-row">
+        <span class="week-label">Week</span>
+        ${dayDots}
+      </div>
+      <div class="token-row">
+        ${tokenDots}
+        <span class="token-label ${allUsed ? 'all-used' : ''}">${allUsed ? '⚠️ No tokens left' : `${used}/${MAX_TOKENS} tokens`}${datesText}</span>
+      </div>`;
+  }
+
+  function renderPodium(top3) {
+    if (!top3.length) return `<div class="podium-empty">⏳ Podium unlocks once KM & days are logged</div>`;
+    const slots = top3.length >= 3
+      ? [[top3[1],2,"second","2ND"],[top3[0],1,"first","1ST"],[top3[2],3,"third","3RD"]]
+      : top3.map((p,i)=>[[p,i+1,["first","second","third"][i],["1ST","2ND","3RD"][i]]]).flat();
+    return `<div class="podium">${slots.map(([p,rnk,cls,lbl])=>{
+      const pct=Math.min(100,Math.round(p.days/CHALLENGE_DAYS*100));
+      return `<div class="podium-slot">
+        <div class="podium-card ${cls}">
+          <div class="podium-medal">${getMedal(rnk)}</div>
+          <div class="podium-name">${esc(p.name)}</div>
+          <div class="podium-km">${p.km}</div>
+          <div class="podium-km-unit">KM</div>
+          <div class="podium-days">${p.days} days</div>
+          <div class="progress-track" style="margin-top:7px"><div class="progress-fill" style="width:${pct}%;background:linear-gradient(90deg,#FF6B35,#FF9F68)"></div></div>
+        </div>
+        <div class="podium-base ${cls}">${lbl}</div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  function renderList(sorted) {
+    if (!sorted.length) return '';
+    return `<div class="section-label">FULL RANKINGS</div>
+    <div class="list-wrap">${sorted.map((p,i)=>{
+      const rank=i+1, st=getStatus(p.days), pct=Math.min(100,Math.round(p.days/CHALLENGE_DAYS*100));
+      return `<div class="list-item" style="animation-delay:${i*.04}s">
+        <div class="rank-badge">${rank}</div>
+        <div>
+          <div class="list-name">${esc(p.name)}</div>
+          <div class="list-meta"><span>${p.days}/${CHALLENGE_DAYS} days</span></div>
+          ${renderWeekTracker(p.name, p.activity)}
+          <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:${pcColor(pct)}"></div></div>
+        </div>
+        <div class="list-right">
+          <div class="list-km">${p.km}</div>
+          <div class="list-km-unit">KM</div>
+          <span class="status-pill" style="background:${st.bg};color:${st.color};border:1px solid ${st.color}33">${st.icon} ${st.label}</span>
+        </div>
+      </div>`;
+    }).join('')}</div>`;
+  }
+
+  function renderPanel(cat) {
+    const allEntries = buildEntries();
+    const group = sortBy(allEntries.filter(p => p.activity === cat.activity));
+    const podiumGroup = group.filter(p => p.km > 0 || p.days > 0);
+    const top3 = podiumGroup.slice(0,3);
+    document.getElementById('panel-' + cat.key).innerHTML = `
+      <div class="cat-header">
+        <span class="cat-icon">${cat.icon}</span>
+        <span class="cat-title ${cat.cls}">${cat.label}</span>
+        <div class="cat-divider"></div>
+        <span class="cat-count">${group.length} ATHLETE${group.length!==1?'S':''}</span>
+      </div>
+      <div class="section-label">TOP 3 PODIUM</div>
+      ${renderPodium(top3)}
+      ${renderList(group)}
+    `;
+  }
+
+  function renderAll() { CATEGORIES.forEach(renderPanel); }
+
+  // ── Firebase listeners ─────────────────────────────────────────────────────
+  onValue(ref(db, 'participants'), snap => {
+    allParticipants = snap.val() ? Object.values(snap.val()) : [];
+    renderAll();
+  });
+
+  onValue(ref(db, 'tokens'), snap => {
+    const raw = snap.val() || {};
+    tokensMap = {};
+    Object.entries(raw).forEach(([key, t]) => {
+      if (!t.name) return;
+      const dates = Array.isArray(t.dates) ? t.dates : [];
+      tokensMap[sanitizeKey(t.name)] = { count: dates.length, dates: new Set(dates) };
+    });
+    renderAll();
+  });
+
+  // Single logs listener — feeds leaderboard (logsMap + buildEntries) and weekly
+  // ── Name correction aliases (Firebase typo → correct display name) ──
+  const NAME_ALIASES = {
+    'saksham tandone': 'Saksham Tandon',
+    'pooja gupta':     'Puja Gupta',
+  };
+  function correctName(name) {
+    if (!name) return name;
+    return NAME_ALIASES[name.trim().toLowerCase()] || name;
+  }
+
+  onValue(ref(db, 'logs'), snap => {
+    const raw = snap.val() || {};
+    allLogs = Object.values(raw).map(l => ({ ...l, name: correctName(l.name) }));
+
+    // Rebuild logsMap for week-dot tracker (Set of dates per name+activity)
+    logsMap = {};
+    allLogs.forEach(l => {
+      if (!l.name || !l.activity || !l.date) return;
+      const key = sanitizeKey(l.name) + '_' + sanitizeKey(l.activity);
+      if (!logsMap[key]) logsMap[key] = new Set();
+      logsMap[key].add(l.date);
+    });
+
+    renderAll();
+    wkRender();
+    renderGroups();
+    window.aeRender && window.aeRender();
+  });
+
+  // ══════════════════════════════════════════════════════
+  //  WEEKLY CHAMPIONS
+  // ══════════════════════════════════════════════════════
+  let wkTab    = 'Walking';
+  let wkOffset = 0;
+
+  function wkGetRange() {
+    const now  = new Date();
+    const day  = now.getDay();
+    const diff = day === 0 ? -6 : 1 - day;
+    const mon  = new Date(now);
+    mon.setDate(now.getDate() + diff + wkOffset * 7);
+    mon.setHours(0,0,0,0);
+    const sun = new Date(mon); sun.setDate(mon.getDate() + 6); sun.setHours(23,59,59,999);
+    return { mon, sun };
+  }
+
+  function wkDateStr(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${y}-${m}-${day}`;
+  }
+
+  function wkDates() {
+    const { mon } = wkGetRange();
+    return Array.from({length:7}, (_,i) => {
+      const d = new Date(mon); d.setDate(mon.getDate() + i);
+      return wkDateStr(d);
+    });
+  }
+
+  function wkFmt(d) {
+    const M = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return `${d.getDate()} ${M[d.getMonth()]}`;
+  }
+
+  function wkNavUI() {
+    const { mon, sun } = wkGetRange();
+    const label = `${wkFmt(mon)} – ${wkFmt(sun)}`;
+    document.getElementById('wk-nav-text').textContent = label;
+    document.getElementById('wk-picker').value = wkDateStr(mon);
+    document.getElementById('wk-btn-now').classList.toggle('hidden', wkOffset === 0);
+    document.getElementById('wk-btn-next').disabled = wkOffset >= 0;
+  }
+
+  window.wkShift = function(d) { wkOffset = Math.min(0, wkOffset + d); wkNavUI(); wkRender(); };
+  window.wkNow   = function()  { wkOffset = 0; wkNavUI(); wkRender(); };
+  window.wkJump  = function(val) {
+    if (!val) return;
+    const picked = new Date(val + 'T12:00:00');
+    const now    = new Date();
+    const pd = picked.getDay(), pm = new Date(picked);
+    pm.setDate(picked.getDate() + (pd === 0 ? -6 : 1 - pd));
+    const td = now.getDay(), tm = new Date(now);
+    tm.setDate(now.getDate() + (td === 0 ? -6 : 1 - td));
+    wkOffset = Math.min(0, Math.round((pm - tm) / (7*24*60*60*1000)));
+    wkNavUI(); wkRender();
+  };
+
+  window.wkSwitchTab = function(activity, btn) {
+    wkTab = activity;
+    document.querySelectorAll('.wk-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    wkRender();
+  };
+
+  function wkRender() {
+    wkNavUI();
+    const dates   = wkDates();
+
+    // Use same buildEntries dedup logic but scoped to this week's dates
+    const weekLogs = allLogs.filter(l => l.activity === wkTab && dates.includes(l.date));
+
+    // Aggregate with duplicate-date dedup (same as buildEntries)
+    const agg = {};
+    weekLogs.forEach(l => {
+      const k = sanitizeKey(l.name) + '_' + l.date;
+      const cur = parseFloat(l.km) || 0;
+      if (!agg[l.name]) agg[l.name] = { name: l.name, km: 0, dates: new Set(), _byDate: {} };
+      const prev = agg[l.name]._byDate[l.date] || 0;
+      if (cur > prev) {
+        agg[l.name].km += cur - prev;
+        agg[l.name]._byDate[l.date] = cur;
+      }
+      agg[l.name].dates.add(l.date);
+    });
+
+    const all    = Object.values(agg).sort((a,b) => b.km - a.km || b.dates.size - a.dates.size);
+    const sorted = all.slice(0, 5);
+
+    const totalKm    = all.reduce((s,p) => s + p.km, 0);
+    const activeDays = new Set(weekLogs.map(l => l.date)).size;
+
+    document.getElementById('wk-s-athletes').textContent = all.length || '—';
+    document.getElementById('wk-s-km').textContent       = all.length ? Math.round(totalKm*10)/10 : '—';
+    document.getElementById('wk-s-days').textContent     = all.length ? activeDays : '—';
+
+    const list = document.getElementById('wk-list');
+    if (!sorted.length) {
+      list.innerHTML = `<div class="wk-empty">🏁 No ${wkTab.toLowerCase()} logged this week yet.</div>`;
+      renderAwards();
+      return;
+    }
+
+    const medals  = ['🥇','🥈','🥉','4','5'];
+    const kmCls   = ['k1','k2','k3','kx','kx'];
+    const mCls    = ['m1','m2','m3','mx','mx'];
+    const cardCls = ['r1','r2','r3','',''];
+
+    list.innerHTML = sorted.map((p, i) => {
+      const km   = Math.round(p.km * 10) / 10;
+      const days = p.dates.size;
+      const dots = dates.map(d =>
+        `<div class="wk-dot ${p.dates.has(d)?'on':'off'}" title="${d}"></div>`
+      ).join('');
+      const nameEsc = esc(p.name);
+      return `<div class="wk-card ${cardCls[i]}" style="animation-delay:${i*.07}s">
+        <div class="wk-medal ${mCls[i]}">${medals[i]}</div>
+        <div>
+          <div class="wk-name">${nameEsc}</div>
+          <div class="wk-meta">
+            <span>${days} day${days!==1?'s':''}</span>
+            ${days >= 5 ? '<span class="wk-streak">Consistent</span>' : ''}
+          </div>
+          <div class="wk-dots">${dots}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="wk-km-val ${kmCls[i]}">${km}</div>
+          <div class="wk-km-unit">km</div>
+        </div>
+      </div>`;
+    }).join('');
+    renderAwards();
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  WEEKLY PERFORMANCE AWARDS
+  // ══════════════════════════════════════════════════════
+  const AWARD_COLORS = [
+    '#3B4F8C','#5B3B8C','#8C3B5B','#8C5B3B','#3B8C5B',
+    '#3B7A8C','#8C3B3B','#5B8C3B','#7A5B3B','#3B5B8C',
+  ];
+  function awardColor(name) {
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffffffff;
+    return AWARD_COLORS[Math.abs(h) % AWARD_COLORS.length];
+  }
+  function awardInitials(name) {
+    const p = name.trim().split(/\s+/);
+    return p.length >= 2 ? (p[0][0] + p[p.length-1][0]).toUpperCase() : name.slice(0,2).toUpperCase();
+  }
+  function awardAvatar(name) {
+    return `<div class="wk-award-avatar" style="background:${awardColor(name)}">${awardInitials(name)}</div>`;
+  }
+
+  function renderAwards() {
+    const el = document.getElementById('wk-awards-body');
+    if (!el) return;
+    const dates = wkDates(); // current week dates array
+    const today = dates[dates.length - 1]; // last day we care about for "today"
+    // Use actual today's date string for "today's champ"
+    const realToday = (function() {
+      const d = new Date();
+      return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+    })();
+
+    const weekLogs = allLogs.filter(l => dates.includes(l.date) && l.name && l.date);
+
+    if (!weekLogs.length) {
+      el.innerHTML = '<div class="wk-awards-empty">No activity logged this week yet.</div>';
+      return;
+    }
+
+    // ── Award 1: Distance Champion (most total km across ALL activities this week) ──
+    const distAgg = {};
+    weekLogs.forEach(l => {
+      if (!distAgg[l.name]) distAgg[l.name] = { km: 0, _byDateAct: {} };
+      const k = l.date + '_' + l.activity;
+      const prev = distAgg[l.name]._byDateAct[k] || 0;
+      const cur  = parseFloat(l.km) || 0;
+      if (cur > prev) { distAgg[l.name].km += cur - prev; distAgg[l.name]._byDateAct[k] = cur; }
+    });
+    const distWinner = Object.entries(distAgg).sort((a,b) => b[1].km - a[1].km)[0];
+
+    // ── Award 2: Iron Streak (longest consecutive days logged, any activity) ──
+    const streakAgg = {};
+    weekLogs.forEach(l => {
+      if (!streakAgg[l.name]) streakAgg[l.name] = new Set();
+      streakAgg[l.name].add(l.date);
+    });
+    // Also look at allLogs for full streak (not just this week)
+    const fullStreakAgg = {};
+    allLogs.forEach(l => {
+      if (!l.name || !l.date) return;
+      if (!fullStreakAgg[l.name]) fullStreakAgg[l.name] = new Set();
+      fullStreakAgg[l.name].add(l.date);
+    });
+    function longestStreak(dateSet) {
+      const sorted = [...dateSet].sort();
+      let max = 1, cur = 1;
+      for (let i = 1; i < sorted.length; i++) {
+        const prev = new Date(sorted[i-1]), next = new Date(sorted[i]);
+        const diff = (next - prev) / 86400000;
+        if (diff === 1) { cur++; max = Math.max(max, cur); }
+        else cur = 1;
+      }
+      return sorted.length ? max : 0;
+    }
+    let streakWinner = null, streakMax = 0;
+    Object.entries(fullStreakAgg).forEach(([name, dates]) => {
+      const s = longestStreak(dates);
+      if (s > streakMax) { streakMax = s; streakWinner = name; }
+    });
+
+    // ── Award 3: Progressive Mover (biggest km growth day-over-day this week, any activity) ──
+    // Per person: compare daily km (any act) across consecutive days logged
+    const progAgg = {};
+    weekLogs.forEach(l => {
+      if (!progAgg[l.name]) progAgg[l.name] = {};
+      const prev = progAgg[l.name][l.date] || 0;
+      const cur  = parseFloat(l.km) || 0;
+      progAgg[l.name][l.date] = Math.max(prev, cur);
+    });
+    let progWinner = null, progGrowth = -Infinity, progDays = 0;
+    Object.entries(progAgg).forEach(([name, byDate]) => {
+      const sortedDates = Object.keys(byDate).sort();
+      if (sortedDates.length < 2) return;
+      let growth = 0, growDays = 0;
+      for (let i = 1; i < sortedDates.length; i++) {
+        const diff = byDate[sortedDates[i]] - byDate[sortedDates[i-1]];
+        if (diff > 0) { growth += diff; growDays++; }
+      }
+      if (growDays > 0 && growth > progGrowth) { progGrowth = growth; progWinner = name; progDays = growDays; }
+    });
+
+    // ── Award 4: Today's Distance Champion (highest km today, any activity) ──
+    const todayLogs = allLogs.filter(l => l.date === realToday && l.name && l.date);
+    const todayAgg = {};
+    todayLogs.forEach(l => {
+      const prev = todayAgg[l.name] || { km: 0, activity: '' };
+      const cur  = parseFloat(l.km) || 0;
+      if (cur > prev.km) todayAgg[l.name] = { km: cur, activity: l.activity };
+    });
+    const todayWinner = Object.entries(todayAgg).sort((a,b) => b[1].km - a[1].km)[0];
+
+    let html = '';
+
+    // Card builder
+    function card(cls, icon, typeLbl, catLbl, name, sub, numVal, unitLbl) {
+      return `<div class="wk-award-card ${cls}">
+        <div class="wk-award-icon-wrap">
+          <div class="wk-award-icon">${icon}</div>
+          <div class="wk-award-type">${typeLbl}</div>
+        </div>
+        <div class="wk-award-body">
+          <div class="wk-award-cat">${catLbl}</div>
+          <div class="wk-award-nameline">${awardAvatar(name)}<div class="wk-award-name">${esc(name)}</div></div>
+          <div class="wk-award-sub">${sub}</div>
+        </div>
+        <div class="wk-award-val">
+          <div class="wk-award-num">${numVal}</div>
+          <div class="wk-award-unit">${unitLbl}</div>
+        </div>
+      </div>`;
+    }
+
+    if (distWinner) {
+      const km = Math.round(distWinner[1].km * 10) / 10;
+      html += card('dist','🏅','Distance\nChampion','Distance Champion',
+        distWinner[0], 'Total this week · All activities', km, 'KM This Week');
+    }
+    if (streakWinner && streakMax > 0) {
+      html += card('streak','🔥','Iron\nStreak','Iron Streak',
+        streakWinner, `Longest consecutive days logged · ${streakMax} total days`, streakMax, 'Day Streak');
+    }
+    if (progWinner && progGrowth > 0) {
+      const g = Math.round(progGrowth * 10) / 10;
+      html += card('prog','📈','Progressive\nMover','Progressive Mover',
+        progWinner, `KM growing day by day · ${progDays} day${progDays!==1?'s':''}`, '+' + g, 'KM Growth');
+    }
+    if (todayWinner) {
+      const km = Math.round(todayWinner[1].km * 10) / 10;
+      const act = todayWinner[1].activity;
+      html += card("today","⚡","Today's\nChamp","Today's Distance Champion",
+        todayWinner[0], `${act} · Today 🔥`, km, 'KM Today');
+    }
+
+    el.innerHTML = html || '<div class="wk-awards-empty">No award data available yet.</div>';
+  }
+
+  // ══════════════════════════════════════════════════════
+  //  ALL ENTRIES PANEL (read-only)
+  // ══════════════════════════════════════════════════════
+  let aeFilter = 'all';
+
+  window.aeChip = function(val, btn) {
+    aeFilter = val;
+    document.querySelectorAll('.ae-act-chip').forEach(c => c.classList.remove('active'));
+    btn.classList.add('active');
+    window.aeRender();
+  };
+
+  window.aeRender = function() {
+    const tbody = document.getElementById('ae-tbody');
+    if (!tbody) return;
+    const search = (document.getElementById('ae-search') ? document.getElementById('ae-search').value : '').toLowerCase().trim();
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    function fmtD(d) {
+      if (!d) return '';
+      var p = d.split('-');
+      return parseInt(p[2]) + ' ' + months[parseInt(p[1])-1] + ' ' + p[0];
+    }
+    function badgeCls(a) { return a==='Walking'?'walk':a==='Running'?'run':'cycle'; }
+
+    var sorted = allLogs.slice().sort(function(a,b){ return (b.date||'').localeCompare(a.date||''); });
+    var filtered = sorted.filter(function(l) {
+      if (!l.name || !l.date) return false;
+      var matchAct  = aeFilter === 'all' || l.activity === aeFilter;
+      var matchName = !search || l.name.toLowerCase().indexOf(search) !== -1;
+      return matchAct && matchName;
+    });
+
+    var countEl = document.getElementById('ae-count');
+    if (countEl) {
+      countEl.textContent = filtered.length
+        ? filtered.length + ' entr' + (filtered.length===1?'y':'ies') + (search ? ' — “'+search+'”' : '')
+        : '';
+    }
+
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="5"><div class="ae-empty">'
+        + (search ? 'No entries found for your search.' : 'No entries logged yet.')
+        + '</div></td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(function(l) {
+      return '<tr>'
+        + '<td style="color:#888;white-space:nowrap">' + fmtD(l.date) + '</td>'
+        + '<td class="ae-td-name">' + esc(l.name) + '</td>'
+        + '<td><span class="ae-badge ' + badgeCls(l.activity) + '">' + esc(l.activity) + '</span></td>'
+        + '<td style="color:#FF6B35;font-weight:700">' + l.km + ' <span style="color:#555;font-size:10px">km</span></td>'
+        + '<td style="color:#666;font-size:11px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'
+          + (l.notes ? esc(l.notes) : '—') + '</td>'
+        + '</tr>';
+    }).join('');
+  };
+
+  // ══════════════════════════════════════════════════════
+  //  GROUPS VIEW
+  // ══════════════════════════════════════════════════════
+
+  const GROUPS = [
+    { id:1, emoji:'🔵', members:['Asmita Tiwari','Sipra Tripathy','Yogesh Karira','Geeta Sharma','Parveen Bansal'] },
+    { id:2, emoji:'🟢', members:['Shobha','Aakash Rayate','Sonam Agnihotri','Neha Goel','Binay Lal'] },
+    { id:3, emoji:'🟠', members:['Poulomi Mukherjee','Puneet Ahuja','Jaya Bharti','Ankit','Puja Gupta'] },
+    { id:4, emoji:'🟣', members:['Shibani Pattnaik','Shubham Singh','Pritam Kumari','Shilpy Pateriya','Gaurav Verma'] },
+    { id:5, emoji:'🔴', members:['Praveen Choudhary','Shyamala','Jyotika Bhurani','Saksham Tandon','Kali Tripathy'] },
+    { id:6, emoji:'🟡', members:['Aparna Shinde','Aman Gupta','Kumar Abhishek','Shikha Tandon','Mayuri Hegde'] },
+    { id:7, emoji:'🟡', members:['Renu Goel','BIBEK LAL','Dikshant Ohri','Surabhi Telang','Pooja'] },
+    { id:8, emoji:'⚫', members:['Saswati Mahapatra','Amar Shinde','Richa Johar','Thavakumar Swaminathan','Shubham Lakhotia','Parita Kachhela'] },
+  ];
+
+  // Avatar background colours — deterministic per initials
+  const AV_COLORS = [
+    '#3B4F8C','#5B3B8C','#8C3B5B','#8C5B3B','#3B8C5B',
+    '#3B7A8C','#8C3B3B','#5B8C3B','#7A5B3B','#3B5B8C',
+  ];
+
+  function grpColor(name) {
+    let h = 0;
+    for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) & 0xffffffff;
+    return AV_COLORS[Math.abs(h) % AV_COLORS.length];
+  }
+
+  function grpInitials(name) {
+    const parts = name.trim().split(/\s+/);
+    return parts.length >= 2
+      ? (parts[0][0] + parts[parts.length-1][0]).toUpperCase()
+      : name.slice(0,2).toUpperCase();
+  }
+
+  function grpTodayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  function grpFmtDate(str) {
+    const [y,m,d] = str.split('-');
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    const dateObj = new Date(parseInt(y), parseInt(m)-1, parseInt(d));
+    return `${days[dateObj.getDay()]}, ${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
+  }
+
+  // Challenge start date
+  const GRP_START = '2026-06-01';
+  let grpOffset = 0; // 0 = today, -1 = yesterday, etc.
+
+  function grpSelectedDate() {
+    const d = new Date();
+    d.setDate(d.getDate() + grpOffset);
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  window.grpShift = function(delta) {
+    const next = grpOffset + delta;
+    if (next > 0) return; // can't go into the future
+    const candidate = new Date();
+    candidate.setDate(candidate.getDate() + next);
+    const candidateStr = `${candidate.getFullYear()}-${String(candidate.getMonth()+1).padStart(2,'0')}-${String(candidate.getDate()).padStart(2,'0')}`;
+    if (candidateStr < GRP_START) return; // can't go before challenge start
+    grpOffset = next;
+    renderGroups();
+  };
+
+  window.grpGoToday = function() {
+    grpOffset = 0;
+    renderGroups();
+  };
+
+  function renderGroups() {
+    const today    = grpTodayStr();
+    const selected = grpSelectedDate();
+    const isToday  = selected === today;
+
+    // Update nav UI
+    document.getElementById('grp-date-text').textContent = isToday
+      ? 'Today — ' + grpFmtDate(selected)
+      : grpFmtDate(selected);
+    document.getElementById('grp-today-badge').classList.toggle('hidden', isToday);
+    document.getElementById('grp-btn-next').disabled = grpOffset >= 0;
+
+    // Disable prev if at challenge start
+    const prevDate = new Date();
+    prevDate.setDate(prevDate.getDate() + grpOffset - 1);
+    const prevStr = `${prevDate.getFullYear()}-${String(prevDate.getMonth()+1).padStart(2,'0')}-${String(prevDate.getDate()).padStart(2,'0')}`;
+    document.getElementById('grp-btn-prev').disabled = prevStr < GRP_START;
+
+    // Build selected-day log map: normalised name → { km, activity }
+    const todayMap = {};
+    allLogs.forEach(l => {
+      if (l.date !== selected || !l.name) return;
+      const key = l.name.trim().toLowerCase();
+      const cur = parseFloat(l.km) || 0;
+      // Keep highest KM entry for the day (in case of duplicates)
+      if (!todayMap[key] || cur > todayMap[key].km) {
+        todayMap[key] = { km: cur, activity: l.activity || '' };
+      }
+    });
+
+    const list = document.getElementById('grp-list');
+    list.innerHTML = GROUPS.map(g => {
+      // Count how many logged today
+      const doneCount = g.members.filter(m => todayMap[m.trim().toLowerCase()]).length;
+      const total     = g.members.length;
+      const allDone   = doneCount === total;
+      const noneDone  = doneCount === 0;
+
+      const dotCls    = allDone ? 'green' : noneDone ? 'grey' : 'orange';
+      const cardCls   = allDone ? 'g-active' : noneDone ? 'g-none' : 'g-partial';
+      const statusTxt = noneDone
+        ? 'Not started'
+        : allDone
+          ? 'All done!'
+          : `${doneCount} of ${total} done`;
+      const statusCls = allDone ? 'done' : noneDone ? 'none' : 'partial';
+
+      const membersHtml = g.members.map(name => {
+        const key  = name.trim().toLowerCase();
+        const data = todayMap[key];
+        const km   = data ? data.km : 0;
+        const act  = data ? data.activity : '';
+        const actKey = act === 'Walking' ? 'walk' : act === 'Running' ? 'run' : act === 'Cycling' ? 'cycle' : '';
+        const avCls  = actKey === 'walk' ? 'av-active' : actKey === 'run' ? 'av-run' : actKey === 'cycle' ? 'av-cycle' : '';
+        const gmCls  = actKey === 'walk' ? 'gm-active' : actKey === 'run' ? 'gm-run' : actKey === 'cycle' ? 'gm-cycle' : '';
+
+        const firstName = name.split(' ')[0];
+        const initials  = grpInitials(name);
+        const bg        = grpColor(name);
+        const fireHtml  = km > 0 ? `<span class="grp-fire">🔥</span>` : '';
+
+        const kmHtml   = `<div class="grp-member-km">${km > 0 ? Math.round(km*10)/10 : '0'} <span style="font-size:9px;color:#555">km</span></div>`;
+        const badgeHtml = actKey ? `<div class="grp-member-badge ${actKey}">${act.toUpperCase()}</div>` : '';
+
+        return `<div class="grp-member ${gmCls}">
+          <div class="grp-avatar-wrap">
+            <div class="grp-avatar ${avCls}" style="background:${bg}">${initials}</div>
+            ${fireHtml}
+          </div>
+          <div class="grp-member-name">${esc(firstName === name ? name : name.split(' ').slice(0,2).join(' '))}</div>
+          ${kmHtml}
+          ${badgeHtml}
+        </div>`;
+      }).join('');
+
+      // Flow line
+      const flowNames = [...g.members, g.members[0]];
+      const flowHtml  = flowNames.map((n,i) =>
+        i === 0 ? `<strong>${n.split(' ')[0]}</strong>`
+                : `<span class="grp-flow-arrow">→</span><strong>${n.split(' ')[0]}</strong>`
+      ).join('');
+
+      return `<div class="grp-card ${cardCls}">
+        <div class="grp-header">
+          <div class="grp-title">
+            <div class="grp-dot ${dotCls}"></div>
+            ${g.emoji} Group ${g.id}
+          </div>
+          <div class="grp-status ${statusCls}">${statusTxt}</div>
+        </div>
+        <div class="grp-members">${membersHtml}</div>
+        <div class="grp-flow">Flow: ${flowHtml}</div>
+      </div>`;
+    }).join('');
+  }
+
+  // ═══ SUGAR-FREE CHALLENGE ═══
+  function sfTodayStr() {
+    const d = new Date();
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
+  function sfDaysBetween(d1, d2) {
+    const a = new Date(d1 + 'T00:00:00Z');
+    const b = new Date(d2 + 'T00:00:00Z');
+    return Math.round((b - a) / 86400000);
+  }
+
+  // Day count of current streak, 1-indexed (start date itself = Day 1), capped at 14
+  function sfDaysClean(startDate, todayStr) {
+    const diff = sfDaysBetween(startDate, todayStr);
+    return Math.max(0, diff) + 1;
+  }
+
+  function renderSugarChallenge() {
+    const today = sfTodayStr();
+    const entries = Object.values(sugarChallenge || {}).map(p => {
+      const raw = sfDaysClean(p.streakStartDate, today);
+      return { ...p, days: Math.min(raw, 14), completed: p.status === 'completed' || raw >= 14 };
+    });
+
+    const hasParticipants = entries.length > 0;
+
+    // Banner: always show, but tweak wording once challenge is live (after Jun 21 + participants exist)
+    const challengeStart = new Date('2026-06-21T00:00:00');
+    const todayDate = new Date(today + 'T00:00:00');
+    const challengeLive = todayDate >= challengeStart && hasParticipants;
+    const banner = document.getElementById('sf-start-banner');
+    if (banner) {
+      if (challengeLive) {
+        // Challenge is active with participants — condense banner
+        const dayNum = Math.floor((todayDate - challengeStart) / 86400000) + 1;
+        banner.style.borderColor = 'rgba(105,255,71,.3)';
+        banner.style.background  = 'linear-gradient(135deg,rgba(105,255,71,.07),rgba(57,255,20,.03))';
+        banner.querySelector('.sf-banner-icon').textContent = '🔥';
+        banner.querySelector('.sf-banner-title').textContent = 'Challenge In Progress — Day ' + Math.min(dayNum, 14) + ' of 14';
+        banner.querySelector('.sf-banner-title').style.color = '#90ff90';
+        banner.querySelector('.sf-banner-date-pill').style.background = 'rgba(105,255,71,.15)';
+        banner.querySelector('.sf-banner-date-pill').style.borderColor = 'rgba(105,255,71,.4)';
+        banner.querySelector('.sf-banner-date-pill').style.color = '#90ff90';
+        banner.querySelector('.sf-banner-date-dot').style.background = '#69FF47';
+      }
+    }
+
+    // Show/hide participants section vs waiting block
+    const participantsWrap = document.getElementById('sf-participants-wrap');
+    const waitingBlock     = document.getElementById('sf-waiting-block');
+    if (participantsWrap) participantsWrap.style.display = hasParticipants ? '' : 'none';
+    if (waitingBlock)     waitingBlock.style.display     = hasParticipants ? 'none' : '';
+
+    document.getElementById('sf-empty').style.display = 'none'; // handled by waiting block
+
+    if (!hasParticipants) return;
+
+    const active = entries.filter(e => !e.completed)
+      .sort((a,b) => b.days - a.days || (a.resetCount||0) - (b.resetCount||0));
+    const completed = entries.filter(e => e.completed)
+      .sort((a,b) => (b.longestStreak||0) - (a.longestStreak||0));
+
+    document.getElementById('sf-active-list').innerHTML = active.map((p,i) => {
+      const pct = Math.round(p.days/14*100);
+      return `<div class="sf-item" style="animation-delay:${i*.04}s">
+        <div class="sf-rank">${i+1}</div>
+        <div>
+          <div class="sf-name">${esc(p.name)}</div>
+          <div class="sf-meta">Best streak: ${p.longestStreak||0}d &nbsp;·&nbsp; Resets: ${p.resetCount||0}</div>
+          <div class="progress-track"><div class="progress-fill" style="width:${pct}%;background:#e95ab4"></div></div>
+        </div>
+        <div class="sf-right">
+          <div class="sf-day">${p.days}</div>
+          <div class="sf-day-unit">of 14</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('sf-completed-label').style.display = completed.length ? '' : 'none';
+    document.getElementById('sf-completed-list').innerHTML = completed.map(p => {
+      return `<div class="sf-item done">
+        <div class="sf-rank gold">🏅</div>
+        <div>
+          <div class="sf-name">${esc(p.name)}</div>
+          <div class="sf-meta">Resets along the way: ${p.resetCount||0}</div>
+          <div class="progress-track"><div class="progress-fill" style="width:100%;background:#FFD700"></div></div>
+        </div>
+        <div class="sf-right">
+          <div class="sf-day done-day">14</div>
+          <div class="sf-day-unit">DONE</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  let sugarChallenge = {};
+  onValue(ref(db, 'sugarChallenge'), snap => {
+    sugarChallenge = snap.val() || {};
+    renderSugarChallenge();
+  });
+
+</script>
