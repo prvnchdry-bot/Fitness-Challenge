@@ -248,17 +248,6 @@
           <label>Participant Name</label>
           <select id="t-name" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:8px;padding:8px 11px;font-family:'DM Sans',sans-serif;font-size:13px;color:#eee;outline:none;width:100%;">
             <option value="">— Select participant —</option>
-            <option>Amar Shinde</option><option>Shobha</option><option>Aakash Rayate</option>
-            <option>Poulomi Mukherjee</option><option>Sipra Tripathy</option><option>Shibani Pattnaik</option>
-            <option>Puneet Ahuja</option><option>Shubham Singh</option><option>Praveen Choudhary</option>
-            <option>Surabhi Telang</option><option>Aparna Shinde</option><option>Renu Goel</option>
-            <option>Saswati Mahapatra</option><option>Sonam Agnihotri</option><option>Jyotika Bhurani</option>
-            <option>Yogesh Karira</option><option>Mayuri Hegde</option><option>Asmita Tiwari</option>
-            <option>Jaya Bharti</option><option>Mithun Vakharia</option><option>Aman Gupta</option>
-            <option>BIBEK LAL</option><option>Richa Johar</option><option>Dikshant Ohri</option>
-            <option>Shyamala</option><option>Shubham Lakhotia</option><option>Kumar Abhishek</option>
-            <option>Kali Tripathy</option><option>Thavakumar Swaminathan</option><option>Binay lal</option>
-            <option>Shilpy pateriya</option><option>Geeta Sharma</option>
           </select>
         </div>
         <div class="fg">
@@ -395,7 +384,7 @@
   }
 
   // ── Unique names datalist ──────────────────────────────────────────────────
-  const PRESET_NAMES = ['Amar Shinde', 'Shobha', 'Aakash Rayate', 'Poulomi Mukherjee', 'Sipra Tripathy', 'Shibani Pattnaik', 'Puneet Ahuja', 'Shubham Singh', 'Praveen Choudhary', 'Surabhi Telang', 'Aparna Shinde', 'Renu Goel', 'Saswati Mahapatra', 'Sonam Agnihotri', 'Jyotika Bhurani', 'Yogesh Karira', 'Mayuri Hegde', 'Asmita Tiwari', 'Jaya Bharti', 'Mithun Vakharia', 'Aman Gupta', 'BIBEK LAL', 'Richa Johar', 'Dikshant Ohri', 'Shyamala', 'Shubham Lakhotia', 'Kumar Abhishek', 'Kali Tripathy', 'Thavakumar Swaminathan', 'Binay lal', 'Shilpy pateriya'];
+  const PRESET_NAMES = ['Amar Shinde', 'Shobha', 'Aakash Rayate', 'Poulomi Mukherjee', 'Sipra Tripathy', 'Shibani Pattnaik', 'Puneet Ahuja', 'Shubham Singh', 'Praveen Choudhary', 'Surabhi Telang', 'Aparna Shinde', 'Renu Goel', 'Saswati Mahapatra', 'Sonam Agnihotri', 'Jyotika Bhurani', 'Yogesh Karira', 'Mayuri Hegde', 'Asmita Tiwari', 'Jaya Bharti', 'Mithun Vakharia', 'Aman Gupta', 'BIBEK LAL', 'Richa Johar', 'Dikshant Ohri', 'Shyamala', 'Shubham Lakhotia', 'Kumar Abhishek', 'Kali Tripathy', 'Thavakumar Swaminathan', 'Binay lal', 'Shilpy pateriya', 'Geeta Sharma'];
 
   function updateNamesList() {
     // Merge preset names with any logged names
@@ -630,6 +619,17 @@
     ];
     const loggedNames = Object.values(logs).map(l => l.name);
     const names = [...new Set([...PRESET_NAMES, ...loggedNames])].sort();
+
+    // Keep the "Log Token" dropdown in sync with everyone who's ever logged
+    // an activity or was preset, so new joiners always appear here too.
+    const sel = document.getElementById('t-name');
+    if (sel) {
+      const prevVal = sel.value;
+      sel.innerHTML = '<option value="">— Select participant —</option>' +
+        names.map(n => `<option value="${esc(n)}">${esc(n)}</option>`).join('');
+      if (names.includes(prevVal)) sel.value = prevVal;
+    }
+
     if (!names.length) { list.innerHTML = `<div class="empty">No participants yet.</div>`; return; }
     list.innerHTML = names.map(name => {
       const key      = sanitizeKey(name);
