@@ -474,11 +474,13 @@
     renderEntries();
   };
 
+  // Keys currently being written to Firebase — onValue must not overwrite these
+  const _pendingSaves = new Set();
+
   window._saveLogEdit = async function(key) {
     const l = logs[key]; if (!l) return;
-    // Read ALL values from the DOM synchronously BEFORE any awaits.
-    // After an await, onValue can fire and re-render the table, destroying
-    // the input elements — so we'd lose the user's edits.
+    // Read DOM values synchronously BEFORE any awaits — after an await the
+    // inputs may be gone (destroyed by an onValue re-render).
     const name     = document.getElementById(`el-name-${key}`)?.value.trim()     || l.name;
     const activity = document.getElementById(`el-act-${key}`)?.value             || l.activity;
     const date     = document.getElementById(`el-date-${key}`)?.value            || l.date;
@@ -487,11 +489,10 @@
     const notes    = document.getElementById(`el-notes-${key}`)?.value.trim()    || '';
     const updated  = { ...l, name, activity, date, km, proof, notes };
 
-    // Optimistically update local cache and re-render BEFORE the async writes.
-    // This way the UI shows the new values instantly, and the onValue callback
-    // that fires after the Firebase write will find the same data (no flicker).
-    logs[key]      = updated;
-    editingLogKey  = null;
+    // Mark this key as pending so onValue won't clobber it during the write
+    _pendingSaves.add(key);
+    logs[key]     = updated;
+    editingLogKey = null;
     renderRecent();
     renderEntries();
 
@@ -500,13 +501,15 @@
       await syncToParticipants();
       toast('✅ Entry updated!');
     } catch(e) {
-      // Roll back on failure
       logs[key] = l;
       editingLogKey = key;
       renderRecent();
       renderEntries();
       toast('Error saving edits.','error');
       console.error(e);
+    } finally {
+      // Release the lock — next onValue snapshot is allowed to update this key
+      _pendingSaves.delete(key);
     }
   };
 
@@ -816,11 +819,14 @@
 
   onValue(logsRef, snap => {
     const fresh = snap.val() || {};
-    // If we have a pending edit open, preserve the user's in-progress edits
-    // for that key so onValue doesn't stomp on what they're typing.
+    // Protect keys that are mid-edit (being typed into) OR mid-save (written
+    // to Firebase but the snapshot echo may carry stale data).
     if (editingLogKey && logs[editingLogKey]) {
       fresh[editingLogKey] = logs[editingLogKey];
     }
+    _pendingSaves.forEach(key => {
+      if (logs[key]) fresh[key] = logs[key];
+    });
     logs = fresh;
     updateNamesList();
     renderRecent();
