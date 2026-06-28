@@ -780,23 +780,33 @@
   // ── Auto-focus KM field when a name is picked from the datalist ───────────
   const _nameOptions = new Set(Array.from(document.querySelectorAll('#names-datalist option')).map(o => o.value));
 
+  // Only these participants default to Running
+  const RUNNERS = new Set(['Bibek Lal','BIBEK LAL','Ankit','Puja Gupta','Shilpy pateriya','Saksham Tandon','Aman Gupta']);
+
   // These participants do multiple activities — don't auto-set, prompt instead
-  const MULTI_ACTIVITY = new Set(['Praveen Choudhary','Amar Shinde','Binay Lal','Yogesh Karira']);
+  const MULTI_ACTIVITY = new Set(['Praveen Choudhary','Amar Shinde','Binay Lal','Binay lal','Yogesh Karira']);
+
+  // Track the last value we acted on to avoid re-triggering on every keystroke
+  let _lastActedName = '';
 
   window.handleNameInput = function(el) {
     const val = el.value.trim();
-    if (!_nameOptions.has(val)) return;
-    const actSel  = document.getElementById('l-activity');
-    const hint    = document.getElementById('l-activity-hint');
+    // Only act when the value exactly matches a known name AND it's a new selection
+    // (not mid-typing / mid-deleting). This fixes the backspace issue where focus
+    // was being stolen on every keystroke.
+    if (!_nameOptions.has(val) || val === _lastActedName) return;
+    _lastActedName = val;
+
+    const actSel = document.getElementById('l-activity');
+    const hint   = document.getElementById('l-activity-hint');
 
     if (MULTI_ACTIVITY.has(val)) {
       // Don't default — highlight the activity dropdown so they consciously pick
-      actSel.value = '';           // clear any previous selection
+      actSel.value = '';
       actSel.style.borderColor = 'rgba(255,107,53,.7)';
       actSel.style.boxShadow   = '0 0 0 2px rgba(255,107,53,.25)';
       actSel.style.animation   = 'pulse-hint .6s ease-in-out 3';
       hint.style.display = '';
-      // Remove highlight once they make a choice
       const cleanup = () => {
         actSel.style.borderColor = '';
         actSel.style.boxShadow   = '';
@@ -806,9 +816,17 @@
       };
       actSel.addEventListener('change', cleanup);
       setTimeout(() => actSel.focus(), 80);
-    } else {
-      // Default to Running and jump straight to KM
+    } else if (RUNNERS.has(val)) {
+      // Known runner — default to Running
       actSel.value = 'Running';
+      hint.style.display = 'none';
+      actSel.style.borderColor = '';
+      actSel.style.boxShadow   = '';
+      actSel.style.animation   = '';
+      setTimeout(() => document.getElementById('l-km').focus(), 80);
+    } else {
+      // Everyone else defaults to Walking
+      actSel.value = 'Walking';
       hint.style.display = 'none';
       actSel.style.borderColor = '';
       actSel.style.boxShadow   = '';
@@ -816,6 +834,12 @@
       setTimeout(() => document.getElementById('l-km').focus(), 80);
     }
   };
+
+  // Reset _lastActedName when the field is cleared so picking the same name
+  // again after clearing works correctly
+  document.getElementById('l-name').addEventListener('input', function() {
+    if (!this.value.trim()) _lastActedName = '';
+  });
 
   onValue(logsRef, snap => {
     const fresh = snap.val() || {};
