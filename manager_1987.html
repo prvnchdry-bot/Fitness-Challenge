@@ -106,6 +106,7 @@
     .toast.error{border-color:rgba(231,76,60,.4);color:#E74C3C;}
     .spinner{width:24px;height:24px;border:2px solid rgba(255,107,53,.2);border-top-color:#FF6B35;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 10px;}
     @keyframes spin{to{transform:rotate(360deg);}}
+    @keyframes pulse-hint{0%,100%{opacity:1;}50%{opacity:.4;}}
   </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
@@ -139,7 +140,7 @@
       <div class="form-grid">
         <div class="fg">
           <label>Participant Name</label>
-          <input id="l-name" placeholder="e.g. Aakash Rayate" list="names-datalist" autocomplete="off">
+          <input id="l-name" placeholder="e.g. Aakash Rayate" list="names-datalist" autocomplete="off" oninput="handleNameInput(this)">
           <datalist id="names-datalist">
             <option value="Amar Shinde">
             <option value="Shobha">
@@ -182,6 +183,7 @@
             <option value="Running">🏃 Running</option>
             <option value="Cycling">🚴 Cycling</option>
           </select>
+          <span id="l-activity-hint" style="display:none;font-size:10px;color:#FF6B35;margin-top:3px;font-weight:700;letter-spacing:.5px;">⬆ Pick today's activity for this participant</span>
         </div>
         <div class="fg">
           <label>Date</label>
@@ -216,11 +218,11 @@
   <!-- ── TAB 2: All Entries ── -->
   <div id="nav-entries" class="nav-section">
     <div class="filter-bar">
-      <input class="search-input" id="search-input" placeholder="🔍 Search by name…" oninput="renderEntries()">
-      <button class="filter-chip active" onclick="setActFilter('all',this)">All</button>
-      <button class="filter-chip" onclick="setActFilter('Walking',this)">🚶 Walk</button>
-      <button class="filter-chip" onclick="setActFilter('Running',this)">🏃 Run</button>
-      <button class="filter-chip" onclick="setActFilter('Cycling',this)">🚴 Cycle</button>
+      <input class="search-input" id="search-input" placeholder="🔍 Search by name…" oninput="window.renderEntries && window.renderEntries()">
+      <button class="filter-chip active" onclick="window.setActFilter('all',this)">All</button>
+      <button class="filter-chip" onclick="window.setActFilter('Walking',this)">🚶 Walk</button>
+      <button class="filter-chip" onclick="window.setActFilter('Running',this)">🏃 Run</button>
+      <button class="filter-chip" onclick="window.setActFilter('Cycling',this)">🚴 Cycle</button>
       <button class="btn btn-sm" onclick="exportToExcel()" style="margin-left:auto;background:rgba(105,255,71,.1);color:#69FF47;border:1px solid rgba(105,255,71,.25);padding:6px 14px;border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;">⬇️ Export Excel</button>
     </div>
     <div class="table-wrap">
@@ -332,8 +334,8 @@
     document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
     document.getElementById('nav-' + key).classList.add('active');
     btn.classList.add('active');
-    if (key === 'summary') renderSummary();
-    if (key === 'entries') renderEntries();
+    if (key === 'summary') window.renderSummary && window.renderSummary();
+    if (key === 'entries') window.renderEntries && window.renderEntries();
   }
 
   // Set today's date by default
@@ -392,6 +394,7 @@
     const names = [...new Set([...PRESET_NAMES, ...loggedNames])].sort();
     const el = document.getElementById('names-datalist');
     if (el) el.innerHTML = names.map(n => `<option value="${esc(n)}">`).join('');
+    names.forEach(n => _nameOptions.add(n));
   }
 
   // ── Compute cumulative totals from logs ────────────────────────────────────
@@ -473,20 +476,38 @@
 
   window._saveLogEdit = async function(key) {
     const l = logs[key]; if (!l) return;
+    // Read ALL values from the DOM synchronously BEFORE any awaits.
+    // After an await, onValue can fire and re-render the table, destroying
+    // the input elements — so we'd lose the user's edits.
     const name     = document.getElementById(`el-name-${key}`)?.value.trim()     || l.name;
     const activity = document.getElementById(`el-act-${key}`)?.value             || l.activity;
     const date     = document.getElementById(`el-date-${key}`)?.value            || l.date;
     const km       = parseFloat(document.getElementById(`el-km-${key}`)?.value)  || 0;
     const proof    = document.getElementById(`el-proof-${key}`)?.value.trim()    || '';
     const notes    = document.getElementById(`el-notes-${key}`)?.value.trim()    || '';
+    const updated  = { ...l, name, activity, date, km, proof, notes };
+
+    // Optimistically update local cache and re-render BEFORE the async writes.
+    // This way the UI shows the new values instantly, and the onValue callback
+    // that fires after the Firebase write will find the same data (no flicker).
+    logs[key]      = updated;
+    editingLogKey  = null;
+    renderRecent();
+    renderEntries();
+
     try {
       await update(ref(db, `logs/${key}`), { name, activity, date, km, proof, notes });
       await syncToParticipants();
-      editingLogKey = null;
+      toast('✅ Entry updated!');
+    } catch(e) {
+      // Roll back on failure
+      logs[key] = l;
+      editingLogKey = key;
       renderRecent();
       renderEntries();
-      toast('✅ Entry updated!');
-    } catch(e) { toast('Error saving edits.','error'); console.error(e); }
+      toast('Error saving edits.','error');
+      console.error(e);
+    }
   };
 
   window._deleteLog = async function(key) {
@@ -753,8 +774,54 @@
     toast(`✅ Exported ${filtered.length} entries to Excel!`);
   };
 
+  // ── Auto-focus KM field when a name is picked from the datalist ───────────
+  const _nameOptions = new Set(Array.from(document.querySelectorAll('#names-datalist option')).map(o => o.value));
+
+  // These participants do multiple activities — don't auto-set, prompt instead
+  const MULTI_ACTIVITY = new Set(['Praveen Choudhary','Amar Shinde','Binay Lal','Yogesh Karira']);
+
+  window.handleNameInput = function(el) {
+    const val = el.value.trim();
+    if (!_nameOptions.has(val)) return;
+    const actSel  = document.getElementById('l-activity');
+    const hint    = document.getElementById('l-activity-hint');
+
+    if (MULTI_ACTIVITY.has(val)) {
+      // Don't default — highlight the activity dropdown so they consciously pick
+      actSel.value = '';           // clear any previous selection
+      actSel.style.borderColor = 'rgba(255,107,53,.7)';
+      actSel.style.boxShadow   = '0 0 0 2px rgba(255,107,53,.25)';
+      actSel.style.animation   = 'pulse-hint .6s ease-in-out 3';
+      hint.style.display = '';
+      // Remove highlight once they make a choice
+      const cleanup = () => {
+        actSel.style.borderColor = '';
+        actSel.style.boxShadow   = '';
+        actSel.style.animation   = '';
+        hint.style.display = 'none';
+        actSel.removeEventListener('change', cleanup);
+      };
+      actSel.addEventListener('change', cleanup);
+      setTimeout(() => actSel.focus(), 80);
+    } else {
+      // Default to Running and jump straight to KM
+      actSel.value = 'Running';
+      hint.style.display = 'none';
+      actSel.style.borderColor = '';
+      actSel.style.boxShadow   = '';
+      actSel.style.animation   = '';
+      setTimeout(() => document.getElementById('l-km').focus(), 80);
+    }
+  };
+
   onValue(logsRef, snap => {
-    logs = snap.val() || {};
+    const fresh = snap.val() || {};
+    // If we have a pending edit open, preserve the user's in-progress edits
+    // for that key so onValue doesn't stomp on what they're typing.
+    if (editingLogKey && logs[editingLogKey]) {
+      fresh[editingLogKey] = logs[editingLogKey];
+    }
+    logs = fresh;
     updateNamesList();
     renderRecent();
     renderEntries();
