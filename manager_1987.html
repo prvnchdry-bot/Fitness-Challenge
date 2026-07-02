@@ -781,10 +781,10 @@
   const _nameOptions = new Set(Array.from(document.querySelectorAll('#names-datalist option')).map(o => o.value));
 
   // Only these participants default to Running
-  const RUNNERS = new Set(['Bibek Lal','BIBEK LAL','Ankit','Puja Gupta','Shilpy pateriya','Saksham Tandon','Aman Gupta']);
+  const RUNNERS = new Set(['Bibek Lal','Ankit','Puja Gupta','Shilpy pateriya']);
 
   // These participants do multiple activities — don't auto-set, prompt instead
-  const MULTI_ACTIVITY = new Set(['Praveen Choudhary','Amar Shinde','Binay Lal','Binay lal','Yogesh Karira']);
+  const MULTI_ACTIVITY = new Set(['Praveen Choudhary','Amar Shinde','Binay Lal','Yogesh Karira']);
 
   // Track the last value we acted on to avoid re-triggering on every keystroke
   let _lastActedName = '';
