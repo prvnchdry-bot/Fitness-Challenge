@@ -62,6 +62,22 @@
     .cat-tab-entries:hover{border-color:rgba(180,120,255,.4);color:#b87fff;background:rgba(180,120,255,.1);}
     .cat-tab-entries.active-entries{border-color:rgba(180,120,255,.5);color:#b87fff;background:rgba(180,120,255,.14);box-shadow:0 0 16px rgba(180,120,255,.1);}
 
+    /* ── Summary tab ── */
+    .summary-intro{padding:14px 16px 4px;text-align:center;}
+    .summary-intro-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:2px;color:#fff;}
+    .summary-intro-sub{font-size:11px;color:#555;margin-top:2px;}
+    .summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:14px 12px 24px;}
+    .summary-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px;animation:fadeUp .3s ease both;}
+    .summary-name{font-size:13px;font-weight:600;color:#f0f0f0;margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .summary-row{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:#777;margin-bottom:4px;}
+    .summary-act-badge{font-size:9px;padding:2px 7px;border-radius:100px;font-weight:700;flex-shrink:0;}
+    .summary-act-badge.walk{background:rgba(105,255,71,.12);color:#69FF47;}
+    .summary-act-badge.run{background:rgba(0,229,255,.12);color:#00E5FF;}
+    .summary-act-badge.cycle{background:rgba(255,107,53,.15);color:#FF6B35;}
+    .summary-val{font-family:'Bebas Neue',sans-serif;font-size:15px;color:#FF6B35;}
+    .summary-tokens{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);font-size:10px;color:#555;}
+    .summary-empty{text-align:center;color:#555;font-size:12px;padding:30px 16px;}
+
     /* ── Category panel ── */
     .cat-panel{display:none;padding:14px 0 0;}
     .cat-panel.active{display:block;}
@@ -444,6 +460,15 @@
     body.theme-light .cat-tab-entries:hover           { color: #7030c0; background: rgba(140,80,220,.12); }
     body.theme-light .cat-tab-entries.active-entries  { color: #7030c0; background: rgba(140,80,220,.15); }
 
+    /* Summary tab (light) */
+    body.theme-light .summary-intro-title { color: #1a1a2e; }
+    body.theme-light .summary-intro-sub   { color: #999; }
+    body.theme-light .summary-card        { background: rgba(255,255,255,.85); border-color: rgba(0,0,0,.08); }
+    body.theme-light .summary-name        { color: #1a1a2e; }
+    body.theme-light .summary-row         { color: #777; }
+    body.theme-light .summary-tokens      { color: #999; border-top-color: rgba(0,0,0,.08); }
+    body.theme-light .summary-empty       { color: #999; }
+
     /* Category panel heading */
     body.theme-light .cat-title.walk      { color: #177017; }   /* neon → deep green */
     body.theme-light .cat-title.run       { color: #006e80; }   /* neon cyan → deep teal */
@@ -657,6 +682,7 @@
   <div class="lb-label">
     <div class="view-toggle">
       <button class="view-btn active" id="vbtn-lb" onclick="switchView('lb')">🏆 Live Leaderboard</button>
+      <button class="view-btn"        id="vbtn-sum" onclick="switchView('sum')">📋 Summary</button>
       <button class="view-btn"        id="vbtn-wk" onclick="switchView('wk')">📅 Weekly</button>
       <button class="view-btn"        id="vbtn-gr" onclick="switchView('gr')">👥 Groups</button>
     </div>
@@ -705,6 +731,15 @@
       <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;"></div>Pending</div>
     </div>
   </div><!-- /view-lb -->
+
+  <!-- ── SUMMARY VIEW (hidden by default) ── -->
+  <div id="view-sum" style="display:none">
+    <div class="summary-intro">
+      <div class="summary-intro-title">CUMULATIVE TOTALS</div>
+      <div class="summary-intro-sub">Auto-calculated from all daily logs · same source as the leaderboard</div>
+    </div>
+    <div id="summary-grid" class="summary-grid"><div class="summary-empty">Loading…</div></div>
+  </div><!-- /view-sum -->
 
   <!-- ── WEEKLY VIEW (hidden by default) ── -->
   <div id="view-wk" style="display:none">
@@ -846,13 +881,16 @@
 
   function switchView(v) {
     document.getElementById('view-lb').style.display = v === 'lb' ? '' : 'none';
+    document.getElementById('view-sum').style.display = v === 'sum' ? '' : 'none';
     document.getElementById('view-wk').style.display = v === 'wk' ? '' : 'none';
     document.getElementById('view-gr').style.display = v === 'gr' ? '' : 'none';
     document.getElementById('view-sf').style.display = v === 'sf' ? '' : 'none';
     document.getElementById('vbtn-lb').classList.toggle('active', v === 'lb');
+    document.getElementById('vbtn-sum').classList.toggle('active', v === 'sum');
     document.getElementById('vbtn-wk').classList.toggle('active', v === 'wk');
     document.getElementById('vbtn-gr').classList.toggle('active', v === 'gr');
     document.getElementById('vbtn-sf').classList.toggle('active', v === 'sf');
+    if (v === 'sum') { window.renderSummary && window.renderSummary(); }
   }
 </script>
 
@@ -1098,10 +1136,45 @@
 
   function renderAll() { CATEGORIES.forEach(renderPanel); }
 
+  // ── Summary tab: cumulative totals per athlete, grouped across activities ──
+  function actClass(a) { return a === 'Walking' ? 'walk' : a === 'Running' ? 'run' : 'cycle'; }
+  function actInitial(a) { return a ? a[0] : '?'; }
+
+  window.renderSummary = function() {
+    const grid = document.getElementById('summary-grid');
+    if (!grid) return;
+    const entries = buildEntries(); // [{name, activity, km, days}]
+    if (!entries.length) { grid.innerHTML = `<div class="summary-empty">No data yet.</div>`; return; }
+
+    // Group by name
+    const byName = {};
+    entries.forEach(e => {
+      if (!byName[e.name]) byName[e.name] = [];
+      byName[e.name].push(e);
+    });
+    const names = Object.keys(byName).sort();
+
+    grid.innerHTML = names.map(name => {
+      const rows = byName[name].map(e => `
+        <div class="summary-row">
+          <span class="summary-act-badge ${actClass(e.activity)}">${actInitial(e.activity)}</span>
+          <span>${e.days}d</span>
+          <span class="summary-val">${e.km}km</span>
+        </div>`).join('');
+      const used = getTokens(name);
+      return `<div class="summary-card">
+        <div class="summary-name">${esc(name)}</div>
+        ${rows}
+        <div class="summary-tokens" style="${used >= MAX_TOKENS ? 'color:#E74C3C' : ''}">🎟 ${used}/${MAX_TOKENS} tokens</div>
+      </div>`;
+    }).join('');
+  };
+
   // ── Firebase listeners ─────────────────────────────────────────────────────
   onValue(ref(db, 'participants'), snap => {
     allParticipants = snap.val() ? Object.values(snap.val()) : [];
     renderAll();
+    window.renderSummary && window.renderSummary();
   });
 
   onValue(ref(db, 'tokens'), snap => {
@@ -1113,6 +1186,7 @@
       tokensMap[sanitizeKey(t.name)] = { count: dates.length, dates: new Set(dates) };
     });
     renderAll();
+    window.renderSummary && window.renderSummary();
   });
 
   // Single logs listener — feeds leaderboard (logsMap + buildEntries) and weekly
@@ -1143,6 +1217,7 @@
     wkRender();
     renderGroups();
     window.aeRender && window.aeRender();
+    window.renderSummary && window.renderSummary();
   });
 
   // ══════════════════════════════════════════════════════
