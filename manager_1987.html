@@ -713,39 +713,78 @@
       [nameInput, kmInput].forEach(el => el.classList.remove('voice-filled'));
     }
 
+    // ── Offline Levenshtein distance (for fuzzy name matching) ────────────────
+    function sfLevenshtein(a, b) {
+      const dp = Array.from({ length: a.length + 1 }, () => new Array(b.length + 1).fill(0));
+      for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+      for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+      for (let i = 1; i <= a.length; i++) {
+        for (let j = 1; j <= b.length; j++) {
+          dp[i][j] = a[i - 1] === b[j - 1]
+            ? dp[i - 1][j - 1]
+            : 1 + Math.min(dp[i - 1][j - 1], dp[i - 1][j], dp[i][j - 1]);
+        }
+      }
+      return dp[a.length][b.length];
+    }
+
+    const ACTIVITY_SYNONYMS = {
+      Walking: ['walk', 'walks', 'walking', 'walked', 'stroll', 'strolled', 'strolling'],
+      Running: ['run', 'runs', 'running', 'ran', 'jog', 'jogs', 'jogging', 'jogged'],
+      Cycling: ['cycle', 'cycles', 'cycling', 'cycled', 'bike', 'bikes', 'biking', 'biked', 'bicycle', 'bicycling']
+    };
+
+    // ── Fully offline field extraction — no network calls, works standalone ──
     async function extractFields(text) {
-      setStatus('Extracting fields…');
+      setStatus('Parsing…');
       try {
         const validActivities = ['Walking', 'Running', 'Cycling'];
-        const response = await fetch("https://api.anthropic.com/v1/messages", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            model: "claude-sonnet-4-6",
-            max_tokens: 1000,
-            system: `You extract structured data from a spoken fitness-activity log entry.
-Return ONLY a JSON object, no markdown fences, no preamble, with exactly these keys:
-{"name": string or null, "activity": one of "Walking","Running","Cycling" or null, "km": string or null}
-- "name" is the participant's name, title-cased, as spoken.
-- "activity" must be exactly one of "Walking", "Running", or "Cycling" (map synonyms like "jog"/"jogging" to "Running", "bike"/"biking" to "Cycling"). If unclear, use null.
-- "km" is the distance in kilometers as a plain number string (e.g. "5.2"), no units.
-If a field isn't mentioned, use null for it. Do not guess values that aren't stated or clearly implied.`,
-            messages: [ { role: "user", content: text } ],
-          })
-        });
+        const lower = text.toLowerCase();
 
-        if (!response.ok) throw new Error('API error ' + response.status);
-        const data = await response.json();
-        const raw = data.content.map(b => b.text || '').join('').trim();
-        const clean = raw.replace(/```json|```/g, '').trim();
-        const parsed = JSON.parse(clean);
+        // -- activity: keyword/synonym match --
+        let activity = null;
+        outer:
+        for (const [act, words] of Object.entries(ACTIVITY_SYNONYMS)) {
+          for (const w of words) {
+            if (new RegExp('\\b' + w + '\\b', 'i').test(lower)) { activity = act; break outer; }
+          }
+        }
+
+        // -- km: prefer a number attached to a unit, else any number --
+        let km = null;
+        let kmMatch = lower.match(/(\d+(?:\.\d+)?)\s*(?:km|kms|k\.m\.?|kilometers?|kilometres?)\b/);
+        if (!kmMatch) kmMatch = lower.match(/(\d+(?:\.\d+)?)/);
+        if (kmMatch) km = kmMatch[1];
+
+        // -- name: strip out numbers/units/activity words, fuzzy-match what's left
+        //    against known participants (handles speech-to-text mishearing) --
+        let candidate = text
+          .replace(/\d+(?:\.\d+)?\s*(?:km|kms|k\.m\.?|kilometers?|kilometres?)?/gi, ' ')
+          .split(/[,.;]/)[0]
+          .trim();
+        Object.values(ACTIVITY_SYNONYMS).flat().forEach(w => {
+          candidate = candidate.replace(new RegExp('\\b' + w + '\\b', 'ig'), '').trim();
+        });
+        candidate = candidate.replace(/\s{2,}/g, ' ').trim();
+
+        let name = null;
+        if (candidate) {
+          const knownNames = new Set([...PRESET_NAMES, ...(typeof _nameOptions !== 'undefined' ? _nameOptions : [])]);
+          let best = null, bestScore = Infinity;
+          knownNames.forEach(n => {
+            const dist = sfLevenshtein(candidate.toLowerCase(), n.toLowerCase());
+            const score = dist / Math.max(candidate.length, n.length, 1);
+            if (score < bestScore) { bestScore = score; best = n; }
+          });
+          name = (best && bestScore <= 0.4) ? best : candidate.replace(/\b\w/g, c => c.toUpperCase());
+        }
 
         let filledAny = false;
-        if (parsed.name) { nameInput.value = parsed.name; nameInput.classList.add('voice-filled'); filledAny = true; }
-        if (parsed.activity && validActivities.includes(parsed.activity)) {
-          activitySel.value = parsed.activity; filledAny = true;
+        if (name) { nameInput.value = name; nameInput.classList.add('voice-filled'); filledAny = true; }
+        if (activity && validActivities.includes(activity)) {
+          activitySel.value = activity; filledAny = true;
         }
-        if (parsed.km) { kmInput.value = parsed.km; kmInput.classList.add('voice-filled'); filledAny = true; }
+        if (km) { kmInput.value = km; kmInput.classList.add('voice-filled'); filledAny = true; }
 
         setStatus(filledAny ? '✅ Fields filled — check and hit Log Activity.' : "Couldn't catch those details — try again.", !filledAny);
       } catch (err) {
