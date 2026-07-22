@@ -77,6 +77,7 @@
     .summary-val{font-family:'Bebas Neue',sans-serif;font-size:15px;color:#FF6B35;}
     .summary-tokens{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);font-size:10px;color:#555;}
     .summary-empty{text-align:center;color:#555;font-size:12px;padding:30px 16px;}
+    .summary-overall{margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);}
 
     /* ── Category panel ── */
     .cat-panel{display:none;padding:14px 0 0;}
@@ -123,6 +124,7 @@
     .progress-track{width:100%;height:3px;background:rgba(255,255,255,.07);border-radius:2px;margin-top:4px;overflow:hidden;}
     .progress-fill{height:100%;border-radius:2px;transition:width .6s ease;}
     .status-pill{display:inline-block;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:100px;margin-top:4px;}
+    .status-pill.combined{margin-left:4px;opacity:.85;}
     .token-row{display:flex;align-items:center;gap:5px;margin-top:4px;}
     .token-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
     .token-dot.used{background:#E74C3C;box-shadow:0 0 4px rgba(231,76,60,.5);}
@@ -729,6 +731,7 @@
       <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#69FF47;flex-shrink:0;"></div>Active ≥50d</div>
       <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#FF9800;flex-shrink:0;"></div>Started ≥1d</div>
       <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#555;"><div style="width:6px;height:6px;border-radius:50%;background:#555;flex-shrink:0;"></div>Pending</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#888;">· <span style="opacity:.8">Faded pill = combined status across all 3 activities</span></div>
     </div>
   </div><!-- /view-lb -->
 
@@ -975,6 +978,25 @@
     return Object.values(result);
   }
 
+  // ── NEW: Combined cross-activity days per person ───────────────────────────
+  // Unions the distinct logged dates across ALL activities for a given name,
+  // so someone active in Walking + Running + Cycling on different days still
+  // accrues one combined "days" total instead of being split into three
+  // separate, each-too-small buckets.
+  function buildCombinedDays() {
+    const byName = {}; // name -> Set of dates, unioned across ALL activities
+    allLogs.forEach(l => {
+      if (!l.name || !l.date) return;
+      if (!byName[l.name]) byName[l.name] = new Set();
+      byName[l.name].add(l.date);
+    });
+    const result = {};
+    Object.entries(byName).forEach(([name, dateSet]) => {
+      result[name] = dateSet.size;
+    });
+    return result;
+  }
+
   function getStatus(days) {
     if (days >= 90) return { label:"Champion", color:"#FFD700", bg:"#2a2000", icon:"🏆" };
     if (days >= 70) return { label:"Elite",    color:"#00E5FF", bg:"#001a1f", icon:"🥇" };
@@ -1096,9 +1118,20 @@
 
   function renderList(sorted) {
     if (!sorted.length) return '';
+    // NEW: combined cross-activity days, so each row can show an "overall" pill
+    // alongside the per-activity one without changing rank order/sorting.
+    const combinedDays = buildCombinedDays();
     return `<div class="section-label">FULL RANKINGS</div>
     <div class="list-wrap">${sorted.map((p,i)=>{
       const rank=i+1, st=getStatus(p.days), pct=Math.min(100,Math.round(p.days/CHALLENGE_DAYS*100));
+      const totalDays  = combinedDays[p.name] || p.days;
+      const overallSt  = getStatus(totalDays);
+      // Only show the extra combined pill if it actually differs from the per-activity one
+      // (i.e. the person logs more than one activity) — avoids visual clutter otherwise.
+      const showCombined = totalDays !== p.days;
+      const combinedPill = showCombined
+        ? `<span class="status-pill combined" title="${totalDays} combined days across all activities" style="background:${overallSt.bg};color:${overallSt.color};border:1px solid ${overallSt.color}33">${overallSt.icon} ${overallSt.label} (all) · ${totalDays}d</span>`
+        : '';
       return `<div class="list-item" style="animation-delay:${i*.04}s">
         <div class="rank-badge">${rank}</div>
         <div>
@@ -1111,6 +1144,7 @@
           <div class="list-km">${p.km}</div>
           <div class="list-km-unit">KM</div>
           <span class="status-pill" style="background:${st.bg};color:${st.color};border:1px solid ${st.color}33">${st.icon} ${st.label}</span>
+          ${combinedPill}
         </div>
       </div>`;
     }).join('')}</div>`;
@@ -1146,6 +1180,9 @@
     const entries = buildEntries(); // [{name, activity, km, days}]
     if (!entries.length) { grid.innerHTML = `<div class="summary-empty">No data yet.</div>`; return; }
 
+    // NEW: combined cross-activity days per name (union of dates across all activities)
+    const combinedDays = buildCombinedDays();
+
     // Group by name
     const byName = {};
     entries.forEach(e => {
@@ -1162,10 +1199,21 @@
           <span class="summary-val">${e.km}km</span>
         </div>`).join('');
       const used = getTokens(name);
+
+      // NEW: overall combined-days status badge
+      const totalDays   = combinedDays[name] || 0;
+      const overallSt    = getStatus(totalDays);
+      const overallBadge = `<div class="summary-overall">
+        <span class="status-pill" style="background:${overallSt.bg};color:${overallSt.color};border:1px solid ${overallSt.color}33">
+          ${overallSt.icon} ${overallSt.label} · ${totalDays}d combined
+        </span>
+      </div>`;
+
       return `<div class="summary-card">
         <div class="summary-name">${esc(name)}</div>
         ${rows}
         <div class="summary-tokens" style="${used >= MAX_TOKENS ? 'color:#E74C3C' : ''}">🎟 ${used}/${MAX_TOKENS} tokens</div>
+        ${overallBadge}
       </div>`;
     }).join('');
   };
