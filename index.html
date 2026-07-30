@@ -118,13 +118,13 @@
     .rank-badge{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:16px;background:rgba(255,255,255,.06);color:#777;flex-shrink:0;}
     .list-name{font-size:13px;font-weight:600;color:#f0f0f0;margin-bottom:1px;}
     .list-meta{font-size:10px;color:#555;display:flex;gap:8px;flex-wrap:wrap;}
-    .list-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;flex-shrink:0;gap:3px;}
+    .list-right{text-align:right;}
     .list-km{font-family:'Bebas Neue',sans-serif;font-size:20px;color:#FF6B35;line-height:1;}
-    .list-km-unit{font-size:9px;color:#555;margin-bottom:1px;}
+    .list-km-unit{font-size:9px;color:#555;}
     .progress-track{width:100%;height:3px;background:rgba(255,255,255,.07);border-radius:2px;margin-top:4px;overflow:hidden;}
     .progress-fill{height:100%;border-radius:2px;transition:width .6s ease;}
-    .status-pill{display:inline-block;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:100px;white-space:nowrap;}
-    .status-pill.combined{margin-left:0;opacity:.85;}
+    .status-pill{display:inline-block;font-size:8px;font-weight:700;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border-radius:100px;margin-top:4px;}
+    .status-pill.combined{margin-left:4px;opacity:.85;}
     .token-row{display:flex;align-items:center;gap:5px;margin-top:4px;}
     .token-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
     .token-dot.used{background:#E74C3C;box-shadow:0 0 4px rgba(231,76,60,.5);}
@@ -415,6 +415,64 @@
     .sf-day-unit{font-size:9px;color:#555;}
 
     /* ═══════════════════════════════════════════════════
+       INSIGHTS TAB
+    ════════════════════════════════════════════════════ */
+    .in-wrap{padding:14px 16px 4px;}
+    .in-section{margin-bottom:26px;}
+    .in-section-title{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1.5px;color:#fff;display:flex;align-items:center;gap:7px;margin-bottom:4px;}
+    .in-section-sub{font-size:10.5px;color:#666;margin-bottom:12px;line-height:1.5;}
+    .in-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px;}
+
+    /* Momentum diverging bars */
+    .in-mo-row{display:grid;grid-template-columns:64px 1fr 34px;align-items:center;gap:8px;margin-bottom:7px;font-size:11px;}
+    .in-mo-name{color:#bbb;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .in-mo-track{position:relative;height:14px;background:rgba(255,255,255,.04);border-radius:4px;overflow:hidden;}
+    .in-mo-bar{position:absolute;top:0;height:100%;border-radius:3px;transition:width .5s ease;}
+    .in-mo-mid{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:rgba(255,255,255,.18);z-index:1;}
+    .in-mo-val{text-align:right;font-family:'Bebas Neue',sans-serif;font-size:13px;}
+    .in-mo-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:9.5px;color:#666;margin-top:8px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06);}
+    .in-mo-legend span{display:inline-flex;align-items:center;gap:5px;}
+    .in-mo-legend i{width:8px;height:8px;border-radius:2px;display:inline-block;}
+
+    /* Quiet list */
+    .in-quiet-item{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:10px;padding:9px 12px;margin-bottom:6px;font-size:12px;color:#ddd;animation:fadeUp .3s ease both;}
+    .in-quiet-gap{font-family:'Bebas Neue',sans-serif;font-size:15px;color:#FF9800;flex-shrink:0;padding-left:8px;}
+    .in-quiet-gap.crit{color:#E74C3C;}
+    .in-quiet-gap.warn{color:#FF9800;}
+    .in-quiet-gap.mild{color:#e8c04a;}
+
+    /* Scatter */
+    .in-scatter{width:100%;height:auto;display:block;}
+    .in-scatter-legend{display:flex;gap:14px;flex-wrap:wrap;font-size:9.5px;color:#777;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.06);}
+    .in-scatter-legend span{display:inline-flex;align-items:center;gap:5px;}
+    .in-scatter-legend i{width:8px;height:8px;border-radius:50%;display:inline-block;}
+
+    /* Token bars */
+    .in-tok-row{display:grid;grid-template-columns:80px 1fr 40px;align-items:center;gap:8px;margin-bottom:7px;font-size:11px;}
+    .in-tok-track{height:9px;background:rgba(255,255,255,.05);border-radius:6px;overflow:hidden;}
+    .in-tok-fill{height:100%;border-radius:6px;transition:width .5s ease;}
+
+    /* Trust / data-health panel */
+    .in-trust-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px;margin-bottom:10px;}
+    .in-trust-stat{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px 10px;text-align:center;}
+    .in-trust-val{font-family:'Bebas Neue',sans-serif;font-size:26px;color:#69FF47;line-height:1;}
+    .in-trust-lbl{font-size:9px;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:5px;}
+    .in-empty{text-align:center;color:#555;font-size:12px;padding:20px 16px;}
+
+    body.theme-light .in-section-title  { color: #1a1a2e; }
+    body.theme-light .in-section-sub    { color: #888; }
+    body.theme-light .in-card           { background: rgba(255,255,255,.85); border-color: rgba(0,0,0,.08); }
+    body.theme-light .in-mo-name        { color: #444; }
+    body.theme-light .in-mo-track       { background: rgba(0,0,0,.05); }
+    body.theme-light .in-mo-legend      { color: #888; border-color: rgba(0,0,0,.08); }
+    body.theme-light .in-quiet-item     { background: rgba(255,255,255,.85); border-color: rgba(0,0,0,.08); color: #333; }
+    body.theme-light .in-scatter-legend { color: #888; border-color: rgba(0,0,0,.08); }
+    body.theme-light .in-tok-track      { background: rgba(0,0,0,.06); }
+    body.theme-light .in-trust-stat     { background: rgba(255,255,255,.85); border-color: rgba(0,0,0,.08); }
+    body.theme-light .in-trust-lbl      { color: #888; }
+    body.theme-light .in-empty          { color: #aaa; }
+
+    /* ═══════════════════════════════════════════════════
        AUTO DAY / NIGHT THEME
        Dark = original colours (all untouched).
        Light = only what needs fixing for readability.
@@ -691,6 +749,7 @@
   
     <br> <div class="view-toggle">
       <button class="view-btn"        id="vbtn-sf" onclick="switchView('sf')">🍬 Sugar Free</button>
+      <button class="view-btn"        id="vbtn-in" onclick="switchView('in')">🔍 Insights</button>
     </div>
   </div>
 
@@ -853,6 +912,64 @@
     </div>
   </div><!-- /view-sf -->
 
+  <!-- ── INSIGHTS VIEW ── -->
+  <div id="view-in" style="display:none">
+    <div class="in-wrap">
+      <div class="sf-header">
+        <div class="sf-icon">🔍</div>
+        <div>
+          <div class="sf-title">CHALLENGE INSIGHTS</div>
+          <div class="sf-sub">Patterns behind the leaderboard — who's fading, who's quietly consistent, and how clean the data looks. Auto-computed from every log.</div>
+        </div>
+      </div>
+
+      <div class="in-section">
+        <div class="in-section-title">📉 Momentum — Last 14 Days vs. First 14 Days</div>
+        <div class="in-section-sub">Active days logged in the challenge's opening two weeks vs. the most recent two weeks. Red bars = started strong, went quiet. Green bars = picking up steam.</div>
+        <div class="in-card">
+          <div id="in-momentum-chart"></div>
+          <div class="in-mo-legend">
+            <span><i style="background:#E74C3C"></i>Declining</span>
+            <span><i style="background:#69FF47"></i>Improving</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="in-section">
+        <div class="in-section-title">🔇 Gone Quiet</div>
+        <div class="in-section-sub">Everyone currently registered, ranked by days since their last logged activity.</div>
+        <div id="in-quiet-list"></div>
+      </div>
+
+      <div class="in-section">
+        <div class="in-section-title">🎯 Consistency vs. Volume</div>
+        <div class="in-section-sub">Each dot is one person. Right = active more days out of the challenge so far. Up = more total km. Bottom-right is where the quiet, steady achievers live.</div>
+        <div class="in-card">
+          <div id="in-scatter-chart"></div>
+          <div class="in-scatter-legend">
+            <span><i style="background:#FFD700"></i>Highest volume</span>
+            <span><i style="background:#69FF47"></i>Most consistent</span>
+            <span><i style="background:#00E5FF"></i>Steadiest low-key achiever</span>
+            <span><i style="background:rgba(255,107,53,.6)"></i>Everyone else</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="in-section">
+        <div class="in-section-title">🎟 Off-Day Token Usage</div>
+        <div class="in-section-sub">Everyone gets 6 tokens to cover the full 100 days. Burning through them early is an early dropout signal — only shown for people who've used at least one.</div>
+        <div class="in-card"><div id="in-token-chart"></div></div>
+      </div>
+
+      <div class="in-section">
+        <div class="in-section-title">✅ Data Health &amp; Trust</div>
+        <div class="in-section-sub">Automated checks run across every submitted log — shared proof links can indicate copy-pasted entries; flagged logs need a manual look.</div>
+        <div class="in-trust-grid" id="in-trust-grid"></div>
+        <div id="in-review-list"></div>
+      </div>
+    </div>
+  </div><!-- /view-in -->
+
 </div><!-- /lb-root -->
 
 <script>
@@ -888,12 +1005,15 @@
     document.getElementById('view-wk').style.display = v === 'wk' ? '' : 'none';
     document.getElementById('view-gr').style.display = v === 'gr' ? '' : 'none';
     document.getElementById('view-sf').style.display = v === 'sf' ? '' : 'none';
+    document.getElementById('view-in').style.display = v === 'in' ? '' : 'none';
     document.getElementById('vbtn-lb').classList.toggle('active', v === 'lb');
     document.getElementById('vbtn-sum').classList.toggle('active', v === 'sum');
     document.getElementById('vbtn-wk').classList.toggle('active', v === 'wk');
     document.getElementById('vbtn-gr').classList.toggle('active', v === 'gr');
     document.getElementById('vbtn-sf').classList.toggle('active', v === 'sf');
+    document.getElementById('vbtn-in').classList.toggle('active', v === 'in');
     if (v === 'sum') { window.renderSummary && window.renderSummary(); }
+    if (v === 'in')  { window.renderInsights && window.renderInsights(); }
   }
 </script>
 
@@ -1218,11 +1338,198 @@
     }).join('');
   };
 
+  // ══════════════════════════════════════════════════════
+  //  INSIGHTS TAB — momentum, consistency/volume, tokens, data health
+  // ══════════════════════════════════════════════════════
+  const CHALLENGE_START = new Date('2026-06-01T00:00:00');
+
+  // Aggregate logs per person: distinct active dates + total km (max-per-date-per-activity,
+  // matching the same de-dupe logic buildEntries() uses) + first/last-14-day windows.
+  function inBuildRows() {
+    const today = new Date(); today.setHours(0,0,0,0);
+    const elapsed = Math.max(1, Math.round((today - CHALLENGE_START) / 86400000) + 1);
+
+    const first14End = new Date(CHALLENGE_START); first14End.setDate(first14End.getDate() + 13);
+    const last14Start = new Date(today); last14Start.setDate(last14Start.getDate() - 13);
+
+    const byName = {};
+    allLogs.forEach(l => {
+      if (!l.name || !l.date) return;
+      if (!byName[l.name]) byName[l.name] = { dateSet: new Set(), byDateAct: {} };
+      byName[l.name].dateSet.add(l.date);
+      const key = l.date + '__' + (l.activity || '');
+      const cur = parseFloat(l.km) || 0;
+      const prev = byName[l.name].byDateAct[key] || 0;
+      if (cur > prev) byName[l.name].byDateAct[key] = cur;
+    });
+
+    const rows = Object.keys(byName).map(name => {
+      const rec = byName[name];
+      const days = rec.dateSet.size;
+      const kmTotal = Math.round(Object.values(rec.byDateAct).reduce((a,b) => a+b, 0) * 10) / 10;
+      const datesSorted = Array.from(rec.dateSet).sort();
+      const lastDate = new Date(datesSorted[datesSorted.length - 1] + 'T00:00:00');
+      const gapDays = Math.max(0, Math.round((today - lastDate) / 86400000));
+      let first14 = 0, last14 = 0;
+      rec.dateSet.forEach(d => {
+        const dt = new Date(d + 'T00:00:00');
+        if (dt >= CHALLENGE_START && dt <= first14End) first14++;
+        if (dt >= last14Start && dt <= today) last14++;
+      });
+      return {
+        name, days, kmTotal, gapDays, first14, last14,
+        delta: last14 - first14,
+        consistencyPct: Math.min(100, Math.round(days / elapsed * 100))
+      };
+    });
+
+    return { rows, elapsed };
+  }
+
+  function inRenderMomentum(rows) {
+    const el = document.getElementById('in-momentum-chart');
+    if (!el) return;
+    // Only people with enough history to compare both windows meaningfully
+    const eligible = rows.filter(r => r.first14 + r.last14 > 0);
+    if (!eligible.length) { el.innerHTML = '<div class="in-empty">Not enough data yet — check back after the first couple of weeks.</div>'; return; }
+
+    const worst = [...eligible].sort((a,b) => a.delta - b.delta).slice(0, 8).filter(r => r.delta < 0);
+    const best  = [...eligible].sort((a,b) => b.delta - a.delta).slice(0, 4).filter(r => r.delta > 0);
+    const combined = [...worst, ...best];
+    const maxAbs = Math.max(1, ...combined.map(r => Math.abs(r.delta)));
+
+    el.innerHTML = combined.map(r => {
+      const pct = Math.abs(r.delta) / maxAbs * 50;
+      const isNeg = r.delta < 0;
+      const color = isNeg ? '#E74C3C' : '#69FF47';
+      const barStyle = isNeg ? `right:50%;width:${pct}%;background:${color}` : `left:50%;width:${pct}%;background:${color}`;
+      return `<div class="in-mo-row">
+        <div class="in-mo-name">${esc(r.name.split(' ')[0])}</div>
+        <div class="in-mo-track"><div class="in-mo-mid"></div><div class="in-mo-bar" style="${barStyle}"></div></div>
+        <div class="in-mo-val" style="color:${color}">${r.delta > 0 ? '+' : ''}${r.delta}</div>
+      </div>`;
+    }).join('') || '<div class="in-empty">No notable movers yet.</div>';
+  }
+
+  function inRenderQuiet(rows) {
+    const el = document.getElementById('in-quiet-list');
+    if (!el) return;
+    const quiet = rows.filter(r => r.gapDays >= 7).sort((a,b) => b.gapDays - a.gapDays).slice(0, 10);
+    if (!quiet.length) { el.innerHTML = '<div class="in-empty">Everyone has logged in the last week 🎉</div>'; return; }
+    el.innerHTML = quiet.map(r => {
+      const cls  = r.gapDays >= 30 ? 'crit' : (r.gapDays >= 14 ? 'warn' : 'mild');
+      const icon = r.gapDays >= 30 ? '🔴' : (r.gapDays >= 14 ? '🟠' : '🟡');
+      return `<div class="in-quiet-item">
+        <span>${icon} ${esc(r.name)}</span>
+        <span class="in-quiet-gap ${cls}">${r.gapDays}d silent</span>
+      </div>`;
+    }).join('');
+  }
+
+  function inRenderScatter(rows) {
+    const el = document.getElementById('in-scatter-chart');
+    if (!el) return;
+    const data = rows.filter(r => r.days > 0);
+    if (!data.length) { el.innerHTML = '<div class="in-empty">No data yet.</div>'; return; }
+
+    const W = 320, H = 220, PAD = 32;
+    const maxKm = Math.max(...data.map(r => r.kmTotal), 10);
+    const px = pct => PAD + (pct / 100) * (W - PAD * 2);
+    const py = km  => H - PAD - (km / maxKm) * (H - PAD * 2);
+
+    const topKm   = [...data].sort((a,b) => b.kmTotal - a.kmTotal)[0];
+    const topCons = [...data].sort((a,b) => b.consistencyPct - a.consistencyPct || a.kmTotal - b.kmTotal)[0];
+    const quietPool = data.filter(r => r.consistencyPct >= 90 && r !== topKm).sort((a,b) => a.kmTotal - b.kmTotal);
+    const quietAchiever = quietPool[0];
+
+    const dots = data.map(r => {
+      let fill = 'rgba(255,107,53,.55)', rad = 3.5, label = '';
+      if (r === topKm)        { fill = '#FFD700'; rad = 6; label = r.name.split(' ')[0]; }
+      if (r === topCons)      { fill = '#69FF47'; rad = 6; label = r.name.split(' ')[0]; }
+      if (quietAchiever && r === quietAchiever) { fill = '#00E5FF'; rad = 6; label = r.name.split(' ')[0]; }
+      const cx = px(r.consistencyPct).toFixed(1), cy = py(r.kmTotal).toFixed(1);
+      const dot = `<circle cx="${cx}" cy="${cy}" r="${rad}" fill="${fill}"><title>${esc(r.name)} — ${r.consistencyPct}% consistent, ${r.kmTotal} km</title></circle>`;
+      const txt = label ? `<text x="${(parseFloat(cx)+7).toFixed(1)}" y="${(parseFloat(cy)+3).toFixed(1)}" font-size="8" fill="#aaa">${esc(label)}</text>` : '';
+      return dot + txt;
+    }).join('');
+
+    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="in-scatter" xmlns="http://www.w3.org/2000/svg">
+      <line x1="${PAD}" y1="${H-PAD}" x2="${W-PAD}" y2="${H-PAD}" stroke="rgba(255,255,255,.15)"/>
+      <line x1="${PAD}" y1="${PAD}" x2="${PAD}" y2="${H-PAD}" stroke="rgba(255,255,255,.15)"/>
+      <text x="${W/2}" y="${H-8}" font-size="9" fill="#666" text-anchor="middle">Consistency (% days active) &#8594;</text>
+      <text x="12" y="${H/2}" font-size="9" fill="#666" text-anchor="middle" transform="rotate(-90 12 ${H/2})">Total km &#8594;</text>
+      ${dots}
+    </svg>`;
+  }
+
+  function inRenderTokens() {
+    const el = document.getElementById('in-token-chart');
+    if (!el) return;
+    const rows = Object.values(tokensMap)
+      .filter(t => t.name && t.count > 0)
+      .map(t => ({ name: t.name, count: t.count }))
+      .sort((a,b) => b.count - a.count);
+    if (!rows.length) { el.innerHTML = '<div class="in-empty">No off-day tokens used yet.</div>'; return; }
+    el.innerHTML = rows.map(r => {
+      const pct = Math.round(r.count / MAX_TOKENS * 100);
+      const color = r.count >= MAX_TOKENS ? '#E74C3C' : (r.count >= MAX_TOKENS - 1 ? '#FF9800' : '#69FF47');
+      return `<div class="in-tok-row">
+        <div class="in-mo-name">${esc(r.name.split(' ')[0])}</div>
+        <div class="in-tok-track"><div class="in-tok-fill" style="width:${pct}%;background:${color}"></div></div>
+        <div class="in-mo-val" style="color:${color}">${r.count}/${MAX_TOKENS}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function inRenderTrust() {
+    const gridEl = document.getElementById('in-trust-grid');
+    const listEl = document.getElementById('in-review-list');
+    if (!gridEl) return;
+
+    const totalLogs = allLogs.length;
+    const proofMap = {};
+    allLogs.forEach(l => {
+      if (!l.proof) return;
+      if (!proofMap[l.proof]) proofMap[l.proof] = new Set();
+      proofMap[l.proof].add(l.name);
+    });
+    const sharedProofCount = Object.values(proofMap).filter(s => s.size > 1).length;
+    const pendingReview = Object.keys(reviewQueue).length;
+
+    gridEl.innerHTML = `
+      <div class="in-trust-stat"><div class="in-trust-val">${totalLogs}</div><div class="in-trust-lbl">Total Logs</div></div>
+      <div class="in-trust-stat"><div class="in-trust-val" style="color:${sharedProofCount ? '#E74C3C' : '#69FF47'}">${sharedProofCount}</div><div class="in-trust-lbl">Shared Proof Links</div></div>
+      <div class="in-trust-stat"><div class="in-trust-val" style="color:${pendingReview ? '#FF9800' : '#69FF47'}">${pendingReview}</div><div class="in-trust-lbl">Pending Review</div></div>
+    `;
+
+    if (!listEl) return;
+    const items = Object.values(reviewQueue);
+    listEl.innerHTML = items.length ? items.map(item => {
+      const ex = item.extracted || {};
+      const flags = (item.flags || []).join(', ');
+      const detail = [ex.activity, ex.km ? ex.km + 'km' : '', ex.date].filter(Boolean).join(' · ');
+      return `<div class="in-quiet-item">
+        <span>🔎 ${esc(item.name || 'Unknown')} — ${esc(detail)}</span>
+        <span class="in-quiet-gap warn" style="font-size:9.5px;text-align:right">${esc(flags)}</span>
+      </div>`;
+    }).join('') : '';
+  }
+
+  window.renderInsights = function() {
+    const { rows } = inBuildRows();
+    inRenderMomentum(rows);
+    inRenderQuiet(rows);
+    inRenderScatter(rows);
+    inRenderTokens();
+    inRenderTrust();
+  };
+
   // ── Firebase listeners ─────────────────────────────────────────────────────
   onValue(ref(db, 'participants'), snap => {
     allParticipants = snap.val() ? Object.values(snap.val()) : [];
     renderAll();
     window.renderSummary && window.renderSummary();
+    window.renderInsights && window.renderInsights();
   });
 
   onValue(ref(db, 'tokens'), snap => {
@@ -1231,10 +1538,18 @@
     Object.entries(raw).forEach(([key, t]) => {
       if (!t.name) return;
       const dates = Array.isArray(t.dates) ? t.dates : [];
-      tokensMap[sanitizeKey(t.name)] = { count: dates.length, dates: new Set(dates) };
+      tokensMap[sanitizeKey(t.name)] = { count: dates.length, dates: new Set(dates), name: t.name };
     });
     renderAll();
     window.renderSummary && window.renderSummary();
+    window.renderInsights && window.renderInsights();
+  });
+
+  // Review queue — logs flagged by the intake pipeline for a manual look
+  let reviewQueue = {};
+  onValue(ref(db, 'review_queue'), snap => {
+    reviewQueue = snap.val() || {};
+    window.renderInsights && window.renderInsights();
   });
 
   // Single logs listener — feeds leaderboard (logsMap + buildEntries) and weekly
@@ -1266,6 +1581,7 @@
     renderGroups();
     window.aeRender && window.aeRender();
     window.renderSummary && window.renderSummary();
+    window.renderInsights && window.renderInsights();
   });
 
   // ══════════════════════════════════════════════════════
