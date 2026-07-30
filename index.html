@@ -963,9 +963,8 @@
 
       <div class="in-section">
         <div class="in-section-title">✅ Data Health &amp; Trust</div>
-        <div class="in-section-sub">Automated checks run across every submitted log — shared proof links can indicate copy-pasted entries; flagged logs need a manual look.</div>
+        <div class="in-section-sub">Total logs submitted across the challenge so far.</div>
         <div class="in-trust-grid" id="in-trust-grid"></div>
-        <div id="in-review-list"></div>
       </div>
     </div>
   </div><!-- /view-in -->
@@ -1483,36 +1482,13 @@
 
   function inRenderTrust() {
     const gridEl = document.getElementById('in-trust-grid');
-    const listEl = document.getElementById('in-review-list');
     if (!gridEl) return;
 
     const totalLogs = allLogs.length;
-    const proofMap = {};
-    allLogs.forEach(l => {
-      if (!l.proof) return;
-      if (!proofMap[l.proof]) proofMap[l.proof] = new Set();
-      proofMap[l.proof].add(l.name);
-    });
-    const sharedProofCount = Object.values(proofMap).filter(s => s.size > 1).length;
-    const pendingReview = Object.keys(reviewQueue).length;
 
     gridEl.innerHTML = `
       <div class="in-trust-stat"><div class="in-trust-val">${totalLogs}</div><div class="in-trust-lbl">Total Logs</div></div>
-      <div class="in-trust-stat"><div class="in-trust-val" style="color:${sharedProofCount ? '#E74C3C' : '#69FF47'}">${sharedProofCount}</div><div class="in-trust-lbl">Shared Proof Links</div></div>
-      <div class="in-trust-stat"><div class="in-trust-val" style="color:${pendingReview ? '#FF9800' : '#69FF47'}">${pendingReview}</div><div class="in-trust-lbl">Pending Review</div></div>
     `;
-
-    if (!listEl) return;
-    const items = Object.values(reviewQueue);
-    listEl.innerHTML = items.length ? items.map(item => {
-      const ex = item.extracted || {};
-      const flags = (item.flags || []).join(', ');
-      const detail = [ex.activity, ex.km ? ex.km + 'km' : '', ex.date].filter(Boolean).join(' · ');
-      return `<div class="in-quiet-item">
-        <span>🔎 ${esc(item.name || 'Unknown')} — ${esc(detail)}</span>
-        <span class="in-quiet-gap warn" style="font-size:9.5px;text-align:right">${esc(flags)}</span>
-      </div>`;
-    }).join('') : '';
   }
 
   window.renderInsights = function() {
